@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documento fecha_actualizacion="20260914085601">
+  <metadatos>
+    <identificador>BOE-A-2025-4410</identificador>
+    <origen_legislativo codigo="1">Estatal</origen_legislativo>
+    <departamento codigo="9575">Ministerio para la Transición Ecológica y el Reto Demográfico</departamento>
+    <rango codigo="1350">Orden</rango>
+    <fecha_disposicion>20250304</fecha_disposicion>
+    <numero_oficial>TED/211/2025</numero_oficial>
+    <titulo>Orden TED/211/2025, de 4 de marzo, por la que se modifica la Orden IET/389/2015, de 5 de marzo, por la que se actualiza el sistema de determinación automática de precios máximos de venta, antes de impuestos, de los gases licuados del petróleo envasados y se modifica el sistema de determinación automática de las tarifas de venta, antes de impuestos, de los gases licuados del petróleo por canalización.</titulo>
+    <diario codigo="BOE">Boletín Oficial del Estado</diario>
+    <fecha_publicacion>20250306</fecha_publicacion>
+    <diario_numero>56</diario_numero>
+    <seccion>1</seccion>
+    <subseccion/>
+    <pagina_inicial>30384</pagina_inicial>
+    <pagina_final>30390</pagina_final>
+    <suplemento_pagina_inicial/>
+    <suplemento_pagina_final/>
+    <url_pdf>https://www.boe.es/boe/dias/2025/03/06/pdfs/BOE-A-2025-4410.pdf</url_pdf>
+    <url_epub>
+      <url_epub>https://www.boe.es/diario_boe/epub.php?id=BOE-A-2025-4410</url_epub>
+    </url_epub>
+    <url_pdf_catalan/>
+    <url_pdf_euskera/>
+    <url_pdf_gallego/>
+    <url_pdf_valenciano/>
+    <estatus_legislativo>L</estatus_legislativo>
+    <fecha_vigencia>20250318</fecha_vigencia>
+    <estatus_derogacion>N</estatus_derogacion>
+    <fecha_derogacion/>
+    <judicialmente_anulada>N</judicialmente_anulada>
+    <fecha_anulacion/>
+    <vigencia_agotada>N</vigencia_agotada>
+    <estado_consolidacion codigo="0"/>
+    <letra_imagen>A</letra_imagen>
+    <suplemento_letra_imagen/>
+    <url_eli>https://www.boe.es/eli/es/o/2025/03/04/ted211</url_eli>
+  </metadatos>
+  <metadata-eli>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:eli="http://data.europa.eu/eli/ontology#">
+      <eli:LegalResource rdf:about="https://www.boe.es/eli/es/o/2025/03/04/ted211">
+        <eli:jurisdiction rdf:resource="http://www.elidata.es/mdr/authority/jurisdiction/1/es"/>
+        <eli:type_document rdf:resource="http://www.elidata.es/mdr/authority/resource-type/1/o"/>
+        <eli:id_local rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BOE-A-2025-4410</eli:id_local>
+        <eli:date_document rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-03-04</eli:date_document>
+        <eli:number rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ted211</eli:number>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/255"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/3889"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5575"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5665"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6827"/>
+        <eli:has_member>
+          <eli:LegalResource rdf:about="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof">
+            <eli:jurisdiction rdf:resource="http://www.elidata.es/mdr/authority/jurisdiction/1/es"/>
+            <eli:type_document rdf:resource="http://www.elidata.es/mdr/authority/resource-type/1/o"/>
+            <eli:id_local rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BOE-A-2025-4410</eli:id_local>
+            <eli:date_document rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-03-04</eli:date_document>
+            <eli:number rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ted211</eli:number>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/255"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/3889"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5575"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5665"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6827"/>
+            <eli:version rdf:resource="http://www.elidata.es/mdr/authority/version/dof"/>
+            <eli:is_member_of rdf:resource="https://www.boe.es/eli/es/o/2025/03/04/ted211"/>
+            <eli:is_realized_by>
+              <eli:LegalExpression rdf:about="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa">
+                <eli:language rdf:resource="http://www.elidata.es/mdr/authority/language/spa"/>
+                <eli:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Orden TED/211/2025, de 4 de marzo, por la que se modifica la Orden IET/389/2015, de 5 de marzo, por la que se actualiza el sistema de determinación automática de precios máximos de venta, antes de impuestos, de los gases licuados del petróleo envasados y se modifica el sistema de determinación automática de las tarifas de venta, antes de impuestos, de los gases licuados del petróleo por canalización.</eli:title>
+                <eli:publisher_agent rdf:resource="https://www.boe.es"/>
+                <eli:date_publication rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-03-06</eli:date_publication>
+                <eli:realizes rdf:resource="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof"/>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa/epub">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/epub+zip"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa/html">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/text/html"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa/pdf">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/pdf"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa/xml">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/xml"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2025/03/04/ted211/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+              </eli:LegalExpression>
+            </eli:is_realized_by>
+          </eli:LegalResource>
+        </eli:has_member>
+      </eli:LegalResource>
+    </rdf:RDF>
+  </metadata-eli>
+  <analisis>
+    <materias>
+      <materia codigo="255" orden="1">Aparatos y recipientes a presión</materia>
+      <materia codigo="3889" orden="1">Gas</materia>
+      <materia codigo="5665" orden="1">Precios</materia>
+      <materia codigo="5575" orden="1">Productos petrolíferos</materia>
+      <materia codigo="6827" orden="1">Tarifas</materia>
+    </materias>
+    <notas/>
+    <referencias>
+      <anteriores>
+        <anterior referencia="BOE-A-2024-14545" orden="2015">
+          <palabra codigo="270">MODIFICA</palabra>
+          <texto>los arts. 20.2 y 28.3 de la Orden TED/728/2024, de 15 de julio</texto>
+        </anterior>
+        <anterior referencia="BOE-A-2015-2495" orden="2015">
+          <palabra codigo="270">MODIFICA</palabra>
+          <texto>los arts. 1 a 4 y AÑADE el 7 y 8 a la Orden IET/389/2015, de 5 de marzo</texto>
+        </anterior>
+        <anterior referencia="BOE-A-1998-23284" orden="3060">
+          <palabra codigo="440">DE CONFORMIDAD con</palabra>
+          <texto>la Ley 34/1998, de 7 de octubre</texto>
+        </anterior>
+      </anteriores>
+      <posteriores/>
+    </referencias>
+    <alertas>
+      <alerta codigo="115" orden="1">Energía</alerta>
+    </alertas>
+  </analisis>
+  <texto>
+    <p class="parrafo">El capítulo III del título III de la Ley 34/1998, de 7 de octubre, del sector de hidrocarburos, regula la actividad de suministro al por mayor y distribución de los gases licuados del petróleo (GLP), mientras que la disposición adicional trigésima tercera de la ley, en su redacción dada por el Real Decreto-ley 8/2014, de 4 de julio, de aprobación de medidas urgentes para el crecimiento, la competitividad y la eficacia, faculta al Ministro de Industria, Energía y Turismo, referencia que en la actualidad debe entenderse dirigida al titular del Ministerio para la Transición Ecológica y el Reto Demográfico, a determinar, previo acuerdo de la Comisión Delegada del Gobierno para Asuntos Económicos, los precios máximos de venta al público de los gases licuados del petróleo envasados, en envases con carga igual o superior a 8 kilogramos e inferior a 20 kilogramos, cuya tara sea superior a 9 kilogramos, en tanto las condiciones de concurrencia y competencia en este mercado no se consideren suficientes.</p>
+    <p class="parrafo">La citada Ley 34/1998, de 7 de octubre, fue desarrollada posteriormente, en lo referente a los gases licuados de petróleo, mediante el Real Decreto 197/2010, de 26 de febrero, por el que se adaptan determinadas disposiciones relativas al sector de hidrocarburos a lo dispuesto en la Ley 25/2009, de 22 de diciembre, de modificación de diversas leyes para su adaptación a la Ley sobre el libre acceso a las actividades de servicios y su ejercicio, que modificó también el Real Decreto 1085/1992, de 11 de septiembre, por el que se aprueba el reglamento de la actividad de distribución de gases licuados del petróleo.</p>
+    <p class="parrafo">Al amparo de estas previsiones legales, se aprobó la Orden IET/463/2013, de 21 de marzo, por la que se actualiza el sistema de determinación automática de precios máximos de venta, antes de impuestos, de los gases licuados del petróleo envasados. Dicho sistema se aplica a los envases con carga igual o superior a 8 kilogramos e inferior a 20 kilogramos, a excepción de los envases de mezcla para usos de los gases licuados del petróleo como carburante.</p>
+    <p class="parrafo">Esta orden fue posteriormente derogada mediante la Orden IET/389/2015, de 5 de marzo, por la que se actualiza el sistema de determinación automática de precios máximos de venta, antes de impuestos, de los gases licuados del petróleo envasados y se modifica el sistema de determinación automática de las tarifas de venta, antes de impuestos, de los gases licuados del petróleo por canalización, que derogó la anterior, con el objetivo de adaptar el coste de la materia prima a la realidad de los suministros del mercado nacional en los últimos años, llevando a cabo una actualización en la fórmula de los costes de comercialización y eliminando la referencia al Índice General de Precios al Consumo, conforme con lo dispuesto en la Ley 2/2015, de 30 de marzo, de desindexación de la economía española.</p>
+    <p class="parrafo">El 19 de mayo de 2015, la persona titular de la Secretaría de Estado de Energía remitió un escrito a la Comisión Nacional de los Mercados y la Competencia (CNMC) por el que solicita informe en relación con el GLP envasado y canalizado, incluyendo una estimación de los costes de comercialización incurridos en el suministro del GLP y una propuesta de actualización de la fórmula de revisión anual de los citados costes de comercialización.</p>
+    <p class="parrafo">El 31 de mayo de 2018 la Sala de Supervisión Regulatoria de la CNMC aprobó el acuerdo por el que se emite informe sobre los costes de comercialización incurridos en el suministro de GLP y su fórmula de revisión anual. Respecto al valor inicial a aplicar a partir de la entrada en vigor de esta orden y teniendo en cuenta que dicho valor se calculó en el año 2018, se ha optado por actualizar el valor propuesto en el citado informe mediante la aplicación sucesiva de la fórmula de actualización propuesta en el mismo hasta el año 2024. Considerando que dicha fórmula sólo actualiza los costes variables dependientes del coste del gasóleo y los costes fijos que dependen de la evolución de las ventas, también se han revisado otras partidas de costes como son los costes salariales, de operación y mantenimiento y de los arrendamientos, en base a la evolución de los valores de mercado, con intención de que sean reflejados preferentemente en las comisiones abonadas a las agencias de distribución de envases de GLP.</p>
+    <p class="parrafo">Cabe mencionar que, para que el incremento de los costes de comercialización derivado de esta actualización sea recuperado más rápidamente por los agentes afectados, se dispone que, en caso de producirse un aumento en el precio sin impuestos superior al 5 % respecto al bimestre anterior, lo cual haría aplicar el tope vigente, se permitirá un incremento adicional en el precio sin impuestos de 1,322 cts.€/kg (equivalente a 20 cts. € en el precio de venta al público del envase de 12,5 kg), aplicable hasta que el precio de venta recoja la totalidad de los nuevos costes de comercialización.</p>
+    <p class="parrafo">Asimismo, la orden desarrolla otras cuestiones de la regulación sectorial de necesaria actualización, así como de su régimen económico, en aras del principio de eficiencia y en atención a la naturaleza del uso del producto. Así, y en base a la habilitación incluida en la disposición adicional trigésima tercera de la Ley 34/1998, de 7 de octubre, en esta orden se liberalizan los precios del propano envasado, con independencia del tamaño del envase, en atención a que su empleo, a diferencia del butano envasado, es fundamentalmente industrial y comercial y, en los casos residuales de consumo doméstico, la modificación de los equipos de consumo para pasar a consumir butano tiene coste reducido.</p>
+    <p class="parrafo">Otras cuestiones abordadas son la incorporación en la fórmula de cálculo del precio sin impuestos del GLP envasado el coste de la obligación del Fondo Nacional de Eficiencia Energética, conforme la recomendación realizada por la CNMC en su informe a la propuesta de orden, por otro lado se amplía de 48 a 72 horas el plazo máximo de reparto domiciliario de estos envases, con el objetivo de facilitar la sostenibilidad de este servicio en las zonas de población más dispersa, se capacita a la CNMC para realizar una revisión cada tres años de la fórmula de actualización anual de los costes de comercialización, con una habilitación para solicitar la información necesaria a las empresas implicadas y, por último, se adelanta del mes de julio al mes de mayo la actualización anual, al objeto de reflejar, lo antes posible, en el precio de venta las variaciones de los costes de comercialización incurridos.</p>
+    <p class="parrafo">Por último, tras la realización de la primera certificación provisional al amparo de la Orden TED/728/2024, de 15 de julio, por la que se desarrolla el mecanismo de fomento de biocarburantes y otros combustibles renovables con fines de transporte, surge la necesidad de clarificar determinados aspectos del funcionamiento del mecanismo de certificación de los biocarburantes y otros combustibles renovables con el propósito de suprimir la posibilidad de efectuar rectificaciones trimestrales, reforzando así la robustez del sistema de prevención del fraude dispuesto en la referida orden. Dichos cambios se materializan en una disposición final donde se procede a la modificación de los artículos 20.2 y 28.3 de la citada orden.</p>
+    <p class="parrafo">Por lo tanto, esta orden se dicta ante la necesidad de actualizar cuestiones esenciales del régimen tarifario del GLP envasado y de la regulación asociada, competencia del Ministerio para la Transición Ecológica y el Reto Demográfico. La orden no impone cargas desproporcionadas ni arbitrarias a ningún agente, y garantiza la seguridad jurídica, ya que la actualización de los costes de comercialización se realiza mediante unas fórmulas tasadas y objetivas propuestas por la CNMC en su informe, que van a proporcionar unos valores predecibles y replicables por terceros.</p>
+    <p class="parrafo">Por otra parte, la tramitación de la orden ha seguido un proceso transparente, realizándose en primer lugar un trámite de Consulta Publica Previa, conforme lo dispuesto en el artículo 26 de la Ley 50/1997, de 27 de noviembre, del Gobierno. Asimismo, la propuesta de orden fue sometida al procedimiento de audiencia pública en la página web del Ministerio para la Transición Ecológica y el Reto Demográfico, proporcionando la oportunidad a los agentes de presentar alegaciones al borrador de la orden.</p>
+    <p class="parrafo">En resumen, la concepción y tramitación de esta orden ha respetado los principios de buena regulación de necesidad, eficacia, proporcionalidad, transparencia, eficiencia y seguridad jurídica recogidos en la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo Común de las Administraciones Públicas.</p>
+    <p class="parrafo">Esta orden ministerial se adecua al orden competencial, al dictarse al amparo de las funciones atribuidas al Estado en el artículo 149 de la Constitución Española y a la persona titular del Ministerio para la Transición Ecológica y el Reto Demográfico, en la Ley 34/1998, de 7 de octubre, y en el Real Decreto 1085/1992, de 11 de septiembre.</p>
+    <p class="parrafo">Asimismo, la propuesta fue objeto del informe IPN/CNMC/038/24 de la Comisión Nacional de los Mercados y la Competencia, aprobado por su Consejo en Pleno en la sesión del 17 de diciembre de 2024, para cuya elaboración se tuvieron en cuenta las alegaciones formuladas en el trámite de audiencia efectuado a través del Consejo Consultivo de Hidrocarburos. El Consejo Consultivo de Hidrocarburos sigue ejerciendo sus funciones hasta la constitución del Consejo Consultivo de Energía de acuerdo con lo dispuesto en la disposición transitoria décima de la Ley 3/2013, de 4 de junio, de creación de la Comisión Nacional de los Mercados y la Competencia.</p>
+    <p class="parrafo">Mediante Acuerdo de 24 de febrero de 2025, la Comisión Delegada del Gobierno para Asuntos Económicos ha autorizado a la Vicepresidenta Tercera del Gobierno y Ministra para la Transición Ecológica y el Reto Demográfico a dictar la orden.</p>
+    <p class="parrafo">En su virtud, previo acuerdo de la Comisión Delegada del Gobierno para Asuntos Económicos, dispongo:</p>
+    <p class="articulo"><strong>Artículo único.</strong> Modificación de la Orden IET/389/2015, de 5 de marzo, por la que se actualiza el sistema de determinación automática de precios máximos de venta, antes de impuestos, de los gases licuados del petróleo envasados y se modifica el sistema de determinación automática de las tarifas de venta, antes de impuestos, de los gases licuados del petróleo por canalización.</p>
+    <p class="parrafo">Uno. Se sustituye el artículo 1, por el siguiente:</p>
+    <blockquote class="sangrado">
+      <p class="articulo">«Artículo 1. Objeto.</p>
+      <p class="parrafo">Constituye el objeto de la presente orden el establecimiento de un sistema de determinación automática de los precios máximos de venta, antes de impuestos, del butano comercial envasado.»</p>
+    </blockquote>
+    <p class="parrafo_2">Dos. Se sustituye el artículo 2, por el siguiente:</p>
+    <blockquote class="sangrado">
+      <p class="articulo">«Artículo 2. Ámbito de aplicación.</p>
+      <p class="parrafo">1. El sistema de determinación de los precios máximos de venta al público, antes de impuestos, establecido en esta orden, será de aplicación al butano comercial envasado, en envases con carga igual o superior a 8 kg e inferior a 20 kg, cuya tara sea igual o superior a 9 kg.</p>
+      <p class="parrafo">2. El precio de venta al público del butano comercial envasado, en envases de tara inferior a 9 kg queda excluido del ámbito de aplicación de la presente orden, excepto para aquellos operadores al por mayor de GLP con obligación de suministro domiciliario, que no dispongan de envases con tara superior a la citada, en el correspondiente ámbito territorial, de acuerdo con lo previsto en la disposición adicional trigésima tercera de la Ley 34/1998, de 7 de octubre, del sector de hidrocarburos.»</p>
+    </blockquote>
+    <p class="parrafo">Tres. La definición del término <img class="frame" data-pdf="imagenesformulasl.pdf" src="/datos/imagenes/disp/2025/56/4410_15403426_2.png" width="93" height="61"/>del artículo 3 queda redactada en los siguientes términos:</p>
+    <blockquote class="sangrado">
+      <p class="parrafo_2">«<img class="frame" data-pdf="imagenesformulasl.pdf" src="/datos/imagenes/disp/2025/56/4410_15403426_2.png" data-ancho="7.91221032" data-alto="5.18231448" width="93" height="61"/>= Precio máximo sin impuestos teórico en cts.€/kg del bimestre “b” que se calculará mediante la fórmula:</p>
+      <p class="imagen"><img class="frame" data-pdf="imagenesformulasl.pdf" src="/datos/imagenes/disp/2025/56/4410_15403426_3.png" data-ancho="69.471612" data-alto="5.88498624" width="820" height="70"/>»</p>
+    </blockquote>
+    <p class="parrafo_2">Cuatro. Se introduce un nuevo epígrafe 5 en el artículo 3, modificando la numeración del originalmente denominado epígrafe 5, quedando redactados del siguiente modo:</p>
+    <blockquote class="sangrado">
+      <p class="parrafo_2">«5. CFNEE<sub>n</sub>: coste de la aportación al Fondo Nacional de Eficiencia Energética en el año “n”, al que corresponde el bimestre “b”, expresado en cts.€/kg, y calculado conforme la siguiente fórmula:</p>
+      <p class="imagen">
+        <img class="frame" data-pdf="imagenesformulasl.pdf" src="/datos/imagenes/disp/2025/56/4410_15403426_4.png" data-ancho="80.2658808" data-alto="5.21480736" width="948" height="62"/>
+      </p>
+      <p class="parrafo">Donde:</p>
+      <p class="parrafo_2">– CAE<sub>n-1</sub>: valor medio del certificado de ahorro energético (CAE) del año “n-1”, expresado en cts.€/kg.</p>
+      <p class="parrafo">– FNEE<sub>n</sub>: valor unitario de la aportación al Fondo Nacional de Eficiencia Energética en el año “n”, expresado en cts.€/kg, conforme la orden donde se establezcan las obligaciones anuales de ahorro energético y la aportación al Fondo Nacional de Eficiencia Energética para el año “n”. r.</p>
+      <p class="parrafo">– α<sub>n</sub>: porcentaje máximo de aportación de CAE en el año “n”, expresado en tanto por uno.</p>
+      <p class="parrafo_2">El valor del término CFNEE se actualizará anualmente conjuntamente con el término CC<sub>n</sub>. En caso de que uno o varios de los valores empleados en la fórmula no hayan sido publicados se emplearán los del año precedente.</p>
+      <p class="parrafo">6. Los precios máximos de venta al público, antes de impuestos, se revisarán con periodicidad bimestral y producirán efectos a partir del tercer martes del mes en el que se efectúe la revisión, desde la primera revisión que se efectúe con la entrada en vigor de la presente orden.»</p>
+    </blockquote>
+    <p class="parrafo_2">Cinco. Se sustituye el artículo 4 por el siguiente texto:</p>
+    <blockquote class="sangrado">
+      <p class="articulo">«Artículo 4. Costes de comercialización.</p>
+      <p class="parrafo">1. Los costes de comercialización recogen todos los costes necesarios para poner el producto a disposición del consumidor, incluyendo los correspondientes al reparto domiciliario, salvo el coste de la contribución al Fondo Nacional de Eficiencia Energética.</p>
+      <p class="parrafo">2. Los costes de comercialización (CC) se actualizarán anualmente, en la revisión de precios correspondiente al mes de mayo, conforme la fórmula siguiente:</p>
+      <p class="imagen">
+        <img class="frame" data-pdf="imagenesformulasl.pdf" src="/datos/imagenes/disp/2025/56/4410_15403426_5.png" data-ancho="106.637328" data-alto="9.64350576" width="1259" height="114"/>
+      </p>
+      <p class="parrafo">Donde:</p>
+      <p class="parrafo_2">– n: año de la actualización del término CC.</p>
+      <p class="parrafo">– CC<sub>n</sub>: costes de comercialización del año “n” en vigor a partir del tercer martes el mes de mayo del año “n”.</p>
+      <p class="parrafo">– CC<sub>n−1</sub>: costes de comercialización en vigor en el período precedente.</p>
+      <p class="parrafo">– ΔPGasóleo: variación del precio medio de venta al público del gasóleo de automoción del año “n−1” en relación con el año anterior, expresado en tanto por uno, de acuerdo con el valor publicado en el informe de precios anual de carburantes y combustibles publicado por el Ministerio para la Transición Ecológica y el Reto Demográfico.</p>
+      <p class="parrafo">– A: porcentaje de los costes variables que están vinculados a la evolución del precio del gasóleo de automoción, expresado en tanto por uno.</p>
+      <p class="parrafo">– B: porcentaje de costes fijos, expresado en tanto por uno.</p>
+      <p class="parrafo">– ΔVentas: variación interanual, expresado en tanto por uno, de las ventas del sector de GLP envasado, correspondiente al valor acumulado al año “n−1”, de acuerdo con el Boletín Estadístico de Hidrocarburos del mes de diciembre del año “n-1” publicado por la Corporación de Reservas Estratégicas de Productos Petrolíferos (CORES), excluyendo las ventas destinadas al sector de automoción.</p>
+      <p class="parrafo_2">3. La resolución de la Dirección General de Política Energética y Minas del Ministerio para la Transición Ecológica y el Reto Demográfico que publique la actualización del término CC<sub>n</sub> incluirá el valor de los parámetros empleados.</p>
+      <p class="parrafo">4. Las autoridades competentes de la Comunidad Autónoma de Canarias y de las Ciudades de Ceuta y Melilla, podrán establecer variaciones en más o en menos sobre el coste de comercialización establecido, hasta una cuantía máxima equivalente a la diferencia entre los impuestos repercutibles al consumidor en el régimen fiscal de Canarias, Ceuta y Melilla respectivamente, y los aplicables con carácter general en el resto del territorio nacional, en función de factores específicos locales que justifiquen las diferencias en los costes de comercialización.</p>
+      <p class="parrafo">Las citadas autoridades deberán remitir a la Dirección General de Política Energética y Minas, en el mes de enero de cada año, información relativa a la aplicación de lo dispuesto en este apartado durante el año inmediatamente anterior y su justificación.»</p>
+    </blockquote>
+    <p class="parrafo_2">Seis. Se incluye un nuevo artículo referente a la revisión de la fórmula de actualización de los costes de comercialización:</p>
+    <blockquote class="sangrado">
+      <p class="articulo">«Artículo 7. Actualización de la fórmula de los costes de comercialización.</p>
+      <p class="parrafo">1. Cada tres años, la Comisión Nacional de los Mercados y la Competencia enviará a la Dirección General de Política Energética y Minas una propuesta de actualización de los costes de comercialización, así como de los parámetros A y B de la fórmula de actualización conforme a la metodología empleada en el “Informe sobre los costes de comercialización incurridos en el suministro de GLP y su fórmula de revisión anual” aprobado el 31 de mayo de 2018 por la Sala de Supervisión Regulatoria. La primera revisión de los parámetros tendrá lugar en el año 2026.</p>
+      <p class="parrafo">2. La Dirección General de Política Energética y Minas calculará el nuevo valor del coste de comercialización conforme los nuevos parámetros propuestos por la Comisión Nacional de los Mercados y la Competencia, en la siguiente resolución de revisión de precios del GLP envasado, donde se publicarán los nuevos valores de los parámetros.»</p>
+    </blockquote>
+    <p class="parrafo">Siete. Se incorpora un nuevo artículo relativo a la remisión de información sobre el sistema de comisiones abonadas a las agencias por la distribución de envases de GLP:</p>
+    <blockquote class="sangrado">
+      <p class="articulo">«Artículo 8. Remisión de información a la Comisión Nacional de los Mercados y la Competencia.</p>
+      <p class="parrafo">Se habilita a la Comisión Nacional de los Mercados y la Competencia para solicitar la información necesaria para el análisis de los costes que componen el término CCn, incluyendo las comisiones percibidas por las agencias de distribución del GLP envasado.</p>
+      <p class="parrafo">En particular, la información remitida por las agencias deberá incluir una descripción detallada de todos los costes incurridos en la distribución del GLP envasado, así como de los ingresos percibidos por esta actividad y cualquier otro dato relevante para la elaboración del citado análisis.»</p>
+    </blockquote>
+    <p class="articulo"><strong>Disposición adicional primera.</strong> Plazo de entrega del GLP envasado.</p>
+    <p class="parrafo">Conforme con la habilitación de desarrollo a favor del titular del Ministerio de Industria, Comercio y Turismo incluida en la disposición final tercera del reglamento de la actividad de distribución de gases licuados del petróleo aprobado, por el Real Decreto 1085/1992, de 11 de septiembre, referencia que en la actualidad se debe entender dirigida al titular del Ministerio para la Transición Ecológica y el Reto Demográfico, se establece en 72 horas el plazo máximo de entrega en el domicilio de los envases de GLP con carga igual o superior a 8 kilogramos e inferior a 20 kilogramos, exceptuados los de mezcla para usos como carburante, sin que se computen los días inhábiles.</p>
+    <p class="articulo"><strong>Disposición adicional segunda.</strong> Parámetros de aplicación.</p>
+    <p class="parrafo">Los valores en vigor de la fórmula de cálculo del precio del GLP envasado son los siguientes:</p>
+    <p class="parrafo_2">– Parámetros A y B de la fórmula de cálculo de los costes de comercialización CC<sub>n</sub>: de 0,07 y 0,401, respectivamente.</p>
+    <p class="parrafo">– Coste de comercialización CC<sub>n</sub>: 61,2320 cts.€/kg.</p>
+    <p class="articulo"><strong>Disposición adicional tercera.</strong> Aplicación de la orden.</p>
+    <p class="parrafo">Por parte de la persona titular de la Secretaría de Estado de Energía se dictarán las resoluciones precisas para la aplicación de esta orden.</p>
+    <p class="articulo"><strong>Disposición transitoria primera.</strong> Suministros pendientes de propano comercial envasado.</p>
+    <p class="parrafo">Para todos los suministros de propano comercial envasado, en los formatos recogidos en el artículo 2 de la Orden IET/389/2015, de 5 de marzo, y solicitados con anterioridad al día de entrada en vigor de la orden, le será de aplicación el precio máximo calculado conforme la fórmula recogida en el artículo 3 de la orden.</p>
+    <p class="articulo"><strong>Disposición transitoria segunda. </strong>Aplicación efectiva del nuevo coste de comercialización.</p>
+    <p class="parrafo">Uno. En el bimestre en el que el precio máximo sin impuestos teórico sea superior al 5 % respecto al precio máximo sin impuestos aplicado el bimestre anterior, al precio máximo sin impuestos aplicado en el bimestre se le adicionará, la menor de las siguientes cantidades: 1,322 cts.€/kg o la diferencia entre el precio máximo sin impuestos teórico el bimestre y el precio máximo sin impuestos aplicado el trimestre anterior incrementado en un 5 %.</p>
+    <p class="parrafo">Dos. A partir de la primera revisión en la cual no se cumpla la condición anterior, ésta incluida, y en todos los bimestres siguientes, se calculará el precio máximo sin impuestos aplicado conforme la fórmula del artículo 3.1.a), sin adicionar cantidad alguna en el precio máximo sin impuestos aplicado.</p>
+    <p class="parrafo">Tres. En la revisión de precios del GLP envasado del mes de marzo de 2025 se empleará el valor del término CFNEEn calculado conforme los valores publicados.</p>
+    <p class="articulo"><strong>Disposición derogatoria única.</strong> Derogación normativa.</p>
+    <p class="parrafo">Quedan derogadas todas las disposiciones de igual o inferior rango en lo que se opongan a lo determinado en la orden.</p>
+    <p class="articulo"><strong>Disposición final primera.</strong> Modificación de la Orden TED/728/2024, de 15 de julio, por la que se desarrolla el mecanismo de fomento de biocarburantes y otros combustibles renovables con fines de transporte.</p>
+    <p class="parrafo">Uno. Se modifica el apartado 2 del artículo 20, que pasa a tener la siguiente redacción:</p>
+    <blockquote class="sangrado">
+      <p class="parrafo_2">«2. Para la expedición de certificados provisionales de combustibles renovables, los titulares de cuentas deberán presentar ante la entidad de certificación, antes del último día del mes n+2, siendo n el mes de referencia, una solicitud de expedición debidamente firmada y cumplimentada en formato digital, según el modelo de la aplicación SICBIOS accesible en el portal de internet del Ministerio para la Transición Ecológica y el Reto Demográfico, previa acreditación de las cantidades de los biocarburantes y otros combustibles renovables con fines de transporte incluidos en sus ventas o consumos. Lo anterior será aplicable a excepción de la presentación correspondiente al mes de diciembre de cada año, que se deberá realizar, a más tardar, el 15 de febrero.</p>
+      <p class="parrafo">El anexo II, parte B de esta orden detalla la información a presentar para la obtención de certificados provisionales. El plazo para realizar solicitudes de certificados provisionales de biocarburantes y otros combustibles renovables finalizará el 15 de febrero del año posterior al ejercicio que se esté certificando.»</p>
+    </blockquote>
+    <p class="parrafo_2">Dos. Se modifica el apartado 3 del artículo 28, que pasa a tener la siguiente redacción:</p>
+    <blockquote class="sangrado">
+      <p class="parrafo_2">«3. La carta de pago emitida en base al punto 1 se expedirá en cada certificación provisional.»</p>
+    </blockquote>
+    <p class="articulo"><strong>Disposición final segunda. </strong>Título competencial.</p>
+    <p class="parrafo">Esta orden se dicta al amparo de lo establecido en el artículo 149.1.13.ª y 25.ª de la Constitución Española, que atribuye al Estado competencia exclusiva en materia de bases y coordinación de la planificación general de la actividad económica y de bases del régimen minero y energético, respectivamente.</p>
+    <p class="articulo"><strong>Disposición final tercera.</strong> Entrada en vigor.</p>
+    <p class="parrafo">La presente orden entrará en vigor el 18 de marzo de 2025.</p>
+    <p class="parrafo_2">Madrid, 4 de marzo de 2025.–La Vicepresidenta Tercera del Gobierno y Ministra para la Transición Ecológica y el Reto Demográfico, Sara Aagesen Muñoz.</p>
+  </texto>
+</documento>

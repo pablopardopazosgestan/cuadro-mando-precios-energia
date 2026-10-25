@@ -10,6 +10,9 @@ Escribe a Pablo siempre en castellano, de forma directa.
   resumen del boletín de referencia y contradicciones a resolver. Léelo también.
 - `docs/DECISIONES.md`: decisiones de Pablo con fecha y lista de propuestas pendientes.
 - `docs/FUENTES.md`: resultado de la fase 1 (disponibilidad real de cada fuente, valores de control, propuestas).
+- `docs/METODOLOGIA.md`: fase 2: ficheros de datos, cómo se construye cada serie, tabla de impuestos por fecha con
+  referencia al BOE, factores de conversión y cómo ejecutar/probar.
+- `docs/COMPROBACIONES.md`: tabla de valores de control contrastados con la fuente.
 
 ## Reglas que no se negocian
 
@@ -25,24 +28,32 @@ Escribe a Pablo siempre en castellano, de forma directa.
 
 ## Estado
 
-- **Fase 1 (disponibilidad de fuentes): terminada el 25/10/2026, pendiente de revisión de Pablo.**
-  Resultado en `docs/FUENTES.md`. Siete de las ocho fuentes se han descargado y contrastado; el PVPC (ESIOS 1001)
-  queda pendiente porque no había `ESIOS_TOKEN` en la sesión.
-- Fase 2 (histórico y base de datos): no empezada. No empezar sin el «sigue» de Pablo.
+- Fase 1 (disponibilidad de fuentes): terminada el 25/10/2026 y aceptada por Pablo (las 11 propuestas).
+- **Fase 2 (histórico y base de datos): terminada el 25/10/2026, pendiente de revisión de Pablo.** Paquete
+  `precios/` (descargadores, impuestos, conversiones, series), datos en `datos/`, pruebas en `tests/`.
+  Pendientes que no dependen de mí: `ESIOS_TOKEN` (PVPC sin datos), acceso al INE (impuestos de varios meses de
+  2026), acceso a `web.archive.org` (PDF antiguos de AVEBIOM) y a `www.miteco.gob.es` (contraste del butano).
+- Fase 3 (cuadro de mando): no empezada. No empezar sin el «sigue» de Pablo.
 
 ## Siguiente paso
 
-Al recibir el «sigue» de la fase 1: anotar en `docs/DECISIONES.md` las decisiones sobre los 11 puntos de
-`docs/FUENTES.md`, comprobar si ya existe `ESIOS_TOKEN`, y empezar la fase 2 (descargadores por fuente,
-normalización, tabla de impuestos por fecha con referencia al BOE, conversiones a €/kWh, media mensual,
-metadatos, pytest y tabla de comprobaciones).
+Al recibir el «sigue» de la fase 2: comprobar si hay `ESIOS_TOKEN` y si el INE es accesible (si lo es, escribir
+el lector del IPC y rellenar `datos/impuestos/condiciones_ipc_2026.json`), y empezar la fase 3: sitio estático
+(GitHub Pages) con resumen ejecutivo, gráfico comparativo, ocho gráficos, filtro de periodo y comentario semanal,
+leyendo `datos/series`, `datos/mensual`, `datos/metadatos.json` y `datos/estado.json`.
 
-## Cómo ejecutar y probar (por ahora)
+## Cómo ejecutar y probar
 
 ```bash
 pip install -r requirements.txt
-python scripts/fase1_sondeo_fuentes.py   # sondeo de fuentes; descarga en ./descargas/ (ignorado por git)
+python -m precios actualizar -v            # descarga lo nuevo y reconstruye datos/ (primera vez: ~30 min)
+python -m precios actualizar --solo omie   # una sola serie
+python -m pytest -q tests                  # pruebas
+python scripts/fase1_sondeo_fuentes.py     # sondeo de fuentes de la fase 1
 ```
+
+Caché de descargas en `.cache/` (ignorada). Documentos originales (XML del BOE, PDF de AVEBIOM) en
+`datos/fuentes_originales/` (versionados).
 
 Red necesaria: `www.omie.es`, `www.mibgas.es`, `api.esios.ree.es`, `energy.ec.europa.eu`, `www.boe.es`,
 `avebiom.org`. Bloqueados en el entorno actual y no imprescindibles: `energia.gob.es`, `www.miteco.gob.es`,
@@ -62,3 +73,7 @@ Red necesaria: `www.omie.es`, `www.mibgas.es`, `api.esios.ree.es`, `energy.ec.eu
 - AVEBIOM: PDF trimestral `IPB-indice-precios-PELLET-nTAAAA.pdf` (página 5: últimos 5 trimestres; página 2: medias
   anuales). Solo hay PDF desde 4T2025 en la mediateca (`/wp-json/wp/v2/media`): trimestral desde 4T2024, anual antes.
   La página HTML devuelve 403 al User-Agent por defecto de python-requests.
+- Impuestos: tabla completa 2020–2026 en `docs/METODOLOGIA.md` §3 y `precios/impuestos.py`. Los meses de 2026 cuyos
+  tipos dependen del IPC (junio, agosto, septiembre, noviembre, diciembre) están «no disponibles» hasta poder leer el
+  INE; el IVA del butano entre 22/03 y 30/06/2026 queda sin resolver (RDL 7/2026 art. 42.c).
+- Bloqueados además: `www.ine.es`, `servicios.ine.es`, `idae.es`, `sede.agenciatributaria.gob.es`. Accesible: Eurostat.

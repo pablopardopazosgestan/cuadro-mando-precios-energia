@@ -1,0 +1,23 @@
+{
+  "actualizado": "2026-10-25T12:23:28+00:00",
+  "version": "0.2.0",
+  "fuentes": {
+    "avebiom": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-25T12:23:28+00:00",
+      "series": {
+        "pellet_saco": {
+          "ultimo_dato": "2026-07-01",
+          "n_datos": 13,
+          "dato_nuevo": false
+        },
+        "pellet_granel": {
+          "ultimo_dato": "2026-07-01",
+          "n_datos": 13,
+          "dato_nuevo": false
+        }
+      }
+    }
+  }
+}
