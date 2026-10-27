@@ -38,8 +38,12 @@ Escribe a Pablo siempre en castellano, de forma directa.
   GitHub Actions) y permitió la rama `claude/new-session-dqbsty` en el entorno `github-pages`. Enlace:
   https://pablopardopazosgestan.github.io/cuadro-mando-precios-energia/
 - **Fase 4 (actualización automática): terminada el 27/10/2026, pendiente de revisión de Pablo.** Workflow
-  `.github/workflows/actualizar.yml` (lunes 05:17 UTC + manual): pytest → actualizar → verificar histórico →
-  comprobaciones → panel → commit de datos/ y sitio/ → Pages. Falta que Pablo cree el secreto `ESIOS_TOKEN`.
+  `.github/workflows/actualizar.yml` (lunes 05:17 UTC + manual + al cambiar el propio fichero en la rama de trabajo):
+  pytest → actualizar → verificar histórico → comprobaciones → panel → commit de datos/ y sitio/ → Pages. Ejecución
+  real el 27/10/2026 (run 40486363420): todo correcto en 56 s, commit «Actualización automática» y publicación;
+  terminó en rojo solo por el PVPC (falta el secreto `ESIOS_TOKEN`, que debe crear Pablo). Mientras el workflow no
+  esté en `main`, GitHub no muestra «Run workflow»: se relanza con «Re-run all jobs» o cambiando el fichero.
+  Las ejecuciones automáticas hacen commits en la rama: hacer `git pull --rebase` antes de trabajar.
 - Fase 5 (exportación PDF y Excel): no empezada. No empezar sin el «sigue» de Pablo.
 
 ## Siguiente paso
