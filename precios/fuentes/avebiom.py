@@ -18,7 +18,7 @@ from dataclasses import dataclass
 import pdfplumber
 
 from ..config import DIR_ORIGINALES, USER_AGENT
-from ..http import clave_cache, descargar
+from ..http import ErrorDescarga, clave_cache, descargar
 
 log = logging.getLogger(__name__)
 
@@ -129,21 +129,38 @@ def leer_pdf(contenido: bytes, nombre_pdf: str) -> tuple[list[PrecioPellet], str
 
 
 def listar_pdfs() -> list[tuple[dt.date, str]]:
-    """PDF trimestrales de pellet en la mediateca de AVEBIOM: [(fecha de subida, url)]."""
-    cuerpo = descargar(URL_MEDIA, params={"mime_type": "application/pdf", "per_page": 100, "search": "PELLET", "_fields": "date,source_url"})
-    out = []
-    for m in json.loads(cuerpo):
-        url = m["source_url"]
-        if re.search(r"IPB.*PELLET.*\.pdf$", url, re.I):
-            out.append((dt.date.fromisoformat(m["date"][:10]), url))
-    # Por si la mediateca no listara el último, se añade el enlazado en la página (requiere User-Agent propio)
+    """PDF trimestrales de pellet en la mediateca de AVEBIOM: [(fecha de subida, url)].
+
+    Se consultan dos vías y se unen: la API de medios de WordPress y la página del índice. Ambas se piden con el
+    User-Agent del proyecto (el servidor rechaza a veces al cliente genérico, y desde el ejecutor de GitHub ha
+    devuelto una página HTML en lugar de JSON). Si una vía falla se avisa y se usa la otra; si fallan las dos, error.
+    """
+    out: list[tuple[dt.date, str]] = []
+    errores = []
+    try:
+        cuerpo = descargar(URL_MEDIA, params={"mime_type": "application/pdf", "per_page": 100, "search": "PELLET", "_fields": "date,source_url"},
+                           headers={"User-Agent": USER_AGENT})
+        try:
+            medios = json.loads(cuerpo)
+        except ValueError as e:
+            raise ValueError(f"la API de medios no devolvió JSON ({e}); respuesta: {cuerpo[:120]!r}") from None
+        for m in medios:
+            url = m["source_url"]
+            if re.search(r"IPB.*PELLET.*\.pdf$", url, re.I):
+                out.append((dt.date.fromisoformat(m["date"][:10]), url))
+    except Exception as e:  # noqa: BLE001
+        errores.append(f"mediateca: {e}")
+        log.warning("AVEBIOM: no se pudo leer la mediateca (%s); se intenta la página del índice", e)
     try:
         html = descargar(URL_PAGINA, headers={"User-Agent": USER_AGENT}).decode("utf-8", errors="replace")
         for u in set(re.findall(r'href="(https://avebiom\.org/[^"]*IPB[^"]*PELLET[^"]*\.pdf)"', html, re.I)):
             if u not in {x[1] for x in out}:
                 out.append((dt.date.today(), u))
     except Exception as e:  # noqa: BLE001
+        errores.append(f"página del índice: {e}")
         log.warning("AVEBIOM: no se pudo leer la página del índice (%s); se usa solo la mediateca", e)
+    if not out:
+        raise ErrorDescarga("AVEBIOM: ninguna vía devolvió PDF del pellet (" + "; ".join(errores) + ")")
     return sorted(out)
 
 

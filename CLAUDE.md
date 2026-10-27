@@ -110,3 +110,6 @@ Red necesaria: `www.omie.es`, `www.mibgas.es`, `api.esios.ree.es`, `energy.ec.eu
   (`precios/plotly.min.js`, extraído del paquete `plotly` de PyPI).
 - ESIOS: la API bloquea por IP (Incapsula, 403) tras varias peticiones seguidas; `precios/fuentes/esios.py` espacia
   las peticiones 4 s y espera 2–15 min ante un 403.
+- AVEBIOM: el 27/10/2026 (run 40498936289) la API de medios devolvió al ejecutor de GitHub una página HTML en vez de
+  JSON (bloqueo puntual); el workflow publicó con el último dato correcto y terminó en rojo, como está previsto.
+  `listar_pdfs` pide ahora las dos vías (API y página) con el User-Agent del proyecto y sigue si una falla.
