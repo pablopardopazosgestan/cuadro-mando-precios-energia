@@ -112,4 +112,8 @@ Red necesaria: `www.omie.es`, `www.mibgas.es`, `api.esios.ree.es`, `energy.ec.eu
   las peticiones 4 s y espera 2–15 min ante un 403.
 - AVEBIOM: el 27/10/2026 (run 40498936289) la API de medios devolvió al ejecutor de GitHub una página HTML en vez de
   JSON (bloqueo puntual); el workflow publicó con el último dato correcto y terminó en rojo, como está previsto.
-  `listar_pdfs` pide ahora las dos vías (API y página) con el User-Agent del proyecto y sigue si una falla.
+  `listar_pdfs` pide ahora las dos vías (API y página) con el User-Agent del proyecto y sigue si una falla. En la
+  ejecución siguiente (40499351715) el servidor (SiteGround) respondió a ambas con un desafío captcha
+  (`/.well-known/sgcaptcha/`) a la IP del ejecutor: no se puede ni se debe sortear. Desde el entorno de sesión
+  responde bien, y a las 10:38 del mismo día también desde GitHub: es intermitente. Pendiente de decidir con Pablo
+  (p. ej. reintentar con espera o consultar AVEBIOM solo cuando toque trimestre nuevo).
