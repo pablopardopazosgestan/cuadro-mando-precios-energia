@@ -148,3 +148,18 @@ def test_butano_julio_y_septiembre_2026_con_condiciones_ipc():
     r = I.butano_bombona_con_impuestos(123.4447, D(2026, 9, 15))
     if r.valor is not None:  # solo cuando las condiciones de IPC están rellenas
         assert r.valor == pytest.approx(18.84, abs=0.01)
+
+
+def test_cambios_impuestos_marca_fechas_y_referencias():
+    omie = {"2021-05": 60.0, "2021-06": 80.0, "2021-07": 90.0}
+    cambios = I.cambios_impuestos("tur2", dt.date(2022, 1, 1), dt.date(2024, 6, 30))
+    fechas = {c["fecha"]: c for c in cambios}
+    assert "2022-10-01" in fechas and "IVA 21 % → IVA 5 %" in fechas["2022-10-01"]["texto"]
+    assert "RDL 17/2022" in fechas["2022-10-01"]["referencia"]
+    assert "2024-01-01" in fechas and "IVA 5 % → IVA 10 %" in fechas["2024-01-01"]["texto"]
+    assert all(set(c) == {"fecha", "texto", "referencia"} for c in cambios)
+    assert [c["fecha"] for c in cambios] == sorted(c["fecha"] for c in cambios)
+    pvpc = {c["fecha"]: c["texto"] for c in I.cambios_impuestos("pvpc", dt.date(2021, 6, 1), dt.date(2021, 12, 31), omie)}
+    assert pvpc["2021-06-26"].startswith("IVA 21 % → IVA 10 %")          # RDL 12/2021 (OMIE del mes anterior > 45 €/MWh)
+    assert "IEE 5,11 % → IEE 0,5 %" in pvpc["2021-09-16"]                 # formato español, sin ceros sobrantes
+    assert I.cambios_impuestos("omie", dt.date(2020, 1, 1), dt.date(2026, 1, 1)) == []

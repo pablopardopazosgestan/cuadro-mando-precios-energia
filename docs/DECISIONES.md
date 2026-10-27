@@ -35,6 +35,7 @@ Todas las propuestas de la fase 1 quedaron aceptadas el 25/10/2026 (fila anterio
 
 | 2026-10-27 | Pablo crea el secreto `ESIOS_TOKEN` y relanza el workflow; acepta la fase 4 y pide la fase 5. | PVPC completo desde el ejecutor de GitHub. |
 | 2026-10-27 | Fase 5: los informes se regeneran en cada actualización y solo se conserva la última versión (`informe.pdf`, `historico.xlsx`). El Excel incluye también 2020–2021 donde la fuente lo da (el encargo pide desde 2022). | Decisión de Claude; cambiable. |
+| 2026-10-27 | Pablo pide, antes de la fase 6, mejorar la presentación de los informes (más visual y manejable para dirección, sin perder métricas) y después la visualización e interactividad del panel (selector de series, sin solapes, Base 100, media móvil, cambios de impuestos, Excel «Comparador»…), con el encargo detallado en `docs/PROMPT_MEJORA_VISUALIZACION.md`. | Aplicado el 27/10/2026 (versión 0.3.0). Sin cambios en fuentes, datos ni criterios de cálculo. |
 
 ## Pendientes que dependen de Pablo (fase 2, 25/10/2026; revisado el 27/10/2026)
 

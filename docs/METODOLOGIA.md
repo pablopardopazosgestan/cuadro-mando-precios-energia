@@ -185,10 +185,31 @@ Criterios del resumen ejecutivo:
   100 TUR, 125 pellet). Si una descarga falla pero hay dato reciente, se muestra ese dato y se anota el fallo.
 - **Comentario semanal:** frases generadas solo con los números de la tabla (variaciones ≥ 1 %, interanuales,
   orden de precios de la energía final y datos no disponibles). No contiene interpretación.
-- **Gráficos:** comparativo en €/kWh con todas las series seleccionables (leyenda), filtro de periodo (fechas libres
-  y atajos), frecuencia original o media mensual; nueve gráficos individuales en la unidad original. Las series
-  reguladas y el pellet se dibujan en escalón. Los huecos no se rellenan. Paleta categórica fija y validada
-  (una tonalidad por indicador; el pellet a granel comparte tono con el saco y usa trazo discontinuo).
+- **Comparativo en €/kWh** (mejora de visualización del 27/10/2026, `docs/PROMPT_MEJORA_VISUALIZACION.md`):
+  selector explícito de series (casillas con el color de cada serie; OMIE y MIBGAS marcados «sin impuestos») y
+  conjuntos predefinidos (todas, energía final con impuestos, calefacción doméstica, electricidad, gas natural,
+  carburantes, ninguna); periodo con fechas libres y atajos (3 meses, 1 año, 3 años, desde 2022, todo); frecuencia
+  original (diaria, semanal, trimestral…) o media mensual; opción **Base 100** en la primera fecha del periodo
+  (cada serie dividida por su primer valor disponible; el €/kWh real sigue en el hover) y **media móvil de 7 días**
+  solo para OMIE, MIBGAS y PVPC (el dato diario sigue en los gráficos individuales y en el Excel). Las series
+  reguladas y el pellet se dibujan en escalón y se arrastra el valor vigente al inicio del periodo. La leyenda va
+  fuera del área de datos (arriba) y cada línea lleva al final su nombre y último valor, separados en vertical si
+  chocan (mínimo 13 px). La selección, el periodo y las opciones se guardan en la URL (`#series=…&desde=…&hasta=…
+  &frecuencia=…&base100=1&mm7=1&impuestos=1`) y el botón «Copiar enlace» la comparte. Los huecos no se rellenan.
+- **Resumen ejecutivo:** ocho tarjetas (precio, variaciones con color, fuente y fecha, mini tendencia de 24 meses),
+  ranking de barras del coste por kWh de la energía final con impuestos (sin mayoristas) y tabla ordenable por
+  columna; cada fila muestra al pasar el ratón la base del cálculo, el valor original y las notas.
+- **Gráficos individuales:** uno por indicador con alternancia entre unidad original y €/kWh, botón «Ver datos»
+  (tabla del periodo con fecha, periodo, valor original y €/kWh sin/con impuestos) y descarga en CSV (separador «;»,
+  con BOM, columnas `fecha;periodo;valor_original;unidad;eur_kwh_sin_impuestos;eur_kwh_con_impuestos;fuente`;
+  los datos no disponibles quedan vacíos). Opción «Mostrar cambios de impuestos»: líneas verticales en las fechas
+  en que cambia algún tipo (IVA, IEE, hidrocarburos) con el texto «antes → después» y la referencia al BOE
+  (`precios.impuestos.cambios_impuestos`). El periodo seleccionado en el comparativo se aplica a todos.
+- **Presentación:** navegación fija por secciones, modo claro/oscuro automático, hoja de estilos de impresión y
+  diseño adaptable a móvil. Paleta categórica fija y validada (una tonalidad por indicador; el pellet a granel
+  comparte tono con el saco y usa trazo discontinuo); un solo eje Y; números en formato español.
+- **Pruebas:** `tests/test_panel_js.py` ejecuta con Node las funciones puras de la plantilla (estado en la URL,
+  Base 100, media móvil, etiquetas finales sin solapes, CSV); `tests/test_panel.py` comprueba el JSON del panel.
 
 ## 7. Actualización automática (fase 4, `.github/workflows/actualizar.yml`)
 
@@ -222,17 +243,26 @@ para dirección (rediseñados el 27/10/2026 a petición de Pablo):
      fecha del dato y si es con o sin impuestos, y una línea de tendencia de las medias mensuales de 24 meses;
      ranking visual del coste por kWh de la energía final con impuestos; «Claves de la semana» (el comentario
      generado a partir de los datos).
-  2. Tabla de precios y variaciones (con estado por colores) y gráfico comparativo en €/kWh desde 2022.
-  3. Nueve gráficos individuales desde 2022 en la unidad original con el último valor anotado, y tabla de medias
-     anuales en €/kWh de los últimos cinco años.
+  2. Tabla de precios y variaciones (con estado por colores y una mini tendencia de 24 meses por fila) y
+     comparativo de los nueve indicadores en €/kWh desde 2022, con la leyenda fuera del área de datos y el nombre y
+     último valor al final de cada línea, separados si chocan (`informes._etiquetas_finales`).
+  3. Segundo comparativo solo de la energía final con impuestos (sin OMIE ni MIBGAS, las mismas series que el
+     ranking); nueve gráficos individuales desde 2022 en la unidad original con el periodo analizado sombreado y el
+     último valor anotado en el margen derecho, sin tapar la línea; tabla de medias anuales en €/kWh de los últimos
+     cinco años.
   4. Estado de las fuentes en la última actualización, fuentes y metodología (tabla por indicador con enlaces),
      factores de conversión, impuestos y criterios.
-- **`sitio/informes/historico.xlsx`**: «Cuadro de mando» (tabla resumen con formato condicional: color y flechas en
-  las variaciones; claves de la semana; gráfico de barras vinculado); «Anual» (medias anuales en €/kWh); «Mensual»
-  (media mensual de cada serie en €/kWh y en su unidad original, desde 2020, como tabla filtrable); «Gráficos»
-  (comparativo mensual, barras anuales y nueve individuales, *vinculados* a las hojas Anual y Mensual); una hoja
+- **`sitio/informes/historico.xlsx`**: «Cuadro de mando» (ocho tarjetas en celdas combinadas con precio, variaciones
+  con color, fuente y fecha; tabla resumen con formato condicional: color y flechas en las variaciones; claves de la
+  semana; ranking de la energía final ordenado de menor a mayor con gráfico de barras vinculado); «Anual» (medias
+  anuales en €/kWh); «Mensual» (media mensual de cada serie en €/kWh y en su unidad original, desde 2020, como tabla
+  filtrable); «Gráficos» (comparativo mensual, barras anuales y nueve individuales, *vinculados* a las hojas Anual y
+  Mensual); **«Comparador»** (hasta cuatro series elegidas con desplegables, frecuencia mensual o anual y opción
+  Base 100; la tabla se calcula con fórmulas INDEX/MATCH sobre «Mensual» y «Anual», los periodos sin dato dan #N/A
+  y no se dibujan, y el gráfico de líneas está vinculado a esa tabla; el libro se recalcula al abrirse); una hoja
   «Datos n nombre» por serie con el histórico completo en su frecuencia original (fecha, periodo, valor original,
   €/kWh sin y con impuestos, origen, impuestos aplicados, fecha de publicación, referencia y nota) en formato tabla
-  de Excel con filtros y paneles inmovilizados; «Fuentes y criterios».
+  de Excel con filtros y paneles inmovilizados; «Fuentes y criterios». Las fórmulas del «Comparador» se han
+  comprobado recalculando el libro con LibreOffice (modos mensual/anual y Base 100).
 Ambos se regeneran en cada actualización (paso previo al panel en `actualizar.yml`) y se descargan desde el panel.
 Solo se conserva la última versión de cada uno (el histórico está en `datos/`, versionado en git).

@@ -49,11 +49,19 @@ Escribe a Pablo siempre en castellano, de forma directa.
 - **Fase 5 (exportación PDF y Excel): terminada el 27/10/2026, pendiente de revisión de Pablo.** `python -m precios
   informes` genera `sitio/informes/informe.pdf` y `historico.xlsx` (ver `docs/METODOLOGIA.md` §8); el workflow los
   regenera antes del panel y el panel los enlaza en «Descargas».
+- **Mejora de visualización (27/10/2026, versión 0.3.0), pendiente de revisión de Pablo.** Encargo en
+  `docs/PROMPT_MEJORA_VISUALIZACION.md`. Panel: selector de series con conjuntos, estado en la URL, leyenda fuera,
+  etiquetas finales sin solapes, Base 100, media móvil 7 d, tarjetas + ranking + tabla ordenable, gráficos
+  individuales con unidad, «Ver datos», CSV y marcas de cambios de impuestos (`impuestos.cambios_impuestos`), nav
+  fija, impresión, claro/oscuro. PDF: etiquetas finales, segundo comparativo de energía final, periodo sombreado,
+  mini tendencias en la tabla. Excel: tarjetas y ranking ordenado en «Cuadro de mando», hoja «Comparador» con
+  desplegables, INDEX/MATCH y gráfico vinculado (fórmulas comprobadas con LibreOffice). Detalle en
+  `docs/METODOLOGIA.md` §6 y §8; pruebas JS con Node en `tests/test_panel_js.py`.
 - Fase 6 (verificación y entrega): no empezada. No empezar sin el «sigue» de Pablo.
 
 ## Siguiente paso
 
-Al recibir el «sigue» de la fase 5: fase 6, comprobar punto por punto el apartado 7 del encargo (ocho indicadores con
+Al recibir el «sigue» de la mejora de visualización: fase 6, comprobar punto por punto el apartado 7 del encargo (ocho indicadores con
 datos reales, gráficos, descargas, actualización configurada y probada), escribir `docs/USO.md` (consultar, actualizar,
 exportar, qué hacer si una fuente falla), proponer a Pablo fusionar la rama en `main` (y, si acepta, hacerlo y
 comprobar que Pages y el workflow siguen funcionando desde `main`), y entregar: enlace, PDF, Excel, instrucciones y

@@ -21,7 +21,8 @@ from pathlib import Path
 import pandas as pd
 
 from . import __version__
-from .config import DIR_DATOS, DIR_SERIES, RAIZ
+from . import impuestos as imp
+from .config import DIR_DATOS, DIR_SERIES, INICIO_AMPLIADO, RAIZ
 from .indicadores import INDICADORES, ORDEN
 
 log = logging.getLogger(__name__)
@@ -255,6 +256,10 @@ def construir(hoy: dt.date | None = None) -> dict:
             mensual[id_] = {"meses": list(m["mes"]), "media_original": [_f(x) for x in m["media_original"]],
                             "media_eur_kwh_sin": [_f(x) for x in m["media_eur_kwh_sin_impuestos"]],
                             "media_eur_kwh_con": [_f(x) for x in m["media_eur_kwh_con_impuestos"]]}
+    # Cambios de impuestos por serie (marcas verificables en los gráficos), con la condición del IVA eléctrico
+    # evaluada con las medias mensuales de la propia serie OMIE
+    omie_mensual = {m: v for m, v in zip(mensual.get("omie", {}).get("meses", []), mensual.get("omie", {}).get("media_original", [])) if v is not None}
+    cambios = {id_: imp.cambios_impuestos(id_, INICIO_AMPLIADO, hoy, omie_mensual) for id_ in ("pvpc", "tur2", "butano", "pellet_saco", "pellet_granel")}
     ultima_ok = max((f.get("ultima_actualizacion_correcta") or "" for f in estado["fuentes"].values()), default="") or None
     informes = []
     for nombre in ("informe.pdf", "historico.xlsx"):
@@ -277,6 +282,13 @@ def construir(hoy: dt.date | None = None) -> dict:
         "metadatos": meta.get("indicadores", {}),
         "factores": meta.get("factores_conversion", []),
         "colores": COLORES, "colores_oscuro": COLORES_OSCURO,
+        "cambios_impuestos": cambios,
+        "conjuntos": {
+            "todas": ORDEN,
+            "final": [i for i in ORDEN if i not in ("omie", "mibgas")],
+            "calefaccion": ["tur2", "gasoleo_c", "butano", "pellet_saco", "pellet_granel"],
+            "electricidad": ["omie", "pvpc"], "gas": ["mibgas", "tur2"], "carburantes": ["gasoleo_a"],
+        },
         "informes": informes,
     }
     return panel

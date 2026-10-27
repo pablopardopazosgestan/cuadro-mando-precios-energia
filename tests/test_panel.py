@@ -60,3 +60,15 @@ def test_comentario_solo_con_datos():
     texto = " ".join(P.comentario_semanal(resumen, D(2026, 10, 27)))
     assert "OMIE +5,0 %" in texto and "Butano" in texto and "PVPC (sin token)" in texto
     assert "de menor a mayor: Pellet 0,082 €/kWh; Butano 0,118 €/kWh" in texto
+
+
+@pytest.mark.skipif(not (P.DIR_SERIES / "omie.csv").exists(), reason="sin datos")
+def test_panel_incluye_conjuntos_y_cambios_de_impuestos():
+    panel = P.construir(D(2026, 10, 27))
+    assert panel["conjuntos"]["final"] == [i for i in P.ORDEN if i not in ("omie", "mibgas")]
+    assert set(panel["conjuntos"]) == {"todas", "final", "calefaccion", "electricidad", "gas", "carburantes"}
+    assert set(panel["cambios_impuestos"]) == {"pvpc", "tur2", "butano", "pellet_saco", "pellet_granel"}
+    tur2 = {c["fecha"]: c for c in panel["cambios_impuestos"]["tur2"]}
+    assert "RDL 17/2022" in tur2["2022-10-01"]["referencia"]
+    pvpc = {c["fecha"]: c["texto"] for c in panel["cambios_impuestos"]["pvpc"]}
+    assert "pendiente" not in pvpc["2021-06-26"]        # el IVA de 2021 se resuelve con el OMIE mensual del panel

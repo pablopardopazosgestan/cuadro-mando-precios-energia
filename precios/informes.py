@@ -3,11 +3,14 @@
 Se generan en cada actualización con los mismos datos que el cuadro de mando (`panel.construir`).
 - PDF (4 páginas): 1) cuadro de mando de una página: ocho indicadores en tarjetas con precio, variaciones con
   color, fecha y tendencia de 24 meses; ranking visual del coste por kWh; claves de la semana. 2) Tabla de precios
-  y variaciones y comparativo en €/kWh desde 2022. 3) Nueve gráficos individuales con el último valor anotado.
-  4) Fuentes, metodología y estado de las fuentes.
-- Excel: «Cuadro de mando» (tarjeta resumen con formato condicional y dos gráficos), «Anual» y «Mensual» (medias),
-  «Gráficos» (vinculados a los datos), una hoja de datos por serie en formato tabla (filtrable) y «Fuentes y
-  criterios».
+  y variaciones (con mini tendencia por fila) y comparativo de los nueve indicadores en €/kWh desde 2022, con
+  etiquetas al final de cada línea sin solapes. 3) Comparativo de la energía final con impuestos, nueve gráficos
+  individuales (periodo analizado sombreado, último valor en el margen) y medias anuales. 4) Estado de las fuentes,
+  fuentes y metodología.
+- Excel: «Cuadro de mando» (tarjetas en celdas, tabla con formato condicional, ranking ordenado con gráfico), «Anual»
+  y «Mensual» (medias), «Gráficos» (vinculados a los datos), «Comparador» (series elegidas con desplegables,
+  frecuencia y Base 100 por fórmulas INDEX/MATCH, gráfico vinculado), una hoja de datos por serie en formato tabla
+  (filtrable) y «Fuentes y criterios».
 Todo texto numérico se formatea a la española y nada se estima: los datos no disponibles aparecen como «n. d.».
 """
 from __future__ import annotations
@@ -28,6 +31,7 @@ from openpyxl.chart import BarChart, LineChart, Reference  # noqa: E402
 from openpyxl.formatting.rule import CellIsRule, IconSetRule  # noqa: E402
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # noqa: E402
 from openpyxl.utils import get_column_letter  # noqa: E402
+from openpyxl.worksheet.datavalidation import DataValidation  # noqa: E402
 from openpyxl.worksheet.table import Table as TablaExcel, TableStyleInfo  # noqa: E402
 from reportlab.lib import colors  # noqa: E402
 from reportlab.lib.enums import TA_JUSTIFY, TA_RIGHT  # noqa: E402
@@ -180,9 +184,45 @@ def grafico_ranking(resumen: list[dict]) -> bytes:
     return _png(fig)
 
 
-def grafico_comparativo(desde: dt.date, hasta: dt.date) -> bytes:
-    fig, ax = plt.subplots(figsize=(10.5, 4.6), dpi=160)
-    for id_ in ORDEN:
+def _etiquetas_finales(ax, items: list[tuple[str, float, str]], x, fontsize: float = 7.0) -> list[float]:
+    """Etiqueta cada línea al final (a la derecha del último dato) y separa verticalmente las que chocarían.
+
+    `items` = (id de la serie, valor y del último dato, texto). Devuelve las posiciones y (en datos) usadas, para pruebas.
+    """
+    if not items:
+        return []
+    ax.figure.canvas.draw()
+    ymin, ymax = ax.get_ylim()
+    alto_px = ax.get_window_extent().height
+    por_unidad = alto_px / (ymax - ymin)
+    min_px = fontsize * 1.5 * ax.figure.dpi / 72
+    its = sorted([{"id": i, "py": (y - ymin) * por_unidad, "txt": t} for i, y, t in items], key=lambda o: o["py"])
+    for k in range(1, len(its)):
+        if its[k]["py"] - its[k - 1]["py"] < min_px:
+            its[k]["py"] = its[k - 1]["py"] + min_px
+    exceso = its[-1]["py"] + min_px / 2 - alto_px
+    if exceso > 0:
+        for o in its:
+            o["py"] -= exceso
+    for k in range(len(its) - 2, -1, -1):
+        if its[k + 1]["py"] - its[k]["py"] < min_px:
+            its[k]["py"] = its[k + 1]["py"] - min_px
+    ys = []
+    for o in its:
+        y_dat = ymin + o["py"] / por_unidad
+        ys.append(y_dat)
+        ax.annotate(o["txt"], xy=(x, y_dat), xycoords="data", ha="left", va="center", fontsize=fontsize, color=COLORES[o["id"]],
+                    annotation_clip=False, fontweight="bold")
+    return ys
+
+
+def grafico_comparativo(desde: dt.date, hasta: dt.date, ids: list[str] | None = None, alto: float = 4.0) -> bytes:
+    """Comparativo en €/kWh. Leyenda fuera del área de datos (debajo) y etiqueta con nombre y último valor al final de
+    cada línea, separadas si chocan. El eje X se prolonga un 13 % para alojar las etiquetas sin tapar las líneas."""
+    ids = list(ids or ORDEN)
+    fig, ax = plt.subplots(figsize=(10.5, alto), dpi=160)
+    finales = []
+    for id_ in ids:
         df = _series_df(id_)
         if df.empty:
             continue
@@ -195,19 +235,28 @@ def grafico_comparativo(desde: dt.date, hasta: dt.date) -> bytes:
             ax.step(d["fecha"], d[col], where="post", color=COLORES[id_], linewidth=1.7, linestyle="--" if id_ == "pellet_granel" else "-", label=etiqueta)
         else:
             ax.plot(d["fecha"], d[col], color=COLORES[id_], linewidth=1.0, label=etiqueta, alpha=0.95)
+        validos = d[col].dropna()
+        if not validos.empty:
+            finales.append((id_, float(validos.iloc[-1]), f"{INDICADORES[id_].nombre_corto} {_fmt(float(validos.iloc[-1]), 4 if id_ in ('omie', 'mibgas') else 3)}"))
     _estilo(ax)
     ax.set_ylabel("€/kWh")
     ax.set_ylim(bottom=0)
+    margen = (pd.Timestamp(hasta) - pd.Timestamp(desde)) * 0.19
+    ax.set_xlim(pd.Timestamp(desde), pd.Timestamp(hasta) + margen)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%Y"))
     ax.legend(ncol=5, fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.1))
     fig.tight_layout()
+    _etiquetas_finales(ax, finales, pd.Timestamp(hasta) + margen * 0.05, fontsize=6.6)
     return _png(fig)
 
 
-def grafico_individual(id_: str, desde: dt.date, hasta: dt.date) -> bytes:
+def grafico_individual(id_: str, desde: dt.date, hasta: dt.date, periodo: tuple[dt.date, dt.date] | None = None) -> bytes:
+    """Serie en su unidad original. Sombrea el periodo analizado (`periodo`) y anota el último valor en el margen
+    derecho, fuera de la línea."""
     df = _series_df(id_)
     ind = INDICADORES[id_]
-    fig, ax = plt.subplots(figsize=(3.6, 2.2), dpi=160)
+    fig, ax = plt.subplots(figsize=(3.6, 2.05), dpi=160)
+    margen = (pd.Timestamp(hasta) - pd.Timestamp(desde)) * 0.16
     if not df.empty:
         d = df[(df["fecha"] >= pd.Timestamp(desde)) & (df["fecha"] <= pd.Timestamp(hasta))]
         if TIPO[id_] == "escalon":
@@ -217,14 +266,18 @@ def grafico_individual(id_: str, desde: dt.date, hasta: dt.date) -> bytes:
         else:
             ax.plot(d["fecha"], d["valor_original"], color=COLORES[id_], linewidth=0.9)
         ult = df.iloc[-1]
-        ax.annotate(_fmt(float(ult["valor_original"]), 2), xy=(pd.Timestamp(hasta), float(ult["valor_original"])), xytext=(-2, 4),
-                    textcoords="offset points", ha="right", fontsize=7.5, color=TINTA, fontweight="bold")
+        ax.plot([pd.Timestamp(hasta)], [float(ult["valor_original"])], "o", color=COLORES[id_], markersize=2.5, clip_on=False)
+        ax.annotate(_fmt(float(ult["valor_original"]), 2), xy=(pd.Timestamp(hasta) + margen * 0.08, float(ult["valor_original"])),
+                    ha="left", va="center", fontsize=7.5, color=COLORES[id_], fontweight="bold", annotation_clip=False)
     else:
         ax.text(0.5, 0.5, "sin datos", ha="center", va="center", transform=ax.transAxes, color=TINTA3)
+    if periodo:
+        ax.axvspan(pd.Timestamp(periodo[0]), pd.Timestamp(periodo[1]) + pd.Timedelta(days=1), color=COLORES[id_], alpha=0.18, linewidth=0)
     _estilo(ax)
     ax.set_title(f"{ind.numero}. {ind.nombre_corto}", loc="left", fontsize=8.5, fontweight="bold")
     ax.set_ylabel(ind.unidad_original, fontsize=7)
     ax.set_ylim(bottom=0)
+    ax.set_xlim(pd.Timestamp(desde), pd.Timestamp(hasta) + margen)
     ax.xaxis.set_major_locator(mdates.YearLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
     ax.tick_params(labelsize=7)
@@ -336,7 +389,7 @@ def generar_pdf(panel: dict, ruta: Path) -> Path:
     # ---------- Página 2: tabla y comparativo
     el.append(PageBreak())
     el.append(Paragraph("Precios y variaciones", h2))
-    cab = ["Indicador", "€/kWh", "Semana", "Un año", "Fecha", "Valor original", "Fuente", "Estado"]
+    cab = ["Indicador", "€/kWh", "Semana", "Un año", "Fecha", "Valor original", "Fuente", "Estado", "24 meses"]
     filas = [[Paragraph(c, celda_b) for c in cab]]
     estilo_t = [("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(SUPERFICIE)), ("LINEBELOW", (0, 0), (-1, 0), 0.8, colors.HexColor(TINTA)),
                 ("LINEBELOW", (0, 1), (-1, -1), 0.3, colors.HexColor(BORDE)), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
@@ -351,22 +404,28 @@ def generar_pdf(panel: dict, ruta: Path) -> Path:
                       Paragraph(_fecha(r["fecha_dato"]).replace("/20", "/"), celda),
                       Paragraph(f"{_fmt(r['valor_original'], 2 if r['valor_original'] and r['valor_original'] > 10 else 4)} {r['unidad_original'].split(' (')[0]}", celda),
                       Paragraph(NOMBRE_FUENTE[r["id"]], celda),
-                      Paragraph(f'<font color="{punto}">●</font> {r["estado"]}', celda)])
-    t = Table(filas, colWidths=[ancho * f for f in (0.22, 0.09, 0.11, 0.12, 0.08, 0.13, 0.09, 0.16)], repeatRows=1)
+                      Paragraph(f'<font color="{punto}">●</font> {r["estado"]}', celda),
+                      Image(io.BytesIO(sparkline(panel, r["id"])), width=20 * mm, height=5 * mm)])
+    t = Table(filas, colWidths=[ancho * f for f in (0.18, 0.08, 0.09, 0.11, 0.085, 0.12, 0.08, 0.145, 0.11)], repeatRows=1)
     t.setStyle(TableStyle(estilo_t + [("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3)]))
     el.append(t)
     el.append(Paragraph("Estado: ● actualizado (dato nuevo en los últimos 7 días); ● sin actualización en el periodo (la fuente publica con menor frecuencia); "
                         "● fuente no disponible o dato pendiente. Los precios con impuestos de PVPC, TUR 2 y butano son calculados con los tipos vigentes en cada "
-                        "fecha; los del Boletín Petrolero y AVEBIOM, originales de la fuente.", peq))
-    el.append(Paragraph("Comparativo en €/kWh desde enero de 2022", h2))
-    el.append(Image(io.BytesIO(grafico_comparativo(INICIO_INFORME, hoy)), width=ancho, height=ancho * 4.6 / 10.5))
-    el.append(Paragraph("Las líneas escalonadas son precios regulados o trimestrales, que se mantienen hasta la siguiente revisión. Los huecos son periodos sin dato.", peq))
-
-    # ---------- Página 3: gráficos individuales
+                        "fecha; los del Boletín Petrolero y AVEBIOM, originales de la fuente. Última columna: medias mensuales de los últimos 24 meses.", peq))
+    el.append(Paragraph("Comparativo en €/kWh desde enero de 2022 (los nueve indicadores)", h2))
+    el.append(Image(io.BytesIO(grafico_comparativo(INICIO_INFORME, hoy, alto=3.9)), width=ancho, height=ancho * 3.9 / 10.5))
+    el.append(Paragraph("Las líneas escalonadas son precios regulados o trimestrales, que se mantienen hasta la siguiente revisión. Los huecos son periodos sin dato. "
+                        "Al final de cada línea, su último valor.", peq))
+    # ---------- Página 3: comparativo de energía final y gráficos individuales
     el.append(PageBreak())
-    el.append(Paragraph("Evolución de cada indicador desde 2022 (unidad original de la fuente; último valor anotado)", h2))
+    el.append(Paragraph("Energía final con impuestos (sin los mercados mayoristas)", h2))
+    el.append(Image(io.BytesIO(grafico_comparativo(INICIO_INFORME, hoy, ids=[i for i in ORDEN if i not in ("omie", "mibgas")], alto=3.4)),
+                    width=ancho, height=ancho * 3.4 / 10.5))
+    el.append(Paragraph("Mismas series que el ranking de la página 1: comparables entre sí porque todas son precio final al consumidor con impuestos.", peq))
+
+    el.append(Paragraph("Evolución de cada indicador desde 2022 (unidad original de la fuente; último valor anotado; banda: periodo analizado)", h2))
     w = ancho / 3 - 2 * mm
-    imgs = [Image(io.BytesIO(grafico_individual(id_, INICIO_INFORME, hoy)), width=w, height=w * 2.2 / 3.6) for id_ in ORDEN]
+    imgs = [Image(io.BytesIO(grafico_individual(id_, INICIO_INFORME, hoy, (desde_periodo, hoy))), width=w, height=w * 2.05 / 3.6) for id_ in ORDEN]
     tg = Table([imgs[i:i + 3] for i in range(0, 9, 3)], colWidths=[ancho / 3] * 3)
     tg.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0), ("TOPPADDING", (0, 0), (-1, -1), 2)]))
     el.append(tg)
@@ -378,7 +437,7 @@ def generar_pdf(panel: dict, ruta: Path) -> Path:
         filas.append([Paragraph(INDICADORES[id_].nombre_corto + (" (sin imp.)" if id_ in ("omie", "mibgas") else ""), celda)] +
                      [Paragraph(_fmt(anual[id_].get(a), 4 if id_ in ("omie", "mibgas") else 3), celda_r) for a in anyos])
     ta = Table(filas, colWidths=[ancho * 0.3] + [ancho * 0.7 / len(anyos)] * len(anyos))
-    ta.setStyle(TableStyle(estilo_t))
+    ta.setStyle(TableStyle(estilo_t + [("TOPPADDING", (0, 0), (-1, -1), 2.2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2)]))
     el.append(ta)
     el.append(Paragraph("* Año en curso: media de los meses disponibles. Los años sin dato en alguno de sus meses se dejan en blanco.", peq))
 
@@ -458,9 +517,48 @@ def generar_excel(panel: dict, ruta: Path) -> Path:
     ws["B2"].font = fuente_titulo
     ws["B3"] = f"Informe semanal · fecha de referencia {_fecha(hoy)} · última actualización {(panel['actualizado'] or '')[:16].replace('T', ' ')} UTC · precios con impuestos salvo los mercados mayoristas"
     ws["B3"].font = gris
+    # Tarjetas (2 filas x 4), cada una sobre un grupo de columnas combinadas
+    resumen = {r["id"]: r for r in panel["resumen"]}
+    grupos = [("C", "C"), ("D", "F"), ("G", "I"), ("J", "L")]
+    orden_tarjetas = [("omie", None), ("mibgas", None), ("gasoleo_a", None), ("pvpc", None), ("tur2", None), ("gasoleo_c", None), ("butano", None), ("pellet_saco", "pellet_granel")]
+    FILA_TARJETAS, ALTO_TARJETA = 5, 6
+    for k, (id_, extra) in enumerate(orden_tarjetas):
+        r = resumen[id_]
+        c1, c2 = grupos[k % 4]
+        f0 = FILA_TARJETAS + (k // 4) * (ALTO_TARJETA + 1)
+        color = COLORES[id_].lstrip("#")
+        etiqueta = "mayorista, sin impuestos" if r["impuestos"].startswith("sin") else "con impuestos"
+        textos = [f"{r['numero']}. {r['nombre_corto']}  ·  {etiqueta}", None, f"Semana: {_pct(r['variacion_semanal_pct'])}", f"Un año: {_pct(r['variacion_interanual_pct'])}",
+                  "" if not extra else f"{resumen[extra]['nombre_corto']}: {_fmt(resumen[extra]['precio_eur_kwh'], 3)} €/kWh ({_pct(resumen[extra]['variacion_semanal_pct'])} semana, {_pct(resumen[extra]['variacion_interanual_pct'])} año)",
+                  f"{NOMBRE_FUENTE[id_]} · dato del {_fecha(r['fecha_dato'])}"]
+        for i, txt in enumerate(textos):
+            fila_i = f0 + i
+            if c1 != c2:
+                ws.merge_cells(f"{c1}{fila_i}:{c2}{fila_i}")
+            celda = ws[f"{c1}{fila_i}"]
+            if i == 1:
+                celda.value = r["precio_eur_kwh"] if r["precio_eur_kwh"] is not None else "n. d."
+                celda.number_format = ("0.0000" if id_ in ("omie", "mibgas") else "0.000") + ' "€/kWh"'
+                celda.font = Font(name="Calibri", bold=True, size=18, color="0B0B0B")
+            else:
+                celda.value = txt
+                celda.font = Font(name="Calibri", bold=(i == 0), size=11 if i == 0 else 9, color="FFFFFF" if i == 0 else ("52514E" if i == 5 else "0B0B0B"))
+            if i == 0:
+                for col in range(ws[f"{c1}1"].column, ws[f"{c2}1"].column + 1):
+                    ws.cell(row=fila_i, column=col).fill = PatternFill("solid", fgColor=color)
+            elif i in (2, 3):
+                v = r["variacion_semanal_pct"] if i == 2 else r["variacion_interanual_pct"]
+                celda.font = Font(name="Calibri", size=9, color=_color_var(v).lstrip("#"))
+            else:
+                for col in range(ws[f"{c1}1"].column, ws[f"{c2}1"].column + 1):
+                    ws.cell(row=fila_i, column=col).fill = fill_suave
+            celda.alignment = Alignment(vertical="center", horizontal="left")
+        ws.row_dimensions[f0 + 1].height = 24
+    fila_tabla = FILA_TARJETAS + 2 * (ALTO_TARJETA + 1) + 1
+    ws.cell(row=fila_tabla - 1, column=2, value="Tabla de indicadores").font = fuente_h2
     cab = ["N.º", "Indicador", "Precio actual (€/kWh)", "Var. semanal (%)", "Var. interanual (%)", "Fecha del dato", "Valor original", "Unidad original", "Fuente", "Impuestos", "Estado"]
-    cabecera(ws, 5, cab, col_ini=2)
-    for i, r in enumerate(panel["resumen"], start=6):
+    cabecera(ws, fila_tabla, cab, col_ini=2)
+    for i, r in enumerate(panel["resumen"], start=fila_tabla + 1):
         vals = [r["numero"], r["nombre"], r["precio_eur_kwh"], None if r["variacion_semanal_pct"] is None else r["variacion_semanal_pct"] / 100,
                 None if r["variacion_interanual_pct"] is None else r["variacion_interanual_pct"] / 100, r["fecha_dato"], r["valor_original"],
                 r["unidad_original"], NOMBRE_FUENTE[r["id"]], "sin (mayorista)" if r["impuestos"].startswith("sin") else "con", r["estado"]]
@@ -476,15 +574,15 @@ def generar_excel(panel: dict, ruta: Path) -> Path:
         ws.row_dimensions[i].height = 30
         ws.cell(row=i, column=2).fill = PatternFill("solid", fgColor=COLORES[r["id"]].lstrip("#"))
         ws.cell(row=i, column=2).font = Font(bold=True, color="FFFFFF")
-    fin = 5 + len(panel["resumen"])
+    fin = fila_tabla + len(panel["resumen"])
     rojo, verde = Font(color="D03B3B"), Font(color="0CA30C")
     for col in ("E", "F"):
-        rango = f"{col}6:{col}{fin}"
+        rango = f"{col}{fila_tabla + 1}:{col}{fin}"
         ws.conditional_formatting.add(rango, CellIsRule(operator="greaterThan", formula=["0.0005"], font=rojo))
         ws.conditional_formatting.add(rango, CellIsRule(operator="lessThan", formula=["-0.0005"], font=verde))
         ws.conditional_formatting.add(rango, IconSetRule("3Arrows", "num", [-0.0005, -0.0005, 0.0005], showValue=True, reverse=False))
     anchos(ws, [2, 5, 46, 14, 13, 14, 13, 13, 22, 20, 14, 26])
-    ws.freeze_panes = "C6"
+    ws.freeze_panes = f"C{fila_tabla + 1}"
     fila = fin + 2
     ws.cell(row=fila, column=2, value="Claves de la semana (generadas a partir de los datos)").font = fuente_h2
     for k, p in enumerate(panel["comentario"], start=fila + 1):
@@ -493,18 +591,30 @@ def generar_excel(panel: dict, ruta: Path) -> Path:
     ws.cell(row=fila_g, column=2, value="Criterios: precio actual = media de 7 días (OMIE, MIBGAS, PVPC), última semana (gasóleos) o valor vigente (TUR 2, butano, pellet); "
                                         "variaciones frente al periodo anterior y frente a hace un año; nada se estima (n. d. = no disponible).").font = gris
 
-    # Gráfico de barras del ranking (energía final) vinculado a la tabla del cuadro de mando
+    # Ranking de la energía final ordenado de menor a mayor (tabla auxiliar + gráfico de barras vinculado)
+    fila_r = fila_g + 2
+    ws.cell(row=fila_r, column=2, value="Ranking: coste por kWh de la energía final, con impuestos (de menor a mayor)").font = fuente_h2
+    cabecera(ws, fila_r + 1, ["Indicador", "€/kWh"], col_ini=3)
+    finales = sorted([r for r in panel["resumen"] if r["id"] not in ("omie", "mibgas") and r["precio_eur_kwh"] is not None], key=lambda r: r["precio_eur_kwh"])
+    for k, r in enumerate(finales, start=fila_r + 2):
+        ws.cell(row=k, column=3, value=r["nombre_corto"]).border = borde_fino
+        c = ws.cell(row=k, column=4, value=r["precio_eur_kwh"])
+        c.number_format = "0.000"
+        c.border = borde_fino
+    fin_r = fila_r + 1 + len(finales)
     bc = BarChart()
     bc.type = "bar"
     bc.style = 10
-    bc.title = "Precio actual por kWh (€/kWh)"
-    bc.y_axis.title = "€/kWh"
+    bc.title = "Coste por kWh de la energía final, con impuestos (€/kWh)"
     bc.legend = None
     bc.height, bc.width = 8.5, 16
-    bc.add_data(Reference(ws, min_col=4, min_row=5, max_row=fin), titles_from_data=True)
-    bc.set_categories(Reference(ws, min_col=3, min_row=6, max_row=fin))
+    bc.add_data(Reference(ws, min_col=4, min_row=fila_r + 1, max_row=fin_r), titles_from_data=True)
+    bc.set_categories(Reference(ws, min_col=3, min_row=fila_r + 2, max_row=fin_r))
+    bc.x_axis.scaling.orientation = "maxMin"   # el más barato arriba
+    bc.x_axis.delete = False
+    bc.y_axis.delete = False
     bc.y_axis.number_format = "0.000"
-    ws.add_chart(bc, f"B{fila_g + 2}")
+    ws.add_chart(bc, f"F{fila_r + 1}")
 
     # ---------- Anual y Mensual
     anual = _anual(panel)
@@ -555,6 +665,7 @@ def generar_excel(panel: dict, ruta: Path) -> Path:
     ch.title = "Comparativo en €/kWh (medias mensuales)"
     ch.y_axis.title = "€/kWh"
     ch.height, ch.width = 9.5, 28
+    ch.x_axis.delete = ch.y_axis.delete = False
     for k, id_ in enumerate(ORDEN):
         ch.add_data(Reference(wm, min_col=2 + 2 * k, min_row=1, max_row=n), titles_from_data=True)
     ch.set_categories(Reference(wm, min_col=1, min_row=2, max_row=n))
@@ -568,6 +679,7 @@ def generar_excel(panel: dict, ruta: Path) -> Path:
     ba = BarChart()
     ba.title = "Media anual en €/kWh"
     ba.height, ba.width = 9.5, 28
+    ba.x_axis.delete = ba.y_axis.delete = False
     for j in range(2, len(ORDEN) + 2):
         ba.add_data(Reference(wa, min_col=j, min_row=1, max_row=len(anyos) + 1), titles_from_data=True)
     ba.set_categories(Reference(wa, min_col=1, min_row=2, max_row=len(anyos) + 1))
@@ -581,12 +693,100 @@ def generar_excel(panel: dict, ruta: Path) -> Path:
         c.title = f"{ind.numero}. {ind.nombre_corto} ({ind.unidad_original}, media mensual)"
         c.height, c.width = 7, 13.5
         c.legend = None
+        c.x_axis.delete = c.y_axis.delete = False
         c.add_data(Reference(wm, min_col=3 + 2 * k, min_row=1, max_row=n), titles_from_data=True)
         c.set_categories(Reference(wm, min_col=1, min_row=2, max_row=n))
         c.series[0].graphicalProperties.line.solidFill = COLORES[id_].lstrip("#")
         c.series[0].graphicalProperties.line.width = 15000
         c.series[0].smooth = False
         wg.add_chart(c, f"{'A' if k % 2 == 0 else 'J'}{fila_g + 15 * (k // 2)}")
+
+    # ---------- Comparador: hasta cuatro series elegidas con desplegables, frecuencia mensual/anual y Base 100
+    wc = wb.create_sheet("Comparador")
+    wc.sheet_view.showGridLines = False
+    nm, na = len(meses) + 1, len(anyos) + 1          # últimas filas con datos en «Mensual» y «Anual»
+    col_m, col_a = get_column_letter(len(cab)), get_column_letter(len(ORDEN) + 1)
+    wc["B2"] = "Comparador de series"
+    wc["B2"].font = fuente_titulo
+    wc["B3"] = ("Elija hasta cuatro series en los desplegables, la frecuencia (mensual o anual) y si quiere verlas en Base 100 "
+                "(cada serie dividida por su primer valor disponible). La tabla y el gráfico se recalculan con fórmulas sobre las hojas «Mensual» y «Anual».")
+    wc["B3"].font = gris
+    # Lista de series: nombre corto -> cabecera en «Mensual» (€/kWh) y en «Anual»
+    wc["P4"], wc["Q4"], wc["R4"] = "Serie", "Columna en Mensual", "Columna en Anual"
+    for j in ("P4", "Q4", "R4"):
+        wc[j].font = Font(bold=True, color="52514E")
+    for k, id_ in enumerate(ORDEN, start=5):
+        wc[f"P{k}"] = INDICADORES[id_].nombre_corto
+        wc[f"Q{k}"] = cab[1 + 2 * (k - 5)]
+        wc[f"R{k}"] = INDICADORES[id_].nombre_corto + (" (sin imp.)" if id_ in ("omie", "mibgas") else "")
+    fin_lista = 4 + len(ORDEN)
+    dv_series = DataValidation(type="list", formula1=f"=$P$5:$P${fin_lista}", allow_blank=True, showDropDown=False)
+    dv_frec = DataValidation(type="list", formula1='"Mensual,Anual"', allow_blank=False)
+    dv_si = DataValidation(type="list", formula1='"No,Sí"', allow_blank=False)
+    wc.add_data_validation(dv_series); wc.add_data_validation(dv_frec); wc.add_data_validation(dv_si)
+    etiquetas = ["Serie 1", "Serie 2", "Serie 3", "Serie 4", "Frecuencia", "Base 100"]
+    valores_ini = ["Gasóleo C", "Pellet saco 15 kg", "", "", "Mensual", "No"]
+    for k, (et, v) in enumerate(zip(etiquetas, valores_ini), start=5):
+        wc[f"B{k}"] = et
+        wc[f"B{k}"].font = Font(bold=True)
+        c = wc[f"C{k}"]
+        c.value = v
+        c.fill = PatternFill("solid", fgColor="FFF4D6")
+        c.border = Border(left=Side(style="thin", color="DCDAD4"), right=Side(style="thin", color="DCDAD4"), top=Side(style="thin", color="DCDAD4"), bottom=Side(style="thin", color="DCDAD4"))
+        (dv_series if k <= 8 else dv_frec if k == 9 else dv_si).add(c)
+    wc["D5"] = "← desplegables (deje en blanco las series que no quiera)"
+    wc["D5"].font = gris
+    wc["B11"] = "Unidad: €/kWh (OMIE y MIBGAS sin impuestos; el resto con impuestos). Los huecos (#N/A) son periodos sin dato y no se dibujan."
+    wc["B11"].font = gris
+    # Cabeceras de la tabla calculada (fila 14), filas auxiliares 12 (índice de columna en Mensual/Anual) y 13 (primer valor para Base 100)
+    FILA0 = 14
+    n_filas = max(nm, na) - 1
+    fin_t = FILA0 + n_filas
+    wc[f"A{FILA0}"] = "Periodo"
+    wc[f"A{FILA0}"].font = fuente_cab; wc[f"A{FILA0}"].fill = fill_cab
+    wc["G12"], wc["G13"] = "Columna en la hoja origen (auxiliar)", "Primer valor disponible (auxiliar, Base 100)"
+    wc["G12"].font = wc["G13"].font = gris
+    for k in range(4):
+        sel = f"$C${5 + k}"
+        col_v, col_h = get_column_letter(2 + k), get_column_letter(8 + k)         # B..E visibles; H..K auxiliares (valor sin Base 100)
+        wc[f"{col_v}{FILA0}"] = f'=IF({sel}="","(vacía)",{sel})'
+        wc[f"{col_v}{FILA0}"].font = fuente_cab; wc[f"{col_v}{FILA0}"].fill = fill_cab
+        wc[f"{col_h}{FILA0}"] = f'=IF({sel}="","(vacía)",{sel}&" (€/kWh)")'
+        wc[f"{col_h}{FILA0}"].font = gris
+        wc[f"{col_h}12"] = (f'=IF({sel}="",0,IF($C$9="Anual",IFERROR(MATCH(INDEX($R$5:$R${fin_lista},MATCH({sel},$P$5:$P${fin_lista},0)),Anual!$B$1:${col_a}$1,0),0),'
+                            f'IFERROR(MATCH(INDEX($Q$5:$Q${fin_lista},MATCH({sel},$P$5:$P${fin_lista},0)),Mensual!$B$1:${col_m}$1,0),0)))')
+        wc[f"{col_h}13"] = f'=IFERROR(INDEX({col_h}{FILA0 + 1}:{col_h}{fin_t},MATCH(TRUE,INDEX(ISNUMBER({col_h}{FILA0 + 1}:{col_h}{fin_t}),0),0)),NA())'
+        wc[f"{col_h}12"].font = wc[f"{col_h}13"].font = gris
+        wc[f"{col_h}13"].number_format = "0.0000"
+    for i in range(1, n_filas + 1):
+        f = FILA0 + i
+        wc[f"A{f}"] = (f'=IF($C$9="Anual",IF({i}<={na - 1},INDEX(Anual!$A$2:$A${na},{i}),""),IF({i}<={nm - 1},INDEX(Mensual!$A$2:$A${nm},{i}),""))')
+        for k in range(4):
+            col_v, col_h = get_column_letter(2 + k), get_column_letter(8 + k)
+            wc[f"{col_h}{f}"] = (f'=IF(OR($A{f}="",{col_h}$12=0),NA(),IF($C$9="Anual",'
+                                 f'IF(INDEX(Anual!$B$2:${col_a}${na},{i},{col_h}$12)="",NA(),INDEX(Anual!$B$2:${col_a}${na},{i},{col_h}$12)),'
+                                 f'IF(INDEX(Mensual!$B$2:${col_m}${nm},{i},{col_h}$12)="",NA(),INDEX(Mensual!$B$2:${col_m}${nm},{i},{col_h}$12))))')
+            wc[f"{col_h}{f}"].number_format = "0.0000"
+            wc[f"{col_v}{f}"] = f'=IF($C$10="Sí",{col_h}{f}/{col_h}$13*100,{col_h}{f})'
+            wc[f"{col_v}{f}"].number_format = '[>=50]0.0;0.0000'
+    anchos(wc, [12, 18, 18, 18, 18, 2, 18, 18, 18, 18, 2, 2, 2, 2, 2, 20, 30, 24])
+    wc.freeze_panes = f"B{FILA0 + 1}"
+    ch = LineChart()
+    ch.title = "Comparador (series elegidas; cambia con los desplegables)"
+    ch.y_axis.title = "€/kWh o índice (Base 100)"
+    ch.x_axis.delete = False
+    ch.y_axis.delete = False
+    ch.height, ch.width = 9.5, 24
+    for k in range(4):
+        ch.add_data(Reference(wc, min_col=2 + k, min_row=FILA0, max_row=fin_t), titles_from_data=True)
+    ch.set_categories(Reference(wc, min_col=1, min_row=FILA0 + 1, max_row=fin_t))
+    for k, s_ in enumerate(ch.series):
+        s_.graphicalProperties.line.solidFill = ["008300", "e34948", "2a78d6", "6250d6"][k]
+        s_.graphicalProperties.line.width = 18000
+        s_.smooth = False
+    ch.display_blanks = "gap"
+    wc.add_chart(ch, "G2")
+    wb.calculation.fullCalcOnLoad = True
 
     # ---------- Una hoja de datos por serie (formato tabla, filtrable)
     for id_ in ORDEN:

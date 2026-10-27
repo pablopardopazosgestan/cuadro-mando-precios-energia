@@ -331,3 +331,62 @@ def butano_bombona_con_impuestos(precio_ckg: float, fecha: dt.date, kg: float = 
         return ConImpuestos(None, detalle, "; ".join(pendientes))
     base = precio_ckg / 100 * kg + t_ih.valor / 1000 * kg
     return ConImpuestos(base * (1 + t_iva.valor), detalle)
+
+
+# ------------------------------------------------------------------ Cambios de impuestos (para marcarlos en los gráficos)
+
+def _firma(serie: str, fecha: dt.date, omie_mes_anterior: float | None) -> tuple:
+    """Tipos vigentes en una fecha para una serie, como tupla comparable (valor None = no disponible)."""
+    if serie == "pvpc":
+        return (("IEE", iee(fecha)), ("IVA", iva_electricidad(fecha, omie_mes_anterior)))
+    if serie == "tur2":
+        return (("IH gas", ih_gas_natural_eur_gj(fecha)), ("IVA", iva_gas_natural(fecha)))
+    if serie == "butano":
+        return (("IH GLP", ih_glp_eur_t(fecha)), ("IVA", iva_butano(fecha)))
+    if serie in ("pellet_saco", "pellet_granel"):
+        return (("IVA", iva_pellets(fecha)),)
+    return ()
+
+
+def _num_es(x: float, dec: int = 2) -> str:
+    """Número con coma decimal y sin ceros sobrantes (5,11; 0,65; 21)."""
+    return f"{x:.{dec}f}".rstrip("0").rstrip(".").replace(".", ",")
+
+
+def _texto_tipo(nombre: str, t: Tipo) -> str:
+    if t.valor is None:
+        return f"{nombre} pendiente"
+    if nombre.startswith("IH gas"):
+        return f"{nombre} {_num_es(t.valor, 3)} €/GJ"
+    if nombre.startswith("IH GLP"):
+        return f"{nombre} {_num_es(t.valor, 2)} €/t"
+    return f"{nombre} {_num_es(t.valor * 100, 2)} %"
+
+
+def cambios_impuestos(serie: str, desde: dt.date, hasta: dt.date, omie_mensual: dict[str, float] | None = None) -> list[dict]:
+    """Fechas en que cambia algún tipo aplicable a la serie, con el texto «antes → después» y la referencia.
+
+    `omie_mensual` ({"AAAA-MM": media €/MWh}) se usa para la condición del IVA eléctrico (2021–2024).
+    """
+    omie_mensual = omie_mensual or {}
+
+    def omie_prev(f: dt.date):
+        a, m = (f.year, f.month - 1) if f.month > 1 else (f.year - 1, 12)
+        return omie_mensual.get(f"{a}-{m:02d}")
+
+    out = []
+    f = desde
+    anterior = _firma(serie, f, omie_prev(f))
+    f += dt.timedelta(days=1)
+    while f <= hasta:
+        actual = _firma(serie, f, omie_prev(f))
+        if [(n, t.valor) for n, t in actual] != [(n, t.valor) for n, t in anterior]:
+            partes, refs = [], []
+            for (n, ta), (_, tb) in zip(anterior, actual):
+                if ta.valor != tb.valor:
+                    partes.append(f"{_texto_tipo(n, ta)} → {_texto_tipo(n, tb)}")
+                    refs.append(tb.referencia)
+            out.append({"fecha": f.isoformat(), "texto": "; ".join(partes), "referencia": "; ".join(dict.fromkeys(refs))})
+        anterior = actual
+        f += dt.timedelta(days=1)
+    return out
