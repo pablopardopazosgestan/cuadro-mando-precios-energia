@@ -24,9 +24,9 @@ mes,media_original,unidad_original,media_eur_kwh_sin_impuestos,media_eur_kwh_con
 2023-04,134.521350,€/MWh,0.134521,0.142297,30,media aritmética de los datos del mes
 2023-05,132.871152,€/MWh,0.132871,0.140565,31,media aritmética de los datos del mes
 2023-06,151.847543,€/MWh,0.151848,0.160490,30,media aritmética de los datos del mes
-2023-07,148.167161,€/MWh,0.148167,0.156626,31,media aritmética de los datos del mes
+2023-07,148.167161,€/MWh,0.148167,0.156625,31,media aritmética de los datos del mes
 2023-08,152.796868,€/MWh,0.152797,0.161488,31,media aritmética de los datos del mes
-2023-09,161.067190,€/MWh,0.161067,0.170171,30,media aritmética de los datos del mes
+2023-09,161.067190,€/MWh,0.161067,0.170170,30,media aritmética de los datos del mes
 2023-10,150.395171,€/MWh,0.150395,0.158968,31,media aritmética de los datos del mes
 2023-11,121.137677,€/MWh,0.121138,0.128245,30,media aritmética de los datos del mes
 2023-12,127.595913,€/MWh,0.127596,0.135026,31,media aritmética de los datos del mes
@@ -42,7 +42,7 @@ mes,media_original,unidad_original,media_eur_kwh_sin_impuestos,media_eur_kwh_con
 2024-10,136.229168,€/MWh,0.136229,0.157514,31,media aritmética de los datos del mes
 2024-11,167.721097,€/MWh,0.167721,0.193926,30,media aritmética de los datos del mes
 2024-12,176.470094,€/MWh,0.176470,0.204042,31,media aritmética de los datos del mes
-2025-01,158.437177,€/MWh,0.158437,0.201510,31,media aritmética de los datos del mes
+2025-01,158.437177,€/MWh,0.158437,0.201511,31,media aritmética de los datos del mes
 2025-02,168.061782,€/MWh,0.168062,0.213752,28,media aritmética de los datos del mes
 2025-03,123.241087,€/MWh,0.123241,0.156746,31,media aritmética de los datos del mes
 2025-04,108.465227,€/MWh,0.108465,0.137953,30,media aritmética de los datos del mes
