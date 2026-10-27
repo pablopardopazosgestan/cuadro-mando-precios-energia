@@ -57,7 +57,8 @@ Escribe a Pablo siempre en castellano, de forma directa.
   mini tendencias en la tabla. Excel: tarjetas y ranking ordenado en «Cuadro de mando», hoja «Comparador» con
   desplegables, INDEX/MATCH y gráfico vinculado (fórmulas comprobadas con LibreOffice). Detalle en
   `docs/METODOLOGIA.md` §6 y §8; pruebas JS con Node en `tests/test_panel_js.py`.
-- Fase 6 (verificación y entrega): no empezada. No empezar sin el «sigue» de Pablo.
+- Mejora de visualización aceptada el 27/10/2026 («sigue»). Pablo delegó la decisión sobre AVEBIOM (ver abajo).
+- **Fase 6 (verificación y entrega): en curso desde el 27/10/2026.**
 
 ## Siguiente paso
 
@@ -110,10 +111,8 @@ Red necesaria: `www.omie.es`, `www.mibgas.es`, `api.esios.ree.es`, `energy.ec.eu
   (`precios/plotly.min.js`, extraído del paquete `plotly` de PyPI).
 - ESIOS: la API bloquea por IP (Incapsula, 403) tras varias peticiones seguidas; `precios/fuentes/esios.py` espacia
   las peticiones 4 s y espera 2–15 min ante un 403.
-- AVEBIOM: el 27/10/2026 (run 40498936289) la API de medios devolvió al ejecutor de GitHub una página HTML en vez de
-  JSON (bloqueo puntual); el workflow publicó con el último dato correcto y terminó en rojo, como está previsto.
-  `listar_pdfs` pide ahora las dos vías (API y página) con el User-Agent del proyecto y sigue si una falla. En la
-  ejecución siguiente (40499351715) el servidor (SiteGround) respondió a ambas con un desafío captcha
-  (`/.well-known/sgcaptcha/`) a la IP del ejecutor: no se puede ni se debe sortear. Desde el entorno de sesión
-  responde bien, y a las 10:38 del mismo día también desde GitHub: es intermitente. Pendiente de decidir con Pablo
-  (p. ej. reintentar con espera o consultar AVEBIOM solo cuando toque trimestre nuevo).
+- AVEBIOM: el 27/10/2026 su servidor (SiteGround) respondió al ejecutor de GitHub con un desafío captcha
+  (`/.well-known/sgcaptcha/`) en dos ejecuciones (40498936289, 40499351715); desde el entorno de sesión responde bien.
+  Decisión (Pablo delegó): el pellet se reconstruye desde los PDF versionados (`datos/fuentes_originales/avebiom/` +
+  `indice.json`) y la web solo se consulta cuando puede haber trimestre nuevo (`avebiom.toca_consultar`: 14 días tras
+  el cierre del trimestre siguiente al último guardado), con dos reintentos espaciados; `--solo pellet_saco` fuerza.

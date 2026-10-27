@@ -13,6 +13,7 @@ import io
 import json
 import logging
 import re
+import time
 from dataclasses import dataclass
 
 import pdfplumber
@@ -164,16 +165,88 @@ def listar_pdfs() -> list[tuple[dt.date, str]]:
     return sorted(out)
 
 
-def descargar_informe(fecha_subida: dt.date, url: str) -> InformePellet:
+DIR_AVEBIOM = DIR_ORIGINALES / "avebiom"
+INDICE = DIR_AVEBIOM / "indice.json"          # nombre del PDF -> {url, fecha_subida}; versionado con los PDF
+ESPERAS_TRAS_FALLO = (240, 480)               # segundos entre intentos de listado si el servidor no responde bien
+DIAS_PUBLICACION = 14                         # el PDF de un trimestre ha salido entre 20 y 35 días tras cerrarlo (2025–2026)
+
+
+def _leer_indice() -> dict:
+    try:
+        return json.loads(INDICE.read_text(encoding="utf-8")) if INDICE.exists() else {}
+    except ValueError:
+        return {}
+
+
+def _anotar_indice(nombre: str, url: str, fecha_subida: dt.date | None) -> None:
+    idx = _leer_indice()
+    idx[nombre] = {"url": url, "fecha_subida": fecha_subida.isoformat() if fecha_subida else None}
+    DIR_AVEBIOM.mkdir(parents=True, exist_ok=True)
+    INDICE.write_text(json.dumps(dict(sorted(idx.items())), ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def informes_locales() -> list[InformePellet]:
+    """PDF ya guardados en `datos/fuentes_originales/avebiom/` (versionados), con su fecha de subida según el índice."""
+    idx = _leer_indice()
+    out = []
+    for ruta in sorted(DIR_AVEBIOM.glob("*.pdf")) if DIR_AVEBIOM.exists() else []:
+        meta = idx.get(ruta.name, {})
+        fecha = dt.date.fromisoformat(meta["fecha_subida"]) if meta.get("fecha_subida") else None
+        precios, actualizacion = leer_pdf(ruta.read_bytes(), ruta.name)
+        out.append(InformePellet(ruta.name, meta.get("url", ""), fecha, actualizacion, tuple(precios)))
+    return out
+
+
+def ultimo_trimestre(informes: list[InformePellet]) -> tuple[int, int] | None:
+    """(año, trimestre) más reciente con precio en los informes, o None."""
+    tri = [(int(p.periodo[:4]), int(p.periodo[5])) for i in informes for p in i.precios if "T" in p.periodo]
+    return max(tri) if tri else None
+
+
+def toca_consultar(informes: list[InformePellet], hoy: dt.date) -> bool:
+    """Solo se consulta AVEBIOM cuando puede existir un trimestre nuevo: ha pasado el cierre del trimestre siguiente al
+    último guardado más el plazo habitual de publicación. Así el ejecutor hace muy pocas peticiones al año."""
+    ult = ultimo_trimestre(informes)
+    if ult is None:
+        return True
+    anyo, t = ult
+    anyo_sig, t_sig = (anyo + 1, 1) if t == 4 else (anyo, t + 1)
+    cierre = dt.date(anyo_sig + (t_sig == 4), 1 if t_sig == 4 else 3 * t_sig + 1, 1)   # primer día tras el trimestre siguiente
+    return hoy >= cierre + dt.timedelta(days=DIAS_PUBLICACION)
+
+
+def listar_pdfs_con_reintentos() -> list[tuple[dt.date, str]]:
+    for k, espera in enumerate((*ESPERAS_TRAS_FALLO, None)):
+        try:
+            return listar_pdfs()
+        except ErrorDescarga as e:
+            if espera is None:
+                raise
+            log.warning("AVEBIOM: %s; se reintenta en %s s (%d/%d)", e, espera, k + 1, len(ESPERAS_TRAS_FALLO))
+            time.sleep(espera)
+    return []  # inalcanzable
+
+
+def descargar_informe(fecha_subida: dt.date | None, url: str) -> InformePellet:
     nombre = url.rsplit("/", 1)[-1]
     cuerpo = descargar(url, cache=clave_cache("avebiom", nombre))
-    copia = DIR_ORIGINALES / "avebiom" / nombre
+    copia = DIR_AVEBIOM / nombre
     if not copia.exists():
         copia.parent.mkdir(parents=True, exist_ok=True)
         copia.write_bytes(cuerpo)
+    _anotar_indice(nombre, url, fecha_subida)
     precios, actualizacion = leer_pdf(cuerpo, nombre)
     return InformePellet(nombre, url, fecha_subida, actualizacion, tuple(precios))
 
 
-def descargar_todo() -> list[InformePellet]:
-    return [descargar_informe(f, u) for f, u in listar_pdfs()]
+def descargar_todo(hoy: dt.date | None = None, forzar: bool = False) -> list[InformePellet]:
+    """Todos los informes: los guardados en el repositorio más los nuevos de AVEBIOM, que solo se consultan cuando
+    puede haber trimestre nuevo (`toca_consultar`) o con `forzar`. Si la consulta falla tras los reintentos, error."""
+    hoy = hoy or dt.date.today()
+    locales = informes_locales()
+    if not forzar and not toca_consultar(locales, hoy):
+        log.info("AVEBIOM: %d PDF guardados (último trimestre %s); no toca consultar la web", len(locales), ultimo_trimestre(locales))
+        return locales
+    nombres = {i.nombre_pdf for i in locales}
+    nuevos = [descargar_informe(f, u) for f, u in listar_pdfs_con_reintentos() if u.rsplit("/", 1)[-1] not in nombres]
+    return locales + nuevos

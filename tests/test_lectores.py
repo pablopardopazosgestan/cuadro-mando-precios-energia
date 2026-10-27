@@ -185,3 +185,45 @@ def test_boe_correccion_de_errores_tur_junio_2023():
     assert boe.aplicar_correccion_tur([original], doc)
     assert original.tarifas["TUR.2"] == (9.48, 4.020647)
     assert "corregida por BOE-A-2023-15235" in original.titulo
+
+
+def test_avebiom_solo_consulta_cuando_puede_haber_trimestre_nuevo(monkeypatch):
+    p = avebiom.PrecioPellet("2026T3", "saco", 5.92, 8.28, "3T2026.pdf")
+    inf = avebiom.InformePellet("3T2026.pdf", "u", dt.date(2026, 10, 20), "octubre 2026", (p,))
+    assert avebiom.ultimo_trimestre([inf]) == (2026, 3)
+    assert not avebiom.toca_consultar([inf], dt.date(2026, 12, 31))       # el 4T2026 aún no ha cerrado
+    assert not avebiom.toca_consultar([inf], dt.date(2027, 1, 14))        # cerrado, pero dentro del plazo de publicación
+    assert avebiom.toca_consultar([inf], dt.date(2027, 1, 15))
+    assert avebiom.toca_consultar([], dt.date(2026, 1, 1))                # sin PDF guardados, siempre
+    p4 = avebiom.PrecioPellet("2026T4", "saco", 6.0, None, "4T2026.pdf")
+    assert avebiom.ultimo_trimestre([inf, avebiom.InformePellet("4T2026.pdf", "u", None, None, (p4,))]) == (2026, 4)
+
+    llamadas = []
+    monkeypatch.setattr(avebiom, "informes_locales", lambda: [inf])
+    monkeypatch.setattr(avebiom, "listar_pdfs", lambda: llamadas.append("web") or [(dt.date(2027, 1, 20), "https://x/4T2026.pdf"), (dt.date(2026, 10, 20), "https://x/3T2026.pdf")])
+    monkeypatch.setattr(avebiom, "descargar_informe", lambda f, u: avebiom.InformePellet(u.rsplit("/", 1)[-1], u, f, None, ()))
+    assert avebiom.descargar_todo(dt.date(2026, 10, 27)) == [inf] and llamadas == []          # no toca: solo los locales
+    res = avebiom.descargar_todo(dt.date(2027, 1, 20))
+    assert llamadas == ["web"] and [i.nombre_pdf for i in res] == ["3T2026.pdf", "4T2026.pdf"]  # solo descarga el nuevo
+    assert len(avebiom.descargar_todo(dt.date(2026, 10, 27), forzar=True)) == 2 and llamadas == ["web", "web"]
+
+
+def test_avebiom_reintenta_el_listado_y_falla_con_error_claro(monkeypatch):
+    from precios.http import ErrorDescarga
+    intentos = []
+    monkeypatch.setattr(avebiom, "ESPERAS_TRAS_FALLO", (0, 0))
+    monkeypatch.setattr(avebiom, "listar_pdfs", lambda: intentos.append(1) or (_ for _ in ()).throw(ErrorDescarga("captcha")))
+    with pytest.raises(ErrorDescarga, match="captcha"):
+        avebiom.listar_pdfs_con_reintentos()
+    assert len(intentos) == 3
+    intentos.clear()
+    monkeypatch.setattr(avebiom, "listar_pdfs", lambda: intentos.append(1) or ([(dt.date(2026, 1, 1), "https://x/a.pdf")] if len(intentos) == 2 else (_ for _ in ()).throw(ErrorDescarga("captcha"))))
+    assert avebiom.listar_pdfs_con_reintentos() == [(dt.date(2026, 1, 1), "https://x/a.pdf")] and len(intentos) == 2
+
+
+def test_avebiom_informes_locales_leen_el_indice():
+    locales = avebiom.informes_locales()
+    nombres = {i.nombre_pdf: i for i in locales}
+    assert "IPB-indice-precios-PELLET-3T2026.pdf" in nombres
+    assert nombres["IPB-indice-precios-PELLET-3T2026.pdf"].fecha_subida == dt.date(2026, 10, 20)
+    assert avebiom.ultimo_trimestre(locales) >= (2026, 3)

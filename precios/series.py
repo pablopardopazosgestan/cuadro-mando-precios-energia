@@ -429,7 +429,7 @@ def actualizar(hoy: dt.date | None = None, solo: set[str] | None = None) -> dict
         registrar("boe_butano", ["butano"], _but)
     if quiere("pellet_saco", "pellet_granel"):
         def _pellet():
-            informes = avebiom.descargar_todo()
+            informes = avebiom.descargar_todo(hoy, forzar=solo is not None and "pellet_saco" in solo)
             return {"pellet_saco": construir_pellet(informes, "saco"), "pellet_granel": construir_pellet(informes, "volquete")}
         registrar("avebiom", ["pellet_saco", "pellet_granel"], _pellet)
 

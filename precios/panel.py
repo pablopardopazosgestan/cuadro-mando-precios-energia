@@ -48,7 +48,7 @@ TIPO = {  # cómo se dibuja cada serie
 }
 PLAZOS_MAXIMOS_DIAS = {  # a partir de cuántos días sin dato nuevo se considera que la fuente no responde
     "omie": 4, "mibgas": 5, "pvpc": 4, "gasoleo_a": 14, "gasoleo_c": 14, "tur2": 100, "butano": 70,
-    "pellet_saco": 125, "pellet_granel": 125,
+    "pellet_saco": 230, "pellet_granel": 230,   # inicio del trimestre + trimestre siguiente completo + 3–5 semanas hasta el PDF
 }
 
 

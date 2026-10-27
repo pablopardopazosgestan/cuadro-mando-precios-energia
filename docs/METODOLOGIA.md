@@ -182,7 +182,8 @@ Criterios del resumen ejecutivo:
 - **Estado:** «actualizado» (dato nuevo en la última ejecución o publicado en los últimos 7 días), «sin actualización
   en el periodo» (la fuente no ha publicado nada nuevo, dentro de su periodicidad) o «fuente no disponible o dato
   pendiente» (sin datos, o más días sin dato de los que admite su periodicidad: 4 diarios, 14 semanales, 70 butano,
-  100 TUR, 125 pellet). Si una descarga falla pero hay dato reciente, se muestra ese dato y se anota el fallo.
+  100 TUR, 230 pellet: inicio del trimestre, el trimestre siguiente completo y las 3–5 semanas que tarda el PDF). Si
+  una descarga falla pero hay dato reciente, se muestra ese dato y se anota el fallo.
 - **Comentario semanal:** frases generadas solo con los números de la tabla (variaciones ≥ 1 %, interanuales,
   orden de precios de la energía final y datos no disponibles). No contiene interpretación.
 - **Comparativo en €/kWh** (mejora de visualización del 27/10/2026, `docs/PROMPT_MEJORA_VISUALIZACION.md`):
@@ -230,8 +231,16 @@ Criterios del resumen ejecutivo:
   PVPC queda en error y el resto se actualiza.
 - **Caché:** en Actions no hay caché local; cada ejecución pide solo los días/ficheros posteriores al último dato
   guardado (OMIE: desde 7 días antes del último dato; MIBGAS: el fichero del año en curso; Boletín Petrolero: el
-  histórico completo, 4,5 MB; BOE: sumarios desde la última publicación; AVEBIOM: los PDF publicados; ESIOS: desde
-  3 días antes del último dato; INE: dos tablas).
+  histórico completo, 4,5 MB; BOE: sumarios desde la última publicación; ESIOS: desde 3 días antes del último dato;
+  INE: dos tablas).
+- **AVEBIOM (decisión del 27/10/2026):** su servidor (SiteGround) respondió dos veces al ejecutor de GitHub con un
+  desafío captcha, que no se sortea. Por eso el pellet se reconstruye siempre desde los PDF guardados en
+  `datos/fuentes_originales/avebiom/` (con `indice.json`: url y fecha de subida de cada uno) y la web solo se consulta
+  cuando puede haber trimestre nuevo: desde 14 días después del cierre del trimestre siguiente al último guardado
+  (`avebiom.toca_consultar`; p. ej. el 4T2026 se busca a partir del 15/01/2027, cada lunes hasta que aparezca). Al
+  consultar, se piden la mediateca y la página con el User-Agent del proyecto y, si fallan, se reintenta dos veces
+  con esperas de 4 y 8 minutos; si sigue fallando, la fuente queda en error (publicación con el último dato y
+  ejecución en rojo). `python -m precios actualizar --solo pellet_saco` fuerza la consulta.
 
 ## 8. Informes PDF y Excel (fase 5, `precios/informes.py`)
 

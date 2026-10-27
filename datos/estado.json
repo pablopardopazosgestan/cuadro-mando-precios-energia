@@ -1,11 +1,11 @@
 {
-  "actualizado": "2026-10-27T11:52:49+00:00",
+  "actualizado": "2026-10-27T12:05:13+00:00",
   "version": "0.3.0",
   "fuentes": {
     "ine_ipc": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T11:52:49+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T12:05:13+00:00",
       "series": {}
     },
     "esios_pvpc": {
@@ -86,10 +86,9 @@
       }
     },
     "avebiom": {
-      "estado": "error",
-      "error": "ErrorDescarga: AVEBIOM: ninguna vía devolvió PDF del pellet (mediateca: la API de medios no devolvió JSON (Expecting value: line 1 column 1 (char 0)); respuesta: b'<html><head><link rel=\"icon\" href=\"data:;\"><meta http-equiv=\"refresh\" content=\"0;/.well-known/sgcaptcha/?r=%2Fwp-json%2F')",
-      "traza": "Traceback (most recent call last):\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/series.py\", line 371, in registrar\n    nuevas = fn()\n             ^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/series.py\", line 432, in _pellet\n    informes = avebiom.descargar_todo()\n               ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/avebiom.py\", line 179, in descargar_todo\n    return [descargar_informe(f, u) for f, u in listar_pdfs()]\n                                                ^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/avebiom.py\", line 163, in listar_pdfs\n    raise ErrorDescarga(\"AVEBIOM: ninguna vía devolvió PDF del pellet (\" + \"; \".join(errores) + \")\")\nprecios.http.ErrorDescarga: AVEBIOM: ninguna vía devolvió PDF del pellet (mediateca: la API de medios no devolvió JSON (Expecting value: line 1 column 1 (char 0)); respuesta: b'<html><head><link rel=\"icon\" href=\"data:;\"><meta http-equiv=\"refresh\" content=\"0;/.well-known/sgcaptcha/?r=%2Fwp-json%2F')\n",
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T12:05:13+00:00",
       "series": {
         "pellet_saco": {
           "ultimo_dato": "2026-07-01",
