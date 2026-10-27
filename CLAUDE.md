@@ -60,6 +60,10 @@ Escribe a Pablo siempre en castellano, de forma directa.
 - Mejora de visualización aceptada el 27/10/2026 («sigue»). Pablo delegó la decisión sobre AVEBIOM (ver abajo).
 - **Fase 6 (verificación y entrega): en curso desde el 27/10/2026.**
 
+- Guía de usuario en PDF (27/10/2026, a petición de Pablo antes de fusionar): `docs/GUIA_DE_USUARIO.pdf`, generada por
+  `scripts/generar_guia.py` a partir de las capturas de `docs/guia/` (`scripts/capturas_guia.js`, Playwright) y de las
+  páginas del informe. Regenerar si cambia el panel o los informes.
+
 ## Siguiente paso
 
 Al recibir el «sigue» de la mejora de visualización: fase 6, comprobar punto por punto el apartado 7 del encargo (ocho indicadores con
