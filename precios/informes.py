@@ -168,7 +168,7 @@ def generar_pdf(panel: dict, ruta: Path) -> Path:
                       _fmt(r["precio_eur_kwh"], 4 if r["id"] in ("omie", "mibgas") else 3),
                       _pct(r["variacion_semanal_pct"]), _pct(r["variacion_interanual_pct"]),
                       _fecha(r["fecha_dato"]), Paragraph(NOMBRE_FUENTE[r["id"]], celda),
-                      Paragraph("sin (mayorista)" if r["impuestos"].startswith("sin") else "con", celda),
+                      Paragraph("sin*" if r["impuestos"].startswith("sin") else "con", celda),
                       Paragraph(r["estado"], celda)])
     t = Table(filas, colWidths=[ancho * f for f in (0.27, 0.10, 0.09, 0.10, 0.09, 0.12, 0.09, 0.14)], repeatRows=1)
     t.setStyle(TableStyle([
@@ -181,7 +181,7 @@ def generar_pdf(panel: dict, ruta: Path) -> Path:
     el.append(t)
     el.append(Paragraph("Precio actual: media de los últimos 7 días (OMIE, MIBGAS, PVPC), última semana publicada (gasóleos) o valor vigente en la fecha de referencia "
                         "(TUR 2, butano, pellet). Variaciones frente a los 7 días, la semana o el valor vigente anteriores, y frente a lo mismo un año antes. "
-                        "«n. d.»: no disponible (la fuente no lo da o no se puede calcular; nunca se estima).", peq))
+                        "«n. d.»: no disponible (la fuente no lo da o no se puede calcular; nunca se estima). * Precio mayorista, sin impuestos.", peq))
 
     # Comentario de evolución
     el.append(Paragraph("Comentario de evolución", h2))
