@@ -1,5 +1,6 @@
 """Tipos impositivos por fecha: cada caso cita la norma del BOE en la que se basa."""
 import datetime as dt
+import json
 
 import pytest
 
@@ -71,15 +72,37 @@ def test_iva_gas_y_pellets(fecha, gas, pellets):
     assert I.iva_pellets(fecha).valor == pytest.approx(pellets)
 
 
-def test_meses_2026_condicionados_al_ipc_quedan_pendientes():
-    # Mientras no se compruebe el IPC del INE, junio/agosto/septiembre/noviembre/diciembre de 2026 no tienen tipo
-    for f in (D(2026, 6, 15), D(2026, 8, 15), D(2026, 9, 15), D(2026, 11, 15), D(2026, 12, 15)):
-        assert I.iva_electricidad(f, 100.0).valor is None
-        assert I.iee(f).valor is None
-        assert I.iva_gas_natural(f).valor is None
-        assert I.ih_gas_natural_eur_gj(f).valor is None
-        assert I.ih_glp_eur_t(f).valor is None
-        assert "IPC" in I.iee(f).pendiente
+def test_meses_2026_condicionados_al_ipc(tmp_path, monkeypatch):
+    # Con las condiciones sin rellenar (null) los meses condicionados no tienen tipo…
+    vacio = tmp_path / "c.json"
+    vacio.write_text(json.dumps({"ipc": {m: {"electricidad": None, "gas": None, "glp": None, "carburantes": None} for m in ("2026-04", "2026-06", "2026-07", "2026-09", "2026-10")}}), encoding="utf-8")
+    I.condiciones_ipc.cache_clear()
+    monkeypatch.setattr(I, "RUTA_CONDICIONES", vacio)
+    try:
+        for f in (D(2026, 6, 15), D(2026, 8, 15), D(2026, 9, 15), D(2026, 11, 15), D(2026, 12, 15)):
+            assert I.iee(f).valor is None and "IPC" in I.iee(f).pendiente
+            assert I.ih_glp_eur_t(f).valor is None
+    finally:
+        I.condiciones_ipc.cache_clear()
+    # …y con los valores del INE (abril: carburantes +15,5 %; electricidad y gas nunca > 15 % hasta septiembre)
+    I.condiciones_ipc.cache_clear()
+    monkeypatch.setattr(I, "RUTA_CONDICIONES", I.DIR_DATOS / "impuestos" / "condiciones_ipc_2026.json")
+    try:
+        c = I.condiciones_ipc()
+        if c["2026-04"]["carburantes"] is True and c["2026-06"]["gas"] is False:
+            assert I.iva_electricidad(D(2026, 6, 15), 100.0).valor == 0.21   # IPC electricidad abril -4,3 %
+            assert I.iee(D(2026, 6, 15)).valor == I.IEE_GENERAL
+            assert I.iva_gas_natural(D(2026, 6, 15)).valor == 0.21          # IPC gas abril -9,6 %
+            assert I.ih_glp_eur_t(D(2026, 6, 15)).valor == 0.0              # IPC carburantes abril +15,5 %
+            assert I.ih_gas_natural_eur_gj(D(2026, 6, 15)).valor == 0.30
+            assert I.iva_butano(D(2026, 6, 15)).valor == 0.10
+            assert I.ih_glp_eur_t(D(2026, 8, 15)).valor == 7.5              # junio glp -14,4 %
+            assert I.ih_glp_eur_t(D(2026, 9, 15)).valor == 11.25            # julio -1,4 %, junio -14,4 %
+            assert I.ih_gas_natural_eur_gj(D(2026, 9, 15)).valor == 0.56
+            assert I.iva_electricidad(D(2026, 11, 15), 100.0).valor == 0.21  # septiembre +11,4 %
+            assert I.ih_glp_eur_t(D(2026, 11, 15)).valor == 15.0            # septiembre +10,2 %
+    finally:
+        I.condiciones_ipc.cache_clear()
 
 
 def test_hidrocarburos():
@@ -112,6 +135,16 @@ def test_butano_con_impuestos_enero_2022():
     assert r.valor == pytest.approx(17.757, abs=0.001)
 
 
-def test_butano_primavera_2026_queda_pendiente_por_el_iva():
-    r = I.butano_bombona_con_impuestos(100.0, D(2026, 4, 21))
-    assert r.valor is None and "42.c" in r.detalle
+def test_butano_primavera_2026_iva_10_por_ciento():
+    # Precio oficial del 19/05/2026: 15,39 € con 111,9680 c€/kg, IH 0 e IVA 10 %
+    r = I.butano_bombona_con_impuestos(111.9680, D(2026, 5, 19))
+    assert r.valor == pytest.approx(15.39, abs=0.01)
+
+
+def test_butano_julio_y_septiembre_2026_con_condiciones_ipc():
+    # 21/07/2026: 17,83 € (IH 3,75 €/t, IVA 21 %); 15/09/2026: 18,84 € (IH 11,25 €/t porque el IPC de
+    # hidrocarburos licuados no superó el 15 % ni en junio ni en julio; IVA 21 %)
+    assert I.butano_bombona_con_impuestos(117.5664, D(2026, 7, 21)).valor == pytest.approx(17.84, abs=0.01)
+    r = I.butano_bombona_con_impuestos(123.4447, D(2026, 9, 15))
+    if r.valor is not None:  # solo cuando las condiciones de IPC están rellenas
+        assert r.valor == pytest.approx(18.84, abs=0.01)

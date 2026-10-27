@@ -122,29 +122,37 @@ aquí se aplica solo al término de energía, que es lo que mide el indicador.
 
 ### 3.5 IVA del butano
 
-21 % en todo el periodo, con una excepción sin resolver: el RDL 7/2026 art. 42.c aplica el 10 % a los productos de
-varios epígrafes del art. 50 de la Ley 38/1992 e incluye el 1.8 (GLP para usos distintos del carburante). No se ha
-podido confirmar si Hacienda lo aplicó al butano envasado. Entre el 22/03/2026 y el 30/06/2026 el precio de la bombona
-con impuestos se deja como **no disponible** con esa explicación, en vez de suponer un tipo.
+21 % en todo el periodo salvo del 22/03/2026 al 30/06/2026, en que el RDL 7/2026 art. 42.c aplicó el 10 % a los
+productos del epígrafe 1.8 (GLP para usos distintos del carburante), es decir, al butano envasado. Que se aplicó lo
+confirma el precio oficial de la bombona del 19/05/2026: 15,39 € = 111,9680 c€/kg × 12,5 kg × 1,10 (con IH a 0 €/t),
+y la subida del 21/07/2026 a 17,83 € «por el fin de la rebaja del IVA» (prensa, La Moncloa). En junio la rebaja
+siguió vigente porque el IPC de carburantes de abril (+15,5 %) superó el 15 %.
 
 ### 3.6 Condiciones de IPC de 2026
 
-Los tipos de junio, agosto, septiembre, noviembre y diciembre de 2026 dependen de si el IPC de una subclase
-(04.5.1.0 Electricidad, 04.5.2.1 Gas natural, 04.5.2.2 Hidrocarburos licuados, carburantes) superó el 15 %
-interanual en un mes de referencia, «de acuerdo con la información que publique el INE». El INE
-(`www.ine.es`, `servicios.ine.es`) no es accesible desde el entorno de trabajo, así que esas condiciones están en
-`datos/impuestos/condiciones_ipc_2026.json` con valor `null` y los precios con impuestos de esos meses salen como
-**no disponibles**. En cuanto el dominio esté permitido se leerán del INE y se recalcularán todas las series (la
-actualización vuelve a aplicar los impuestos a toda la serie en cada ejecución).
+Los tipos de junio, agosto, septiembre, noviembre y diciembre de 2026 dependen de si el IPC de una subclase superó
+el 15 % interanual en un mes de referencia, «de acuerdo con la información que publique el INE». El módulo
+`precios/fuentes/ine.py` lee en cada actualización las tablas del IPC del INE (servicio Tempus en `www.ine.es`:
+tabla 79184 de subclases y 76127 de clases) y rellena `datos/impuestos/condiciones_ipc_2026.json` con el valor y el
+resultado de cada condición. Series usadas: 04.5.1.0 Electricidad, 04.5.2.1 Gas natural, 04.5.2.2 Hidrocarburos
+licuados y, para el «IPC de carburantes» del RDL 7/2026, la clase 07.2.2 Combustibles y lubricantes para vehículos
+personales (criterio documentado: la norma no da código; el resultado coincide con lo que ocurrió con la bombona).
+
+Valores leídos el 27/10/2026 (variación anual, %): abril: electricidad −4,3; gas natural −9,6; hidrocarburos
+licuados −16,4; carburantes +15,5. Junio: 6,0 / 0,8 / −14,4 / 7,8. Julio: 8,4 / 4,1 / −1,4 / 11,6. Septiembre:
+11,4 / 4,3 / 10,2 / 30,8. Consecuencias: en junio solo siguieron las rebajas ligadas a carburantes (hidrocarburos del
+gas a 0,30 €/GJ, del GLP a 0 €/t, IVA del butano al 10 %); electricidad, gas natural y pellets volvieron al tipo
+general el 01/06/2026; en agosto, septiembre y noviembre no se activó ninguna rebaja. El IPC de octubre (que decide
+diciembre) se publica a mediados de noviembre; hasta entonces diciembre figura como pendiente.
 
 ## 4. Factores de conversión (código: `precios/conversiones.py`)
 
 | Factor | Valor | Procedencia | Estado |
 |---|---|---|---|
-| Pellet, PCI | 4,8 kWh/kg | Boletín de referencia (cita IDAE). Decisión 9. | AVEBIOM usa 4.100 kcal/kg = 4,76 kWh/kg; su c€/kWh se guarda en la nota de cada fila. |
-| Gasóleo A y C, PCI | 10,28 kWh/l | Boletín de referencia (cita IDAE). Decisión 10 (mismo factor para ambos). | Verificación directa en el IDAE pendiente: `idae.es` no es accesible desde el entorno. |
-| Butano, PCI | 12,73 kWh/kg | Boletín de referencia (cita IDAE). | Ídem. |
-| Gas natural, PCI/PCS | 0,904 | Boletín de referencia (cita IDAE). | La TUR se factura en kWh PCS; el €/kWh PCI es mayor en un 10,6 %. |
+| Pellet, PCI | 4,8 kWh/kg | Boletín de referencia (cita IDAE). Decisión 9. | No aparece en la guía del IDAE consultada; AVEBIOM usa 4.100 kcal/kg = 4,76 kWh/kg y su c€/kWh se guarda en la nota de cada fila. |
+| Gasóleo A y C, PCI | 10,28 kWh/l | IDAE, *Guía técnica de diseño de centrales de calor eficientes*, tabla CBL-01 (gasóleo: PCI 10,28 kWh/l, PCS 10,89). Decisión 10 (mismo factor para ambos). | Verificado el 27/10/2026. |
+| Butano, PCI | 12,73 kWh/kg | IDAE, misma guía, tabla CBL-01 (gas butano: PCI 12,73 kWh/kg, PCS 13,79). | Verificado el 27/10/2026. |
+| Gas natural, PCI/PCS | 0,904 | IDAE, misma guía, tabla CBL-05 (gas natural: PCI/PCS 0,904). | Verificado el 27/10/2026. La TUR se factura en kWh PCS; el €/kWh PCI es mayor en un 10,6 %. |
 
 ## 5. Cómo ejecutar y probar
 
@@ -157,3 +165,27 @@ python -m pytest -q tests                    # conversiones, impuestos por fecha
 
 La primera ejecución descarga todo el histórico (unos 1.800 ficheros diarios de OMIE y 2.500 sumarios del BOE) y
 deja una caché en `.cache/` (ignorada por git). Las siguientes solo piden lo nuevo.
+
+## 6. Cuadro de mando (fase 3, código: `precios/panel.py` y `precios/plantilla_panel.html`)
+
+`python -m precios panel` genera `sitio/` (HTML estático + `datos/panel.json` + Plotly servido desde el propio
+sitio, sin CDN). GitHub Pages publica esa carpeta mediante `.github/workflows/pages.yml`.
+
+Criterios del resumen ejecutivo:
+- **Precio actual (€/kWh):** OMIE, MIBGAS y PVPC: media de los últimos 7 días con dato (decisión 8). Gasóleos:
+  última semana publicada. TUR 2, butano y pellet: valor vigente en la fecha de referencia (decisión 5).
+  Con impuestos siempre que la fuente o el cálculo lo den; OMIE y MIBGAS sin impuestos y etiquetados como
+  mayoristas (decisión 1). Si el precio con impuestos no está disponible (p. ej. condición de IPC pendiente), la
+  celda dice «no disponible» y el detalle explica por qué.
+- **Variación semanal:** frente a los 7 días anteriores (diarios), la semana anterior (semanales) o el valor vigente
+  7 días antes (regulados y pellet: 0 % si no ha cambiado). **Interanual:** lo mismo 364/365 días atrás.
+- **Estado:** «actualizado» (dato nuevo en la última ejecución o publicado en los últimos 7 días), «sin actualización
+  en el periodo» (la fuente no ha publicado nada nuevo, dentro de su periodicidad) o «fuente no disponible o dato
+  pendiente» (sin datos, o más días sin dato de los que admite su periodicidad: 4 diarios, 14 semanales, 70 butano,
+  100 TUR, 125 pellet). Si una descarga falla pero hay dato reciente, se muestra ese dato y se anota el fallo.
+- **Comentario semanal:** frases generadas solo con los números de la tabla (variaciones ≥ 1 %, interanuales,
+  orden de precios de la energía final y datos no disponibles). No contiene interpretación.
+- **Gráficos:** comparativo en €/kWh con todas las series seleccionables (leyenda), filtro de periodo (fechas libres
+  y atajos), frecuencia original o media mensual; nueve gráficos individuales en la unidad original. Las series
+  reguladas y el pellet se dibujan en escalón. Los huecos no se rellenan. Paleta categórica fija y validada
+  (una tonalidad por indicador; el pellet a granel comparte tono con el saco y usa trazo discontinuo).

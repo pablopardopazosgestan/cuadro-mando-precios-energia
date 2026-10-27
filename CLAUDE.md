@@ -29,18 +29,22 @@ Escribe a Pablo siempre en castellano, de forma directa.
 ## Estado
 
 - Fase 1 (disponibilidad de fuentes): terminada el 25/10/2026 y aceptada por Pablo (las 11 propuestas).
-- **Fase 2 (histórico y base de datos): terminada el 25/10/2026, pendiente de revisión de Pablo.** Paquete
-  `precios/` (descargadores, impuestos, conversiones, series), datos en `datos/`, pruebas en `tests/`.
-  Pendientes que no dependen de mí: `ESIOS_TOKEN` (PVPC sin datos), acceso al INE (impuestos de varios meses de
-  2026), acceso a `web.archive.org` (PDF antiguos de AVEBIOM) y a `www.miteco.gob.es` (contraste del butano).
-- Fase 3 (cuadro de mando): no empezada. No empezar sin el «sigue» de Pablo.
+- Fase 2 (histórico y base de datos): terminada el 25/10/2026 y aceptada el 27/10/2026. El 27/10 se completó:
+  impuestos de 2026 con el IPC del INE (`precios/fuentes/ine.py`), IVA del butano de 2026 resuelto, factores IDAE
+  verificados. **PVPC: el cortafuegos de ESIOS (Incapsula) bloqueó la IP del entorno tras las primeras peticiones**
+  (403 también con curl); el descargador espacia peticiones y reintenta con esperas largas. Si sigue bloqueado,
+  la descarga se hará desde el ejecutor de GitHub Actions (fase 4).
+- **Fase 3 (cuadro de mando): terminada el 27/10/2026, pendiente de revisión de Pablo.** `python -m precios panel`
+  genera `sitio/`; `.github/workflows/pages.yml` lo publica en GitHub Pages (Pablo debe activar Pages con origen
+  «GitHub Actions» si el workflow no lo activa solo).
+- Fase 4 (actualización automática): no empezada. No empezar sin el «sigue» de Pablo.
 
 ## Siguiente paso
 
-Al recibir el «sigue» de la fase 2: comprobar si hay `ESIOS_TOKEN` y si el INE es accesible (si lo es, escribir
-el lector del IPC y rellenar `datos/impuestos/condiciones_ipc_2026.json`), y empezar la fase 3: sitio estático
-(GitHub Pages) con resumen ejecutivo, gráfico comparativo, ocho gráficos, filtro de periodo y comentario semanal,
-leyendo `datos/series`, `datos/mensual`, `datos/metadatos.json` y `datos/estado.json`.
+Al recibir el «sigue» de la fase 3: fase 4, workflow `actualizar.yml` (semanal + manual) que ejecuta pytest,
+`python -m precios actualizar`, `python -m precios panel`, hace commit de `datos/` y `sitio/` y despliega Pages;
+secreto `ESIOS_TOKEN` en Actions; errores visibles en el panel y en la ejecución fallida. Comprobar antes si el
+PVPC ya tiene datos (si ESIOS sigue bloqueando la IP de la sesión, confiar en el ejecutor de Actions).
 
 ## Cómo ejecutar y probar
 
@@ -48,7 +52,9 @@ leyendo `datos/series`, `datos/mensual`, `datos/metadatos.json` y `datos/estado.
 pip install -r requirements.txt
 python -m precios actualizar -v            # descarga lo nuevo y reconstruye datos/ (primera vez: ~30 min)
 python -m precios actualizar --solo omie   # una sola serie
+python -m precios panel                    # genera el cuadro de mando en sitio/
 python -m pytest -q tests                  # pruebas
+python scripts/comprobaciones.py           # valores de control contra la fuente
 python scripts/fase1_sondeo_fuentes.py     # sondeo de fuentes de la fase 1
 ```
 
@@ -76,4 +82,9 @@ Red necesaria: `www.omie.es`, `www.mibgas.es`, `api.esios.ree.es`, `energy.ec.eu
 - Impuestos: tabla completa 2020–2026 en `docs/METODOLOGIA.md` §3 y `precios/impuestos.py`. Los meses de 2026 cuyos
   tipos dependen del IPC (junio, agosto, septiembre, noviembre, diciembre) están «no disponibles» hasta poder leer el
   INE; el IVA del butano entre 22/03 y 30/06/2026 queda sin resolver (RDL 7/2026 art. 42.c).
-- Bloqueados además: `www.ine.es`, `servicios.ine.es`, `idae.es`, `sede.agenciatributaria.gob.es`. Accesible: Eurostat.
+- Accesibles desde el 27/10/2026: `www.ine.es` (incluido su servicio Tempus `/wstempus/js/ES/DATOS_TABLA/<id>`;
+  `servicios.ine.es` sigue bloqueado), `www.idae.es`, `www.miteco.gob.es`. Siguen bloqueados `web.archive.org`,
+  `sede.agenciatributaria.gob.es`. Las CDN de JavaScript no son accesibles desde el entorno: Plotly va dentro del repo
+  (`precios/plotly.min.js`, extraído del paquete `plotly` de PyPI).
+- ESIOS: la API bloquea por IP (Incapsula, 403) tras varias peticiones seguidas; `precios/fuentes/esios.py` espacia
+  las peticiones 4 s y espera 2–15 min ante un 403.

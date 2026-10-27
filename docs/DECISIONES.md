@@ -24,14 +24,16 @@ Todas las propuestas de la fase 1 quedaron aceptadas el 25/10/2026 (fila anterio
 10. (Nueva) Gasóleo de automoción: el encargo lo pide en €/l; para la tabla resumen en €/kWh se propone el mismo factor que el de calefacción (10,28 kWh/l, IDAE), marcándolo como calculado.
 11. (Nueva) Gasóleos 2022: el Boletín Petrolero no descuenta la bonificación de 20 c€/l de abril–diciembre de 2022; se propone mostrar el precio del Boletín con una nota.
 
-## Pendientes que dependen de Pablo (fase 2, 25/10/2026)
+| 2026-10-27 | Pablo acepta la fase 2 y aporta el token de ESIOS y el acceso al INE, idae.es y miteco.gob.es. Pide completar los datos pendientes y pasar a la fase 3. | `web.archive.org` sigue bloqueado en el entorno. |
+| 2026-10-27 | Criterio (propuesto por Claude, sin objeción): el «IPC de carburantes» del RDL 7/2026 se lee como la clase 07.2.2 del INE (Combustibles y lubricantes para vehículos personales). | La norma no da código. El resultado (+15,5 % en abril) coincide con que la bombona mantuvo en junio el IVA del 10 % y el IH a 0. |
+| 2026-10-27 | El IVA del butano del 22/03 al 30/06/2026 se toma al 10 % (RDL 7/2026 art. 42.c), confirmado por el precio oficial de la bombona de mayo (15,39 €). | Antes figuraba como «no disponible». |
 
-1. **Token de ESIOS.** Se solicita gratis a REE escribiendo a consultasios@ree.es (asunto «Solicitud de token personal
-   API e·sios»); llega por correo. Hay que definirlo como variable de entorno `ESIOS_TOKEN` de la sesión y, en la fase 4,
-   como secreto de GitHub Actions con el mismo nombre. Sin él, el PVPC no tiene datos.
-2. **Acceso al INE** (`www.ine.es` y `servicios.ine.es`): necesario para resolver los impuestos de junio, agosto,
-   septiembre, noviembre y diciembre de 2026 (condiciones de IPC de los RDL 7/2026, 18/2026 y 25/2026).
-3. **Acceso a `web.archive.org`:** permitido por Pablo el 25/10/2026, pero el entorno seguía bloqueándolo en esa sesión
-   (puede requerir una sesión nueva). Serviría para recuperar los PDF antiguos de AVEBIOM (2022–2024).
-4. **Acceso a `www.miteco.gob.es`** (opcional): para contrastar el precio de la bombona con impuestos que publica el
-   Ministerio en cada revisión y resolver la duda del IVA del butano en primavera de 2026.
+| 2026-10-27 | Fase 3 construida como sitio estático con Plotly incluido en el repositorio (sin CDN) y publicación por GitHub Actions (`pages.yml`). | GitHub Pages solo admite raíz o `/docs` de una rama, o despliegue por Actions; `docs/` ya es la documentación. |
+
+## Pendientes que dependen de Pablo (fase 2, 25/10/2026; revisado el 27/10/2026)
+
+1. ~~Token de ESIOS~~ Resuelto el 27/10/2026 (en la sesión). Falta crearlo como secreto `ESIOS_TOKEN` de GitHub Actions en la fase 4.
+2. ~~Acceso al INE~~ Resuelto el 27/10/2026 (`www.ine.es`; `servicios.ine.es` sigue bloqueado pero no hace falta).
+3. **Acceso a `web.archive.org`:** sigue bloqueado el 27/10/2026 (la petición CONNECT recibe 403 del proxy). Serviría para
+   intentar recuperar los PDF antiguos de AVEBIOM (2022–2024).
+4. ~~Acceso a miteco.gob.es~~ Abierto, aunque la duda del IVA del butano se resolvió con los precios publicados por La Moncloa y la prensa.

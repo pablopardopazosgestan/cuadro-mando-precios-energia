@@ -17,9 +17,16 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--solo", help="ids de series separados por comas (p. ej. omie,tur2)")
     a.add_argument("--fecha", help="fecha de referencia (por defecto hoy)")
     a.add_argument("-v", "--verbose", action="store_true")
+    pa = sub.add_parser("panel", help="genera el cuadro de mando estático en sitio/ a partir de datos/")
+    pa.add_argument("--fecha", help="fecha de referencia (por defecto hoy)")
+    pa.add_argument("-v", "--verbose", action="store_true")
     args = p.parse_args(argv)
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
     hoy = dt.date.fromisoformat(args.fecha) if args.fecha else None
+    if args.orden == "panel":
+        from .panel import generar
+        print(generar(hoy=hoy))
+        return 0
     solo = set(args.solo.split(",")) if args.solo else None
     estado = actualizar(hoy=hoy, solo=solo)
     for fuente, r in estado["fuentes"].items():

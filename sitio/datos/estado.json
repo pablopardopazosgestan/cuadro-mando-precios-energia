@@ -1,0 +1,94 @@
+{
+  "actualizado": "2026-10-27T09:34:59+00:00",
+  "version": "0.2.0",
+  "fuentes": {
+    "ine_ipc": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T09:34:59+00:00",
+      "series": {}
+    },
+    "boe_tur": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T09:34:59+00:00",
+      "series": {
+        "tur2": {
+          "ultimo_dato": "2026-10-01",
+          "n_datos": 25,
+          "dato_nuevo": false
+        }
+      }
+    },
+    "boe_butano": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T09:34:59+00:00",
+      "series": {
+        "butano": {
+          "ultimo_dato": "2026-09-15",
+          "n_datos": 40,
+          "dato_nuevo": false
+        }
+      }
+    },
+    "omie": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T09:34:59+00:00",
+      "series": {
+        "omie": {
+          "ultimo_dato": "2026-10-27",
+          "n_datos": 2489,
+          "dato_nuevo": true
+        }
+      }
+    },
+    "mibgas": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T09:34:59+00:00",
+      "series": {
+        "mibgas": {
+          "ultimo_dato": "2026-10-26",
+          "n_datos": 2491,
+          "dato_nuevo": true
+        }
+      }
+    },
+    "boletin_petrolero": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T09:34:59+00:00",
+      "series": {
+        "gasoleo_a": {
+          "ultimo_dato": "2026-10-19",
+          "n_datos": 349,
+          "dato_nuevo": false
+        },
+        "gasoleo_c": {
+          "ultimo_dato": "2026-10-19",
+          "n_datos": 349,
+          "dato_nuevo": false
+        }
+      }
+    },
+    "avebiom": {
+      "estado": "ok",
+      "error": null,
+      "ultima_actualizacion_correcta": "2026-10-27T09:34:59+00:00",
+      "series": {
+        "pellet_saco": {
+          "ultimo_dato": "2026-07-01",
+          "n_datos": 13,
+          "dato_nuevo": false
+        },
+        "pellet_granel": {
+          "ultimo_dato": "2026-07-01",
+          "n_datos": 13,
+          "dato_nuevo": false
+        }
+      }
+    }
+  }
+}

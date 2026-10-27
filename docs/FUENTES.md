@@ -98,10 +98,11 @@ entorno (no imprescindibles): `energia.gob.es`, `www.miteco.gob.es`, `www.cnmc.e
 
 - **Dirección.** `https://api.esios.ree.es/indicators/1001?start_date=…&end_date=…&geo_ids[]=8741` (Península),
   con cabecera `x-api-key: <token>`.
-- **Estado.** **No comprobado**: `ESIOS_TOKEN` no está definido en la sesión. Sin token la API devuelve
-  403 con una página del cortafuegos (Incapsula), también desde Python. En cuanto esté el token repetiré
-  la descarga de 01/01/2022 y de un día reciente y confirmaré: nombre y unidad del indicador, si incluye peajes y
-  cargos pero no impuestos (es lo esperado para el 1001), granularidad desde 10/2025 y límites de rango por petición.
+- **Estado (actualizado el 27/10/2026, ya con token).** Comprobado: el indicador se llama «Término de facturación de
+  energía activa del PVPC 2.0TD», magnitud «Precio €/MWh», paso horario, geos Península (8741), Canarias, Baleares,
+  Ceuta y Melilla. 01/01/2022 00h Península = 204,51 €/MWh (igual que la API pública de REE); media del día 178,27 €/MWh.
+  El cortafuegos de ESIOS (Incapsula) devuelve 403 si se encadenan peticiones seguidas: el descargador espacia las
+  peticiones y, ante un 403, espera varios minutos antes de reintentar.
 - **Alternativa pública sin token, probada.** `https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real`
   (REE) devuelve la serie «PVPC» horaria en €/MWh: 01/01/2022 00h = 204,51 €/MWh; 01/06/2023 00h = 125,71;
   24/10/2026 00h = 228,20; 25/10/2026 23h = 314,04. Pero rechaza con 403 (mismo cortafuegos) los rangos de más

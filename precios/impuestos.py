@@ -63,8 +63,9 @@ class Tipo:
 
 
 @lru_cache(maxsize=1)
-def condiciones_ipc(ruta: Path = RUTA_CONDICIONES) -> dict:
-    return json.loads(ruta.read_text(encoding="utf-8"))["ipc"]
+def condiciones_ipc() -> dict:
+    """Condiciones de IPC leídas del JSON (la ruta se resuelve en cada llamada para poder sustituirla en pruebas)."""
+    return json.loads(RUTA_CONDICIONES.read_text(encoding="utf-8"))["ipc"]
 
 
 def _ipc(mes: str, subclase: str) -> bool | None:
@@ -217,11 +218,14 @@ def iva_pellets(fecha: dt.date) -> Tipo:
 
 
 def iva_butano(fecha: dt.date) -> Tipo:
-    """IVA del butano envasado. 21 % salvo la duda del RDL 7/2026 art. 42.c (22/03–30/06/2026)."""
-    if RDL7_2026_VIGOR <= fecha <= dt.date(2026, 6, 30):
-        return Tipo(None, "RDL 7/2026 art. 42.c",
-                    "el artículo cita el epígrafe 1.8 (GLP para usos distintos del carburante) entre los productos al 10 %; "
-                    "no se ha podido confirmar si se aplicó al butano envasado")
+    """IVA del butano envasado: 21 %, salvo el 10 % del RDL 7/2026 art. 42.c (22/03–31/05/2026 y junio
+    según el IPC de carburantes de abril). Que el 42.c se aplicó al butano envasado lo confirma el precio
+    oficial de la bombona del 19/05/2026 (15,39 € = 111,9680 c€/kg × 12,5 kg × 1,10) y la subida de julio
+    «por el fin de la rebaja del IVA»."""
+    if RDL7_2026_VIGOR <= fecha <= dt.date(2026, 5, 31):
+        return Tipo(0.10, "RDL 7/2026 art. 42.c (epígrafe 1.8)")
+    if _ym(fecha) == "2026-06":
+        return _condicional("2026-06", "2026-04", "carburantes", 0.10, IVA_GENERAL, "RDL 7/2026 art. 42.c (junio: condición IPC de carburantes de abril)")
     return Tipo(IVA_GENERAL, "Ley 37/1992 art. 90")
 
 

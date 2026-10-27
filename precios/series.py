@@ -23,7 +23,8 @@ from . import __version__
 from . import conversiones as cv
 from . import impuestos as imp
 from .config import DIR_DATOS, DIR_MENSUAL, DIR_SERIES, INICIO_AMPLIADO
-from .fuentes import avebiom, boe, esios, mibgas, omie, wob
+from . import impuestos
+from .fuentes import avebiom, boe, esios, ine, mibgas, omie, wob
 from .indicadores import INDICADORES, ORDEN
 
 log = logging.getLogger(__name__)
@@ -216,6 +217,8 @@ def recalcular_impuestos_regulados(id_: str, serie: pd.DataFrame) -> pd.DataFram
         else:
             ci = imp.butano_bombona_con_impuestos(v, f)
             con = None if ci.valor is None else cv.eur_bombona_a_eur_kwh(ci.valor)
+            sin_bombona = v / 100 * cv.MASA_BOMBONA_KG
+            serie.at[i, "nota"] = f"bombona 12,5 kg: {sin_bombona:.2f} € antes de impuestos" + (f"; {ci.valor:.2f} € con impuestos (calculado)" if ci.valor is not None else "")
         serie.at[i, "eur_kwh_con_impuestos"] = con
         serie.at[i, "con_impuestos_origen"] = "calculado" if ci.valor is not None else "no disponible"
         serie.at[i, "impuestos_detalle"] = ci.detalle
@@ -353,7 +356,8 @@ def actualizar(hoy: dt.date | None = None, solo: set[str] | None = None) -> dict
     hoy = hoy or dt.date.today()
     ahora = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
     anterior = _estado_anterior()
-    estado = {"actualizado": ahora, "version": __version__, "fuentes": {}}
+    # Se parte del estado anterior para no perder la información de las fuentes que no se ejecutan esta vez
+    estado = {"actualizado": ahora, "version": __version__, "fuentes": dict(anterior.get("fuentes", {}))}
     series: dict[str, pd.DataFrame] = {id_: cargar_serie(id_) for id_ in ORDEN}
 
     def registrar(fuente: str, ids: list[str], fn):
@@ -381,6 +385,15 @@ def actualizar(hoy: dt.date | None = None, solo: set[str] | None = None) -> dict
     def quiere(*ids):
         return solo is None or any(i in solo for i in ids)
 
+    # Condiciones de IPC de 2026 (INE): se actualizan antes de aplicar impuestos
+    try:
+        ine.actualizar_condiciones()
+        impuestos.condiciones_ipc.cache_clear()
+        estado["fuentes"]["ine_ipc"] = {"estado": "ok", "error": None, "ultima_actualizacion_correcta": ahora, "series": {}}
+    except Exception as e:  # noqa: BLE001
+        log.error("INE: %s", e)
+        estado["fuentes"]["ine_ipc"] = {"estado": "error", "error": f"{type(e).__name__}: {e}",
+                                        "ultima_actualizacion_correcta": anterior.get("fuentes", {}).get("ine_ipc", {}).get("ultima_actualizacion_correcta"), "series": {}}
     if quiere("omie"):
         registrar("omie", ["omie"], lambda: {"omie": construir_omie(series["omie"], hoy)})
     if quiere("mibgas"):

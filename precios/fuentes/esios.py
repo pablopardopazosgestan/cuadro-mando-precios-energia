@@ -11,8 +11,10 @@ import datetime as dt
 import json
 import logging
 import os
+import time
 from dataclasses import dataclass
 
+from ..config import DIR_CACHE
 from ..http import ErrorDescarga, clave_cache, descargar
 
 log = logging.getLogger(__name__)
@@ -57,17 +59,50 @@ def leer_respuesta(contenido: bytes) -> list[DiaPVPC]:
     return [DiaPVPC(f, sum(vs) / len(vs), len(vs), min(vs), max(vs)) for f, vs in sorted(por_dia.items())]
 
 
+PAUSA_ENTRE_PETICIONES = 4      # segundos; el cortafuegos de ESIOS (Incapsula) bloquea ráfagas de peticiones
+ESPERAS_TRAS_403 = (120, 300, 600, 900)  # reintentos cuando el cortafuegos devuelve 403
+_ultima_peticion = 0.0
+
+
+def _peticion(ini: dt.date, fin: dt.date, cache: str | None) -> bytes:
+    """Una petición al indicador 1001 con pausa entre peticiones y esperas largas si el cortafuegos responde 403."""
+    global _ultima_peticion
+    if cache and (DIR_CACHE / cache).exists():
+        return (DIR_CACHE / cache).read_bytes()
+    for intento, espera in enumerate((0,) + ESPERAS_TRAS_403):
+        if espera:
+            log.warning("ESIOS: bloqueo del cortafuegos (403); se espera %ss antes de reintentar", espera)
+            time.sleep(espera)
+        transcurrido = time.monotonic() - _ultima_peticion
+        if transcurrido < PAUSA_ENTRE_PETICIONES:
+            time.sleep(PAUSA_ENTRE_PETICIONES - transcurrido)
+        _ultima_peticion = time.monotonic()
+        try:
+            cuerpo = descargar(
+                URL,
+                params={"start_date": f"{ini}T00:00", "end_date": f"{fin}T23:59", "geo_ids[]": GEO_PENINSULA},
+                headers={"Accept": "application/json; application/vnd.esios-api-v1+json", "x-api-key": token()},
+                cache=cache, reintentos=1,
+            )
+        except ErrorDescarga as e:
+            if "HTTP 403" in str(e) and intento < len(ESPERAS_TRAS_403):
+                continue
+            raise
+        if cuerpo.lstrip().startswith(b"{"):
+            return cuerpo
+        if cache:
+            (DIR_CACHE / cache).unlink(missing_ok=True)
+        if intento < len(ESPERAS_TRAS_403):
+            continue
+        raise ErrorDescarga("ESIOS: respuesta no JSON (bloqueo del cortafuegos) tras varios reintentos")
+    raise ErrorDescarga("ESIOS: sin respuesta válida")
+
+
 def descargar_mes(anyo: int, mes: int) -> list[DiaPVPC]:
     ini = dt.date(anyo, mes, 1)
     fin = (dt.date(anyo + (mes == 12), (mes % 12) + 1, 1) - dt.timedelta(days=1))
     cache = clave_cache("esios", "1001", f"{anyo}-{mes:02d}.json") if fin < dt.date.today() else None
-    cuerpo = descargar(
-        URL,
-        params={"start_date": f"{ini}T00:00", "end_date": f"{fin}T23:59", "geo_ids[]": GEO_PENINSULA},
-        headers={"Accept": "application/json; application/vnd.esios-api-v1+json", "x-api-key": token()},
-        cache=cache,
-    )
-    dias = leer_respuesta(cuerpo)
+    dias = leer_respuesta(_peticion(ini, fin, cache))
     return [d for d in dias if ini <= d.fecha <= fin]
 
 

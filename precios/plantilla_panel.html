@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Precios de la energía en España</title>
+<meta name="description" content="Cuadro de mando de precios energéticos en España: electricidad, gas natural, gasóleos, butano y pellet, con histórico desde 2020 y actualización automática.">
+<script src="plotly.min.js"></script>
+<style>
+:root {
+  color-scheme: light;
+  --surface: #fcfcfb; --surface-2: #f3f2ef; --border: #dcdad4;
+  --text: #0b0b0b; --text-2: #52514e; --text-3: #7a7873;
+  --accent: #2a78d6;
+  --ok: #0ca30c; --warn: #fab219; --bad: #d03b3b;
+  --grid: #e6e4de;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface: #1a1a19; --surface-2: #242423; --border: #3a3a37;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86; --accent: #3987e5; --grid: #33332f;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #1a1a19; --surface-2: #242423; --border: #3a3a37;
+  --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86; --accent: #3987e5; --grid: #33332f;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 16px; }
+header { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; }
+h2 { font-size: 1.2rem; margin: 32px 0 10px; }
+h3 { font-size: 1rem; margin: 18px 0 6px; }
+.sub { color: var(--text-2); margin: 0; }
+.meta { color: var(--text-3); font-size: .85rem; margin-top: 6px; }
+a { color: var(--accent); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--text-2); font-weight: 600; white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tabla-scroll { overflow-x: auto; }
+.estado { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.punto { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.punto.ok { background: var(--ok); } .punto.warn { background: var(--warn); } .punto.bad { background: var(--bad); }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; }
+.chip { font-size: .75rem; color: var(--text-2); background: var(--surface-2); border-radius: 4px; padding: 1px 6px; margin-left: 6px; white-space: nowrap; }
+.nd { color: var(--text-3); font-style: italic; }
+.pos { color: var(--bad); } .neg { color: var(--ok); }
+.filtros { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; padding: 10px 12px; background: var(--surface-2); border-radius: 8px; margin: 10px 0 14px; }
+.filtros label { display: flex; flex-direction: column; font-size: .8rem; color: var(--text-2); gap: 3px; }
+.filtros input, .filtros select, .filtros button { font: inherit; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+.filtros button { cursor: pointer; }
+.filtros .botones { display: flex; gap: 6px; flex-wrap: wrap; }
+.grafico { width: 100%; min-height: 420px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.tarjeta { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--surface); }
+.tarjeta .grafico { min-height: 260px; }
+.comentario p { margin: 6px 0; }
+details { margin: 8px 0; } summary { cursor: pointer; color: var(--text-2); }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-3); font-size: .85rem; }
+.aviso { padding: 10px 12px; border-left: 4px solid var(--warn); background: var(--surface-2); border-radius: 4px; margin: 10px 0; }
+@media (max-width: 640px) { h1 { font-size: 1.3rem; } th, td { padding: 6px 5px; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Precios de la energía en España</h1>
+  <p class="sub">Ocho indicadores en €/kWh: electricidad (mercado diario y PVPC), gas natural (MIBGAS y TUR 2), gasóleos de automoción y calefacción, butano y pellet. Histórico desde 2020.</p>
+  <p class="meta" id="meta-cabecera">Cargando datos…</p>
+</header>
+
+<section id="seccion-resumen">
+  <h2>Resumen ejecutivo</h2>
+  <div class="tabla-scroll"><table id="tabla-resumen">
+    <thead><tr>
+      <th>Indicador</th><th class="num">Precio actual<br>€/kWh</th><th class="num">Var. semanal</th><th class="num">Var. interanual</th><th>Fecha del dato</th><th>Fuente</th><th>Estado</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="meta">Precio actual: media de los últimos 7 días (OMIE, MIBGAS, PVPC), última semana publicada (gasóleos) o valor vigente hoy (TUR 2, butano, pellet). OMIE y MIBGAS son precios mayoristas sin impuestos; el resto, con impuestos. Las variaciones comparan con los 7 días, la semana o el valor vigente anteriores, y con lo mismo hace un año. Pase el ratón por cada fila para ver el detalle.</p>
+</section>
+
+<section id="seccion-comentario">
+  <h2>Comentario semanal</h2>
+  <div class="comentario" id="comentario"></div>
+  <p class="meta">Generado automáticamente a partir de los datos de la tabla; solo recoge variaciones y comparaciones verificables.</p>
+</section>
+
+<section id="seccion-comparativo">
+  <h2>Comparativo en €/kWh</h2>
+  <div class="filtros">
+    <label>Desde <input type="date" id="f-desde"></label>
+    <label>Hasta <input type="date" id="f-hasta"></label>
+    <label>Periodo rápido
+      <span class="botones">
+        <button data-meses="3">3 meses</button><button data-meses="12">1 año</button><button data-meses="36">3 años</button><button data-desde="2022-01-01">Desde 2022</button><button data-desde="2020-01-01">Todo</button>
+      </span>
+    </label>
+    <label>Frecuencia
+      <select id="f-frecuencia"><option value="original">Original (diaria, semanal…)</option><option value="mensual">Media mensual</option></select>
+    </label>
+    <label>Series
+      <span class="botones"><button id="b-todas">Todas</button><button id="b-finales">Solo energía final</button><button id="b-ninguna">Ninguna</button></span>
+    </label>
+  </div>
+  <div id="g-comparativo" class="grafico"></div>
+  <p class="meta">Haga clic en la leyenda para ocultar o mostrar series (doble clic aísla una). Las líneas escalonadas son precios regulados o trimestrales: el valor se mantiene hasta la siguiente revisión. Los huecos son periodos sin dato (no se rellenan).</p>
+</section>
+
+<section id="seccion-individuales">
+  <h2>Evolución de cada indicador</h2>
+  <p class="meta">En la unidad original de cada fuente; el detalle al pasar el ratón muestra también el €/kWh. El filtro de periodo de arriba se aplica a todos.</p>
+  <div class="grid" id="individuales"></div>
+</section>
+
+<section id="seccion-estado">
+  <h2>Estado de las fuentes y actualización</h2>
+  <div class="tabla-scroll"><table id="tabla-fuentes">
+    <thead><tr><th>Fuente</th><th>Última descarga</th><th>Último dato</th><th>Resultado</th></tr></thead><tbody></tbody>
+  </table></div>
+  <p class="meta" id="meta-actualizacion"></p>
+  <div id="descargas"></div>
+</section>
+
+<section id="seccion-metodo">
+  <h2>Fuentes y criterios</h2>
+  <div id="metodo"></div>
+  <details><summary>Factores de conversión a €/kWh (sobre poder calorífico inferior)</summary><ul id="factores"></ul></details>
+  <p class="meta">Metodología completa, tabla de impuestos por fecha con referencia al BOE y comprobaciones: <a id="enlace-metodologia" href="#">documentación en el repositorio</a>.</p>
+</section>
+
+<footer>Datos: OMIE, MIBGAS, REE/ESIOS, Comisión Europea (Weekly Oil Bulletin), BOE y AVEBIOM. Impuestos según el BOE e IPC del INE. Cada dato conserva su fuente, fecha de publicación y si es original o calculado. <span id="pie-version"></span></footer>
+</main>
+
+<script>
+(async function () {
+  const fmtNum = (x, d) => x == null ? '—' : x.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const fmtPct = x => x == null ? null : (x > 0 ? '+' : '') + x.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
+  const fmtFecha = s => { if (!s) return '—'; const [a, m, d] = s.slice(0, 10).split('-'); return `${d}/${m}/${a}`; };
+  const fmtFechaHora = s => s ? new Date(s).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  const oscuro = () => matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme !== 'light' || document.documentElement.dataset.theme === 'dark';
+
+  let P;
+  try {
+    P = await (await fetch('datos/panel.json', { cache: 'no-store' })).json();
+  } catch (e) {
+    document.getElementById('meta-cabecera').textContent = 'No se han podido cargar los datos (datos/panel.json).';
+    return;
+  }
+  const colores = () => oscuro() ? P.colores_oscuro : P.colores;
+  const ORDEN = P.resumen.map(r => r.id);
+  const NOMBRES = Object.fromEntries(P.resumen.map(r => [r.id, r.nombre_corto]));
+  const UNIDADES = Object.fromEntries(P.resumen.map(r => [r.id, r.unidad_original]));
+
+  // Cabecera
+  document.getElementById('meta-cabecera').innerHTML =
+    `Última actualización correcta: <strong>${fmtFechaHora(P.ultima_actualizacion_correcta)}</strong> · fecha de referencia: ${fmtFecha(P.fecha_referencia)} · ` +
+    `<a href="${P.url_actions}" target="_blank" rel="noopener">lanzar una actualización</a>`;
+  document.getElementById('enlace-metodologia').href = P.url_repo + '/blob/main/docs/METODOLOGIA.md';
+  document.getElementById('pie-version').textContent = `Versión ${P.version}, generado el ${fmtFechaHora(P.generado)}.`;
+
+  // Tabla resumen
+  const tb = document.querySelector('#tabla-resumen tbody');
+  for (const r of P.resumen) {
+    const tr = document.createElement('tr');
+    const clase = r.estado === 'actualizado' ? 'ok' : (r.estado.startsWith('sin') ? 'warn' : 'bad');
+    const sem = fmtPct(r.variacion_semanal_pct), inter = fmtPct(r.variacion_interanual_pct);
+    const signo = x => x == null ? '' : (x > 0.05 ? 'pos' : (x < -0.05 ? 'neg' : ''));
+    const detalle = [r.base_precio, r.valor_original != null ? `valor original: ${fmtNum(r.valor_original, 4)} ${r.unidad_original}` : null, r.detalle_estado, r.nota].filter(Boolean).join('\n');
+    tr.title = detalle;
+    tr.innerHTML = `
+      <td><span class="swatch" style="background:${colores()[r.id]}"></span>${r.nombre}<span class="chip">${r.impuestos}</span></td>
+      <td class="num">${r.precio_eur_kwh == null ? '<span class="nd">no disponible</span>' : fmtNum(r.precio_eur_kwh, r.id === 'omie' || r.id === 'mibgas' ? 4 : 3)}</td>
+      <td class="num ${signo(r.variacion_semanal_pct)}">${sem == null ? '<span class="nd">n. d.</span>' : sem}</td>
+      <td class="num ${signo(r.variacion_interanual_pct)}">${inter == null ? '<span class="nd">n. d.</span>' : inter}</td>
+      <td>${fmtFecha(r.fecha_dato)}${r.periodo_dato && r.periodo_dato.length <= 6 ? ` <span class="chip">${r.periodo_dato}</span>` : ''}</td>
+      <td><a href="${r.url_fuente}" target="_blank" rel="noopener">${r.fuente.split(',')[0]}</a></td>
+      <td><span class="estado"><span class="punto ${clase}"></span>${r.estado}</span></td>`;
+    tb.appendChild(tr);
+  }
+
+  // Comentario
+  document.getElementById('comentario').innerHTML = P.comentario.map(p => `<p>${p}</p>`).join('') || '<p class="nd">Sin datos suficientes.</p>';
+
+  // ---- Gráficos
+  const layoutBase = () => ({
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { color: oscuro() ? '#c3c2b7' : '#52514e', size: 12 },
+    margin: { l: 56, r: 16, t: 10, b: 40 },
+    xaxis: { gridcolor: oscuro() ? '#33332f' : '#e6e4de', zeroline: false, hoverformat: '%d/%m/%Y' },
+    yaxis: { gridcolor: oscuro() ? '#33332f' : '#e6e4de', zeroline: false, rangemode: 'tozero', separatethousands: true },
+    hovermode: 'x unified', hoverlabel: { namelength: -1 },
+    legend: { orientation: 'h', y: -0.15, yanchor: 'top' },
+    separators: ',.',
+  });
+  const config = { responsive: true, displaylogo: false, locale: 'es', modeBarButtonsToRemove: ['lasso2d', 'select2d'] };
+
+  const serieTraza = (id, s, usarKwh, frecuencia) => {
+    let x, y, hover;
+    if (frecuencia === 'mensual' && P.mensual[id]) {
+      const m = P.mensual[id];
+      x = m.meses.map(k => k + '-15');
+      y = usarKwh ? (id === 'omie' || id === 'mibgas' ? m.media_eur_kwh_sin : m.media_eur_kwh_con) : m.media_original;
+      hover = usarKwh ? '%{y:.4f} €/kWh (media mensual)' : `%{y:.4f} ${UNIDADES[id]} (media mensual)`;
+    } else {
+      x = s.fechas; y = usarKwh ? s.eur_kwh : s.original;
+      hover = usarKwh ? '%{y:.4f} €/kWh' + ' · %{customdata} ' + UNIDADES[id] : `%{y:.4f} ${UNIDADES[id]} · %{customdata} €/kWh`;
+    }
+    const custom = (frecuencia === 'mensual' || !s.fechas.length) ? null : (usarKwh ? s.original : s.eur_kwh).map(v => v == null ? 'n. d.' : v.toLocaleString('es-ES', { maximumFractionDigits: 4 }));
+    return {
+      type: 'scatter', mode: 'lines', name: NOMBRES[id], x, y, customdata: custom,
+      line: { color: colores()[id], width: 2, shape: s.tipo === 'escalon' ? 'hv' : 'linear', dash: id === 'pellet_granel' ? 'dash' : 'solid' },
+      connectgaps: false, hovertemplate: hover + '<extra>' + NOMBRES[id] + (s.impuestos.startsWith('sin') ? ' (sin impuestos)' : '') + '</extra>',
+    };
+  };
+
+  const rango = () => [document.getElementById('f-desde').value || '2020-01-01', document.getElementById('f-hasta').value || P.fecha_referencia];
+  const dibujarComparativo = () => {
+    const frec = document.getElementById('f-frecuencia').value;
+    const trazas = ORDEN.map(id => serieTraza(id, P.series[id], true, frec));
+    const lay = layoutBase();
+    lay.xaxis.range = rango();
+    lay.yaxis.title = { text: '€/kWh' };
+    lay.xaxis.rangeslider = { visible: true, thickness: 0.06 };
+    lay.margin.b = 20;
+    lay.legend = { orientation: 'h', y: 1.02, yanchor: 'bottom' };
+    const el = document.getElementById('g-comparativo');
+    const visibles = el.data ? Object.fromEntries(el.data.map(t => [t.name, t.visible])) : {};
+    for (const t of trazas) if (visibles[t.name] !== undefined) t.visible = visibles[t.name];
+    Plotly.react(el, trazas, lay, config);
+  };
+
+  const individuales = ['omie', 'mibgas', 'gasoleo_a', 'pvpc', 'tur2', 'gasoleo_c', 'butano', 'pellet_saco', 'pellet_granel'];
+  const cont = document.getElementById('individuales');
+  for (const id of individuales) {
+    const r = P.resumen.find(x => x.id === id);
+    const div = document.createElement('div'); div.className = 'tarjeta';
+    const titulo = id === 'pellet_saco' ? '8a. Pellet: saco de 15 kg' : (id === 'pellet_granel' ? '8b. Pellet: granel en volquete' : `${r.numero}. ${r.nombre}`);
+    div.innerHTML = `<h3>${titulo}</h3><p class="meta">${UNIDADES[id]} · ${r.impuestos}</p><div class="grafico" id="g-${id}"></div>`;
+    cont.appendChild(div);
+  }
+  const dibujarIndividuales = () => {
+    const frec = document.getElementById('f-frecuencia').value;
+    for (const id of individuales) {
+      const lay = layoutBase();
+      lay.xaxis.range = rango();
+      lay.margin = { l: 56, r: 10, t: 6, b: 34 };
+      lay.showlegend = false;
+      lay.yaxis.title = { text: UNIDADES[id] };
+      Plotly.react(document.getElementById('g-' + id), [serieTraza(id, P.series[id], false, frec)], lay, config);
+    }
+  };
+  const dibujarTodo = () => { dibujarComparativo(); dibujarIndividuales(); };
+
+  // Filtros
+  document.getElementById('f-desde').value = '2022-01-01';
+  document.getElementById('f-hasta').value = P.fecha_referencia;
+  document.querySelectorAll('.filtros button[data-meses], .filtros button[data-desde]').forEach(b => b.addEventListener('click', () => {
+    const hasta = new Date(P.fecha_referencia + 'T00:00:00');
+    let desde;
+    if (b.dataset.desde) desde = b.dataset.desde;
+    else { const d = new Date(hasta); d.setMonth(d.getMonth() - Number(b.dataset.meses)); desde = d.toISOString().slice(0, 10); }
+    document.getElementById('f-desde').value = desde; document.getElementById('f-hasta').value = P.fecha_referencia; dibujarTodo();
+  }));
+  ['f-desde', 'f-hasta', 'f-frecuencia'].forEach(id => document.getElementById(id).addEventListener('change', dibujarTodo));
+  const setVisibles = fn => { const el = document.getElementById('g-comparativo'); Plotly.restyle(el, { visible: el.data.map(t => fn(t.name)) }); };
+  document.getElementById('b-todas').addEventListener('click', () => setVisibles(() => true));
+  document.getElementById('b-ninguna').addEventListener('click', () => setVisibles(() => 'legendonly'));
+  document.getElementById('b-finales').addEventListener('click', () => setVisibles(n => (n === NOMBRES.omie || n === NOMBRES.mibgas) ? 'legendonly' : true));
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', dibujarTodo);
+  dibujarTodo();
+
+  // Estado de las fuentes
+  const nombresFuente = { omie: 'OMIE (mercado diario)', mibgas: 'MIBGAS (índice diario)', boletin_petrolero: 'Comisión Europea (Weekly Oil Bulletin)', esios_pvpc: 'REE / ESIOS (PVPC)', boe_tur: 'BOE (TUR gas natural)', boe_butano: 'BOE (butano envasado)', avebiom: 'AVEBIOM (pellet)', ine_ipc: 'INE (IPC para los impuestos de 2026)' };
+  const tf = document.querySelector('#tabla-fuentes tbody');
+  for (const [k, f] of Object.entries(P.fuentes)) {
+    const ult = Object.values(f.series || {}).map(s => s.ultimo_dato).filter(Boolean).sort().pop();
+    const nuevo = Object.values(f.series || {}).some(s => s.dato_nuevo);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${nombresFuente[k] || k}</td><td>${fmtFechaHora(f.ultima_actualizacion_correcta)}</td><td>${ult ? fmtFecha(ult) + (nuevo ? ' <span class="chip">dato nuevo</span>' : '') : '—'}</td>` +
+      `<td><span class="estado"><span class="punto ${f.estado === 'ok' ? 'ok' : 'bad'}"></span>${f.estado === 'ok' ? 'correcto' : 'error'}</span>${f.error ? `<div class="meta">${f.error}</div>` : ''}</td>`;
+    tf.appendChild(tr);
+  }
+  document.getElementById('meta-actualizacion').innerHTML = `La actualización se ejecuta cada semana de forma automática y puede lanzarse a mano desde <a href="${P.url_actions}" target="_blank" rel="noopener">la página de ejecuciones del repositorio</a> (botón «Run workflow»). Si una fuente falla, se conserva su último dato correcto y el error queda registrado aquí.`;
+  const desc = document.getElementById('descargas');
+  desc.innerHTML = P.informes.length ? '<h3>Descargas</h3><ul>' + P.informes.map(i => `<li><a href="${i.url}">${i.nombre}</a></li>`).join('') + '</ul>' : '<p class="meta">Los informes en PDF y Excel se incorporarán en la siguiente fase.</p>';
+
+  // Método
+  const met = document.getElementById('metodo');
+  met.innerHTML = '<div class="tabla-scroll"><table><thead><tr><th>Indicador</th><th>Fuente</th><th>Unidad y frecuencia</th><th>Impuestos</th><th>Conversión a €/kWh</th></tr></thead><tbody>' +
+    P.resumen.map(r => { const m = P.metadatos[r.id] || {}; return `<tr><td>${r.nombre}</td><td><a href="${r.url_fuente}" target="_blank" rel="noopener">${r.fuente}</a></td><td>${r.unidad_original}; ${m.frecuencia || ''}</td><td>${m.impuestos_original || ''}</td><td>${m.conversion || ''}${m.nota ? '<div class="meta">' + m.nota + '</div>' : ''}</td></tr>`; }).join('') +
+    '</tbody></table></div>';
+  document.getElementById('factores').innerHTML = P.factores.map(f => `<li><strong>${f.nombre}</strong>: ${fmtNum(f.valor, 3)} ${f.unidad}. ${f.procedencia}</li>`).join('');
+})();
+</script>
+</body>
+</html>
