@@ -20,9 +20,17 @@ def main(argv: list[str] | None = None) -> int:
     pa = sub.add_parser("panel", help="genera el cuadro de mando estático en sitio/ a partir de datos/")
     pa.add_argument("--fecha", help="fecha de referencia (por defecto hoy)")
     pa.add_argument("-v", "--verbose", action="store_true")
+    pi = sub.add_parser("informes", help="genera sitio/informes/informe.pdf y historico.xlsx a partir de datos/")
+    pi.add_argument("--fecha", help="fecha de referencia (por defecto hoy)")
+    pi.add_argument("-v", "--verbose", action="store_true")
     args = p.parse_args(argv)
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
     hoy = dt.date.fromisoformat(args.fecha) if args.fecha else None
+    if args.orden == "informes":
+        from .informes import generar
+        for r in generar(hoy=hoy):
+            print(r)
+        return 0
     if args.orden == "panel":
         from .panel import generar
         print(generar(hoy=hoy))

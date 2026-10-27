@@ -56,6 +56,8 @@ jobs:
         run: python scripts/verificar_historico.py
       - name: Comprobaciones con valores de control
         run: python scripts/comprobaciones.py || echo "::warning::Alguna comprobación de control no coincide; revisar docs/COMPROBACIONES.md"
+      - name: Generar los informes PDF y Excel
+        run: python -m precios informes
       - name: Generar el cuadro de mando
         run: python -m precios panel
       - name: Guardar datos y sitio en el repositorio

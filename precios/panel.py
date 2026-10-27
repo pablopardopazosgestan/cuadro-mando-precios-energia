@@ -237,7 +237,8 @@ def comentario_semanal(resumen: list[dict], hoy: dt.date) -> list[str]:
     return parrafos
 
 
-def generar(hoy: dt.date | None = None) -> Path:
+def construir(hoy: dt.date | None = None) -> dict:
+    """Calcula todo lo que muestran el panel y los informes (resumen, comentario, series, mensual, estado)."""
     hoy = hoy or dt.date.today()
     estado = json.loads((DIR_DATOS / "estado.json").read_text(encoding="utf-8")) if (DIR_DATOS / "estado.json").exists() else {"fuentes": {}}
     meta = json.loads((DIR_DATOS / "metadatos.json").read_text(encoding="utf-8")) if (DIR_DATOS / "metadatos.json").exists() else {}
@@ -278,6 +279,11 @@ def generar(hoy: dt.date | None = None) -> Path:
         "colores": COLORES, "colores_oscuro": COLORES_OSCURO,
         "informes": informes,
     }
+    return panel
+
+
+def generar(hoy: dt.date | None = None) -> Path:
+    panel = construir(hoy)
     (DIR_SITIO / "datos").mkdir(parents=True, exist_ok=True)
     (DIR_SITIO / "datos" / "panel.json").write_text(json.dumps(panel, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     shutil.copy(DIR_DATOS / "estado.json", DIR_SITIO / "datos" / "estado.json")

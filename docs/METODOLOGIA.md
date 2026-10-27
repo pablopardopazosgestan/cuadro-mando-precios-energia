@@ -211,3 +211,20 @@ Criterios del resumen ejecutivo:
   guardado (OMIE: desde 7 días antes del último dato; MIBGAS: el fichero del año en curso; Boletín Petrolero: el
   histórico completo, 4,5 MB; BOE: sumarios desde la última publicación; AVEBIOM: los PDF publicados; ESIOS: desde
   3 días antes del último dato; INE: dos tablas).
+
+## 8. Informes PDF y Excel (fase 5, `precios/informes.py`)
+
+`python -m precios informes` genera, con los mismos datos que el panel (`panel.construir`):
+- **`sitio/informes/informe.pdf`** (A4, 4 páginas): cabecera con número de semana ISO, periodo analizado (los 7 días
+  que terminan en la fecha de referencia) y fecha de generación; resumen ejecutivo (precios por kWh de la energía
+  final de menor a mayor, mayoristas, datos no disponibles); tabla de precios y variaciones de los ocho indicadores;
+  comentario de evolución (variaciones semanales e interanuales); gráfico comparativo en €/kWh desde enero de 2022;
+  nueve gráficos individuales en la unidad original; fuentes y metodología (tabla por indicador, factores, impuestos,
+  estado de las fuentes). Los gráficos son imágenes generadas con matplotlib con la misma paleta que el panel.
+- **`sitio/informes/historico.xlsx`**: hoja «Resumen» (tabla resumen y comentario); «Mensual» (media mensual de cada
+  serie en €/kWh y en su unidad original, desde 2020); «Gráficos» (comparativo y nueve individuales, *vinculados* a la
+  hoja Mensual: se actualizan si se cambian los datos); una hoja por serie con el histórico completo en su frecuencia
+  original (fecha, periodo, valor original, €/kWh sin y con impuestos, origen, impuestos aplicados, fecha de
+  publicación, referencia y nota) con filtro automático y paneles inmovilizados; «Fuentes y criterios».
+Ambos se regeneran en cada actualización (paso previo al panel en `actualizar.yml`) y se descargan desde el panel.
+Solo se conserva la última versión de cada uno (el histórico está en `datos/`, versionado en git).

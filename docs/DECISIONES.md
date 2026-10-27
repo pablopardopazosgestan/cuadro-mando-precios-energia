@@ -33,6 +33,9 @@ Todas las propuestas de la fase 1 quedaron aceptadas el 25/10/2026 (fila anterio
 | 2026-10-27 | Pablo activa GitHub Pages (origen «GitHub Actions») y permite la rama de trabajo en el entorno `github-pages`; el cuadro de mando queda publicado. Pide avanzar a la fase 4. | Enlace: https://pablopardopazosgestan.github.io/cuadro-mando-precios-energia/ |
 | 2026-10-27 | Fase 4: la actualización semanal se programa los lunes a las 05:17 UTC; si falla una fuente se publica con el último dato correcto y la ejecución termina en rojo. | Decisión de Claude dentro de lo que fija el encargo; cambiable en `actualizar.yml`. |
 
+| 2026-10-27 | Pablo crea el secreto `ESIOS_TOKEN` y relanza el workflow; acepta la fase 4 y pide la fase 5. | PVPC completo desde el ejecutor de GitHub. |
+| 2026-10-27 | Fase 5: los informes se regeneran en cada actualización y solo se conserva la última versión (`informe.pdf`, `historico.xlsx`). El Excel incluye también 2020–2021 donde la fuente lo da (el encargo pide desde 2022). | Decisión de Claude; cambiable. |
+
 ## Pendientes que dependen de Pablo (fase 2, 25/10/2026; revisado el 27/10/2026)
 
 1. ~~Token de ESIOS~~ Resuelto el 27/10/2026 (en la sesión). Falta crearlo como secreto `ESIOS_TOKEN` de GitHub Actions en la fase 4.
@@ -40,5 +43,4 @@ Todas las propuestas de la fase 1 quedaron aceptadas el 25/10/2026 (fila anterio
 3. **Acceso a `web.archive.org`:** sigue bloqueado el 27/10/2026 (la petición CONNECT recibe 403 del proxy). Serviría para
    intentar recuperar los PDF antiguos de AVEBIOM (2022–2024).
 4. ~~Acceso a miteco.gob.es~~ Abierto, aunque la duda del IVA del butano se resolvió con los precios publicados por La Moncloa y la prensa.
-5. **Secreto `ESIOS_TOKEN` en GitHub Actions** (fase 4): Settings → Secrets and variables → Actions → New repository
-   secret, nombre `ESIOS_TOKEN`, valor el token. Hasta entonces la actualización automática deja el PVPC en error.
+5. ~~Secreto `ESIOS_TOKEN` en GitHub Actions~~ Creado el 27/10/2026.

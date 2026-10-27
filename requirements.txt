@@ -5,3 +5,4 @@ lxml>=5.0
 beautifulsoup4>=4.12
 pandas>=2.2
 pytest>=8.0
+matplotlib>=3.8

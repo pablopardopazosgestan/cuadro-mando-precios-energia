@@ -44,15 +44,20 @@ Escribe a Pablo siempre en castellano, de forma directa.
   terminó en rojo solo por el PVPC (falta el secreto `ESIOS_TOKEN`, que debe crear Pablo). Mientras el workflow no
   esté en `main`, GitHub no muestra «Run workflow»: se relanza con «Re-run all jobs» o cambiando el fichero.
   Las ejecuciones automáticas hacen commits en la rama: hacer `git pull --rebase` antes de trabajar.
-- Fase 5 (exportación PDF y Excel): no empezada. No empezar sin el «sigue» de Pablo.
+- Fase 4 aceptada el 27/10/2026: Pablo creó el secreto `ESIOS_TOKEN` y relanzó; la ejecución desde GitHub descargó
+  el PVPC completo (1.975 días desde 01/06/2021) sin bloqueo: **las 8 fuentes están en ok.**
+- **Fase 5 (exportación PDF y Excel): terminada el 27/10/2026, pendiente de revisión de Pablo.** `python -m precios
+  informes` genera `sitio/informes/informe.pdf` y `historico.xlsx` (ver `docs/METODOLOGIA.md` §8); el workflow los
+  regenera antes del panel y el panel los enlaza en «Descargas».
+- Fase 6 (verificación y entrega): no empezada. No empezar sin el «sigue» de Pablo.
 
 ## Siguiente paso
 
-Al recibir el «sigue» de la fase 4: fase 5, generar en cada actualización `sitio/informes/informe.pdf` (presentación
-parecida al boletín: fecha y periodo, resumen ejecutivo, tabla de precios y variaciones, gráfico comparativo, gráficos
-individuales, comentario, fuentes y metodología) y `sitio/informes/historico.xlsx` (histórico desde 2022 con datos
-originales y convertidos, tabla resumen, gráficos vinculados, fuentes y criterios, filtros). El panel ya enlaza esos
-ficheros si existen (`panel.py`, lista `informes`). Añadir su generación al workflow después de `python -m precios panel`.
+Al recibir el «sigue» de la fase 5: fase 6, comprobar punto por punto el apartado 7 del encargo (ocho indicadores con
+datos reales, gráficos, descargas, actualización configurada y probada), escribir `docs/USO.md` (consultar, actualizar,
+exportar, qué hacer si una fuente falla), proponer a Pablo fusionar la rama en `main` (y, si acepta, hacerlo y
+comprobar que Pages y el workflow siguen funcionando desde `main`), y entregar: enlace, PDF, Excel, instrucciones y
+confirmación de la actualización semanal.
 
 ## Cómo ejecutar y probar
 
@@ -60,6 +65,7 @@ ficheros si existen (`panel.py`, lista `informes`). Añadir su generación al wo
 pip install -r requirements.txt
 python -m precios actualizar -v            # descarga lo nuevo y reconstruye datos/ (primera vez: ~30 min)
 python -m precios actualizar --solo omie   # una sola serie
+python -m precios informes                 # genera sitio/informes/informe.pdf y historico.xlsx
 python -m precios panel                    # genera el cuadro de mando en sitio/
 python -m pytest -q tests                  # pruebas
 python scripts/comprobaciones.py           # valores de control contra la fuente
