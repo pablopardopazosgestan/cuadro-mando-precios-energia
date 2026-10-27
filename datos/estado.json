@@ -1,17 +1,17 @@
 {
-  "actualizado": "2026-10-27T10:08:54+00:00",
+  "actualizado": "2026-10-27T10:10:23+00:00",
   "version": "0.2.0",
   "fuentes": {
     "ine_ipc": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:08:54+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T10:10:23+00:00",
       "series": {}
     },
     "esios_pvpc": {
       "estado": "error",
-      "error": "ErrorDescarga: no se pudo descargar https://api.esios.ree.es/indicators/1001: HTTP 403 en https://api.esios.ree.es/indicators/1001?start_date=2021-06-01T00%3A00&end_date=2021-06-30T23%3A59&geo_ids%5B%5D=8741",
-      "traza": "Traceback (most recent call last):\n  File \"/home/user/cuadro-mando-precios-energia/precios/series.py\", line 363, in registrar\n    def registrar(fuente: str, ids: list[str], fn):\n                     ^^^^\n  File \"/home/user/cuadro-mando-precios-energia/precios/series.py\", line 406, in _pvpc\n    omie_mensual = medias_mensuales_omie(series[\"omie\"])\n                    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/user/cuadro-mando-precios-energia/precios/series.py\", line 141, in construir_pvpc\n    dias = esios.descargar_rango(desde, hoy + dt.timedelta(days=1))\n  File \"/home/user/cuadro-mando-precios-energia/precios/fuentes/esios.py\", line 113, in descargar_rango\n    out += [d for d in descargar_mes(a, m) if desde <= d.fecha <= hasta]\n                       ~~~~~~~~~~~~~^^^^^^\n  File \"/home/user/cuadro-mando-precios-energia/precios/fuentes/esios.py\", line 105, in descargar_mes\n    dias = leer_respuesta(_peticion(ini, fin, cache))\n                          ~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/user/cuadro-mando-precios-energia/precios/fuentes/esios.py\", line 81, in _peticion\n    cuerpo = descargar(\n        URL,\n    ...<2 lines>...\n        cache=cache, reintentos=1,\n    )\n  File \"/home/user/cuadro-mando-precios-energia/precios/http.py\", line 68, in descargar\n    raise ErrorDescarga(f\"no se pudo descargar {url}: {ultimo}\")\nprecios.http.ErrorDescarga: no se pudo descargar https://api.esios.ree.es/indicators/1001: HTTP 403 en https://api.esios.ree.es/indicators/1001?start_date=2021-06-01T00%3A00&end_date=2021-06-30T23%3A59&geo_ids%5B%5D=8741\n",
+      "error": "FaltaToken: falta la variable de entorno ESIOS_TOKEN",
+      "traza": "Traceback (most recent call last):\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/series.py\", line 371, in registrar\n    nuevas = fn()\n             ^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/series.py\", line 414, in _pvpc\n    nueva = construir_pvpc(series[\"pvpc\"], hoy, omie_mensual)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/series.py\", line 142, in construir_pvpc\n    dias = esios.descargar_rango(desde, hoy + dt.timedelta(days=1))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/esios.py\", line 113, in descargar_rango\n    out += [d for d in descargar_mes(a, m) if desde <= d.fecha <= hasta]\n                       ^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/esios.py\", line 105, in descargar_mes\n    dias = leer_respuesta(_peticion(ini, fin, cache))\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/esios.py\", line 84, in _peticion\n    headers={\"Accept\": \"application/json; application/vnd.esios-api-v1+json\", \"x-api-key\": token()},\n                                                                                           ^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/esios.py\", line 45, in token\n    raise FaltaToken(\"falta la variable de entorno ESIOS_TOKEN\")\nprecios.fuentes.esios.FaltaToken: falta la variable de entorno ESIOS_TOKEN\n",
       "ultima_actualizacion_correcta": null,
       "series": {
         "pvpc": {
@@ -24,7 +24,7 @@
     "boe_tur": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:08:54+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T10:10:23+00:00",
       "series": {
         "tur2": {
           "ultimo_dato": "2026-10-01",
@@ -36,7 +36,7 @@
     "omie": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:08:54+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T10:10:23+00:00",
       "series": {
         "omie": {
           "ultimo_dato": "2026-10-27",
@@ -48,7 +48,7 @@
     "mibgas": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:08:54+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T10:10:23+00:00",
       "series": {
         "mibgas": {
           "ultimo_dato": "2026-10-26",
@@ -60,7 +60,7 @@
     "boletin_petrolero": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:08:54+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T10:10:23+00:00",
       "series": {
         "gasoleo_a": {
           "ultimo_dato": "2026-10-19",
@@ -77,7 +77,7 @@
     "boe_butano": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:08:54+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T10:10:23+00:00",
       "series": {
         "butano": {
           "ultimo_dato": "2026-09-15",
@@ -89,7 +89,7 @@
     "avebiom": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:08:54+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T10:10:23+00:00",
       "series": {
         "pellet_saco": {
           "ultimo_dato": "2026-07-01",
@@ -104,5 +104,5 @@
       }
     }
   },
-  "ejecucion_url": null
+  "ejecucion_url": "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia/actions/runs/40486363420"
 }
