@@ -1,17 +1,17 @@
 {
-  "actualizado": "2026-10-27T10:38:53+00:00",
-  "version": "0.2.0",
+  "actualizado": "2026-10-27T11:49:30+00:00",
+  "version": "0.3.0",
   "fuentes": {
     "ine_ipc": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T11:49:30+00:00",
       "series": {}
     },
     "esios_pvpc": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T11:49:30+00:00",
       "series": {
         "pvpc": {
           "ultimo_dato": "2026-10-27",
@@ -23,7 +23,7 @@
     "boe_tur": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T11:49:30+00:00",
       "series": {
         "tur2": {
           "ultimo_dato": "2026-10-01",
@@ -35,7 +35,7 @@
     "omie": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T11:49:30+00:00",
       "series": {
         "omie": {
           "ultimo_dato": "2026-10-27",
@@ -47,7 +47,7 @@
     "mibgas": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T11:49:30+00:00",
       "series": {
         "mibgas": {
           "ultimo_dato": "2026-10-26",
@@ -59,7 +59,7 @@
     "boletin_petrolero": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T11:49:30+00:00",
       "series": {
         "gasoleo_a": {
           "ultimo_dato": "2026-10-19",
@@ -76,7 +76,7 @@
     "boe_butano": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
+      "ultima_actualizacion_correcta": "2026-10-27T11:49:30+00:00",
       "series": {
         "butano": {
           "ultimo_dato": "2026-09-15",
@@ -86,8 +86,9 @@
       }
     },
     "avebiom": {
-      "estado": "ok",
-      "error": null,
+      "estado": "error",
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "traza": "Traceback (most recent call last):\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/series.py\", line 371, in registrar\n    nuevas = fn()\n             ^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/series.py\", line 432, in _pellet\n    informes = avebiom.descargar_todo()\n               ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/avebiom.py\", line 162, in descargar_todo\n    return [descargar_informe(f, u) for f, u in listar_pdfs()]\n                                                ^^^^^^^^^^^^^\n  File \"/home/runner/work/cuadro-mando-precios-energia/cuadro-mando-precios-energia/precios/fuentes/avebiom.py\", line 135, in listar_pdfs\n    for m in json.loads(cuerpo):\n             ^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/json/decoder.py\", line 338, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/json/decoder.py\", line 356, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n",
       "ultima_actualizacion_correcta": "2026-10-27T10:38:53+00:00",
       "series": {
         "pellet_saco": {
@@ -103,5 +104,5 @@
       }
     }
   },
-  "ejecucion_url": "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia/actions/runs/40490030297"
+  "ejecucion_url": "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia/actions/runs/40498936289"
 }
