@@ -285,7 +285,12 @@ footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border
       `<td><span class="estado"><span class="punto ${f.estado === 'ok' ? 'ok' : 'bad'}"></span>${f.estado === 'ok' ? 'correcto' : 'error'}</span>${f.error ? `<div class="meta">${f.error}</div>` : ''}</td>`;
     tf.appendChild(tr);
   }
-  document.getElementById('meta-actualizacion').innerHTML = `La actualización se ejecuta cada semana de forma automática y puede lanzarse a mano desde <a href="${P.url_actions}" target="_blank" rel="noopener">la página de ejecuciones del repositorio</a> (botón «Run workflow»). Si una fuente falla, se conserva su último dato correcto y el error queda registrado aquí.`;
+  document.getElementById('meta-actualizacion').innerHTML = `Última ejecución: ${fmtFechaHora(P.actualizado)}${P.ejecucion_url ? ` (<a href="${P.ejecucion_url}" target="_blank" rel="noopener">ver registro</a>)` : ''}. La actualización se ejecuta cada lunes de forma automática y puede lanzarse a mano desde <a href="${P.url_actions}" target="_blank" rel="noopener">la página de ejecuciones del repositorio</a> (botón «Run workflow»). Si una fuente falla, se conserva su último dato correcto y el error queda registrado aquí.`;
+  if (P.fuentes_con_error && P.fuentes_con_error.length) {
+    const av = document.createElement('div'); av.className = 'aviso';
+    av.textContent = `Atención: en la última ejecución fallaron ${P.fuentes_con_error.length} fuente(s) (${P.fuentes_con_error.join(', ')}). Se muestra el último dato correcto de cada una; el detalle está en la tabla de abajo.`;
+    document.getElementById('seccion-resumen').insertBefore(av, document.getElementById('seccion-resumen').children[1]);
+  }
   const desc = document.getElementById('descargas');
   desc.innerHTML = P.informes.length ? '<h3>Descargas</h3><ul>' + P.informes.map(i => `<li><a href="${i.url}">${i.nombre}</a></li>`).join('') + '</ul>' : '<p class="meta">Los informes en PDF y Excel se incorporarán en la siguiente fase.</p>';
 

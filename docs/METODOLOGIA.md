@@ -189,3 +189,25 @@ Criterios del resumen ejecutivo:
   y atajos), frecuencia original o media mensual; nueve gráficos individuales en la unidad original. Las series
   reguladas y el pellet se dibujan en escalón. Los huecos no se rellenan. Paleta categórica fija y validada
   (una tonalidad por indicador; el pellet a granel comparte tono con el saco y usa trazo discontinuo).
+
+## 7. Actualización automática (fase 4, `.github/workflows/actualizar.yml`)
+
+- **Cuándo:** cada lunes a las 05:17 UTC (06:17/07:17 hora peninsular) y a mano desde la pestaña Actions del
+  repositorio («Actualizar datos y publicar» → «Run workflow»). El cuadro de mando enlaza esa página.
+- **Qué hace, en orden:** instala dependencias; ejecuta las pruebas (`pytest`); descarga solo lo nuevo de cada fuente
+  (`python -m precios actualizar`); comprueba que ninguna serie pierde filas ni retrocede su primer dato respecto a la
+  versión guardada (`scripts/verificar_historico.py`); pasa las comprobaciones de control (aviso si alguna no cuadra);
+  genera el cuadro de mando (`python -m precios panel`); guarda `datos/` y `sitio/` con un commit «Actualización
+  automática»; publica `sitio/` en GitHub Pages.
+- **Si fallan las pruebas o se perdería histórico:** la ejecución se detiene antes del commit y no se publica nada.
+- **Si falla la descarga de una fuente:** se publica igualmente con el último dato correcto de esa fuente, el panel
+  muestra un aviso y la tabla «Estado de las fuentes» recoge el error, y la ejecución termina en rojo (GitHub avisa
+  por correo). `datos/estado.json` guarda por fuente la última actualización correcta, el último dato, si hubo dato
+  nuevo y el error, además del enlace a la ejecución.
+- **Fuentes sin dato nuevo:** `dato_nuevo` en `estado.json` y el estado «sin actualización en el periodo» del panel.
+- **Secretos:** `ESIOS_TOKEN` como secreto del repositorio (Settings → Secrets and variables → Actions). Sin él, el
+  PVPC queda en error y el resto se actualiza.
+- **Caché:** en Actions no hay caché local; cada ejecución pide solo los días/ficheros posteriores al último dato
+  guardado (OMIE: desde 7 días antes del último dato; MIBGAS: el fichero del año en curso; Boletín Petrolero: el
+  histórico completo, 4,5 MB; BOE: sumarios desde la última publicación; AVEBIOM: los PDF publicados; ESIOS: desde
+  3 días antes del último dato; INE: dos tablas).

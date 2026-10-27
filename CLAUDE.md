@@ -34,17 +34,21 @@ Escribe a Pablo siempre en castellano, de forma directa.
   verificados. **PVPC: el cortafuegos de ESIOS (Incapsula) bloqueó la IP del entorno tras las primeras peticiones**
   (403 también con curl); el descargador espacia peticiones y reintenta con esperas largas. Si sigue bloqueado,
   la descarga se hará desde el ejecutor de GitHub Actions (fase 4).
-- **Fase 3 (cuadro de mando): terminada el 27/10/2026, pendiente de revisión de Pablo.** `python -m precios panel`
-  genera `sitio/`; `.github/workflows/pages.yml` lo publica en GitHub Pages (Pablo debe activar Pages con origen
-  «GitHub Actions» si el workflow no lo activa solo).
-- Fase 4 (actualización automática): no empezada. No empezar sin el «sigue» de Pablo.
+- Fase 3 (cuadro de mando): terminada y publicada el 27/10/2026. Pablo activó Pages (Settings → Pages → Source:
+  GitHub Actions) y permitió la rama `claude/new-session-dqbsty` en el entorno `github-pages`. Enlace:
+  https://pablopardopazosgestan.github.io/cuadro-mando-precios-energia/
+- **Fase 4 (actualización automática): terminada el 27/10/2026, pendiente de revisión de Pablo.** Workflow
+  `.github/workflows/actualizar.yml` (lunes 05:17 UTC + manual): pytest → actualizar → verificar histórico →
+  comprobaciones → panel → commit de datos/ y sitio/ → Pages. Falta que Pablo cree el secreto `ESIOS_TOKEN`.
+- Fase 5 (exportación PDF y Excel): no empezada. No empezar sin el «sigue» de Pablo.
 
 ## Siguiente paso
 
-Al recibir el «sigue» de la fase 3: fase 4, workflow `actualizar.yml` (semanal + manual) que ejecuta pytest,
-`python -m precios actualizar`, `python -m precios panel`, hace commit de `datos/` y `sitio/` y despliega Pages;
-secreto `ESIOS_TOKEN` en Actions; errores visibles en el panel y en la ejecución fallida. Comprobar antes si el
-PVPC ya tiene datos (si ESIOS sigue bloqueando la IP de la sesión, confiar en el ejecutor de Actions).
+Al recibir el «sigue» de la fase 4: fase 5, generar en cada actualización `sitio/informes/informe.pdf` (presentación
+parecida al boletín: fecha y periodo, resumen ejecutivo, tabla de precios y variaciones, gráfico comparativo, gráficos
+individuales, comentario, fuentes y metodología) y `sitio/informes/historico.xlsx` (histórico desde 2022 con datos
+originales y convertidos, tabla resumen, gráficos vinculados, fuentes y criterios, filtros). El panel ya enlaza esos
+ficheros si existen (`panel.py`, lista `informes`). Añadir su generación al workflow después de `python -m precios panel`.
 
 ## Cómo ejecutar y probar
 

@@ -15,6 +15,7 @@ import calendar
 import datetime as dt
 import json
 import logging
+import os
 import traceback
 
 import pandas as pd
@@ -358,6 +359,10 @@ def actualizar(hoy: dt.date | None = None, solo: set[str] | None = None) -> dict
     anterior = _estado_anterior()
     # Se parte del estado anterior para no perder la información de las fuentes que no se ejecutan esta vez
     estado = {"actualizado": ahora, "version": __version__, "fuentes": dict(anterior.get("fuentes", {}))}
+    if os.environ.get("GITHUB_RUN_ID"):
+        estado["ejecucion_url"] = f"{os.environ.get('GITHUB_SERVER_URL', 'https://github.com')}/{os.environ.get('GITHUB_REPOSITORY', '')}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+    else:
+        estado["ejecucion_url"] = anterior.get("ejecucion_url")
     series: dict[str, pd.DataFrame] = {id_: cargar_serie(id_) for id_ in ORDEN}
 
     def registrar(fuente: str, ids: list[str], fn):
@@ -428,7 +433,9 @@ def actualizar(hoy: dt.date | None = None, solo: set[str] | None = None) -> dict
             return {"pellet_saco": construir_pellet(informes, "saco"), "pellet_granel": construir_pellet(informes, "volquete")}
         registrar("avebiom", ["pellet_saco", "pellet_granel"], _pellet)
 
-    # medias mensuales y metadatos de todas las series (también las no actualizadas en esta ejecución)
+    # medias mensuales y metadatos de todas las series (también las no actualizadas en esta ejecución).
+    # Se releen del disco para que los resultados sean deterministas (los CSV guardan 6 decimales).
+    series = {id_: cargar_serie(id_) for id_ in ORDEN}
     DIR_MENSUAL.mkdir(parents=True, exist_ok=True)
     meta = {"generado": ahora, "version": __version__, "indicadores": {}}
     for id_ in ORDEN:

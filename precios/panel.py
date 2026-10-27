@@ -265,6 +265,8 @@ def generar(hoy: dt.date | None = None) -> Path:
         "version": __version__,
         "ultima_actualizacion_correcta": ultima_ok,
         "actualizado": estado.get("actualizado"),
+        "ejecucion_url": estado.get("ejecucion_url"),
+        "fuentes_con_error": [k for k, f in estado["fuentes"].items() if f.get("estado") != "ok"],
         "url_actions": URL_ACTIONS, "url_repo": URL_REPO,
         "resumen": resumen,
         "comentario": comentario_semanal(resumen, hoy),
