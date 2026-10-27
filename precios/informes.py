@@ -352,8 +352,8 @@ def generar_pdf(panel: dict, ruta: Path) -> Path:
                       Paragraph(f"{_fmt(r['valor_original'], 2 if r['valor_original'] and r['valor_original'] > 10 else 4)} {r['unidad_original'].split(' (')[0]}", celda),
                       Paragraph(NOMBRE_FUENTE[r["id"]], celda),
                       Paragraph(f'<font color="{punto}">●</font> {r["estado"]}', celda)])
-    t = Table(filas, colWidths=[ancho * f for f in (0.24, 0.09, 0.10, 0.10, 0.08, 0.13, 0.10, 0.16)], repeatRows=1)
-    t.setStyle(TableStyle(estilo_t))
+    t = Table(filas, colWidths=[ancho * f for f in (0.22, 0.09, 0.11, 0.12, 0.08, 0.13, 0.09, 0.16)], repeatRows=1)
+    t.setStyle(TableStyle(estilo_t + [("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3)]))
     el.append(t)
     el.append(Paragraph("Estado: ● actualizado (dato nuevo en los últimos 7 días); ● sin actualización en el periodo (la fuente publica con menor frecuencia); "
                         "● fuente no disponible o dato pendiente. Los precios con impuestos de PVPC, TUR 2 y butano son calculados con los tipos vigentes en cada "
