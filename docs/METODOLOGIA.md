@@ -214,17 +214,25 @@ Criterios del resumen ejecutivo:
 
 ## 8. Informes PDF y Excel (fase 5, `precios/informes.py`)
 
-`python -m precios informes` genera, con los mismos datos que el panel (`panel.construir`):
-- **`sitio/informes/informe.pdf`** (A4, 4 páginas): cabecera con número de semana ISO, periodo analizado (los 7 días
-  que terminan en la fecha de referencia) y fecha de generación; resumen ejecutivo (precios por kWh de la energía
-  final de menor a mayor, mayoristas, datos no disponibles); tabla de precios y variaciones de los ocho indicadores;
-  comentario de evolución (variaciones semanales e interanuales); gráfico comparativo en €/kWh desde enero de 2022;
-  nueve gráficos individuales en la unidad original; fuentes y metodología (tabla por indicador, factores, impuestos,
-  estado de las fuentes). Los gráficos son imágenes generadas con matplotlib con la misma paleta que el panel.
-- **`sitio/informes/historico.xlsx`**: hoja «Resumen» (tabla resumen y comentario); «Mensual» (media mensual de cada
-  serie en €/kWh y en su unidad original, desde 2020); «Gráficos» (comparativo y nueve individuales, *vinculados* a la
-  hoja Mensual: se actualizan si se cambian los datos); una hoja por serie con el histórico completo en su frecuencia
-  original (fecha, periodo, valor original, €/kWh sin y con impuestos, origen, impuestos aplicados, fecha de
-  publicación, referencia y nota) con filtro automático y paneles inmovilizados; «Fuentes y criterios».
+`python -m precios informes` genera, con los mismos datos que el panel (`panel.construir`), dos ficheros pensados
+para dirección (rediseñados el 27/10/2026 a petición de Pablo):
+- **`sitio/informes/informe.pdf`** (A4, 4 páginas, tipografía DejaVu Sans incluida con matplotlib):
+  1. *Cuadro de mando de una página*: ocho tarjetas (una por indicador; la del pellet incluye el granel) con el
+     precio en €/kWh en grande, variación semanal e interanual con flecha y color (rojo sube, verde baja), fuente,
+     fecha del dato y si es con o sin impuestos, y una línea de tendencia de las medias mensuales de 24 meses;
+     ranking visual del coste por kWh de la energía final con impuestos; «Claves de la semana» (el comentario
+     generado a partir de los datos).
+  2. Tabla de precios y variaciones (con estado por colores) y gráfico comparativo en €/kWh desde 2022.
+  3. Nueve gráficos individuales desde 2022 en la unidad original con el último valor anotado, y tabla de medias
+     anuales en €/kWh de los últimos cinco años.
+  4. Estado de las fuentes en la última actualización, fuentes y metodología (tabla por indicador con enlaces),
+     factores de conversión, impuestos y criterios.
+- **`sitio/informes/historico.xlsx`**: «Cuadro de mando» (tabla resumen con formato condicional: color y flechas en
+  las variaciones; claves de la semana; gráfico de barras vinculado); «Anual» (medias anuales en €/kWh); «Mensual»
+  (media mensual de cada serie en €/kWh y en su unidad original, desde 2020, como tabla filtrable); «Gráficos»
+  (comparativo mensual, barras anuales y nueve individuales, *vinculados* a las hojas Anual y Mensual); una hoja
+  «Datos n nombre» por serie con el histórico completo en su frecuencia original (fecha, periodo, valor original,
+  €/kWh sin y con impuestos, origen, impuestos aplicados, fecha de publicación, referencia y nota) en formato tabla
+  de Excel con filtros y paneles inmovilizados; «Fuentes y criterios».
 Ambos se regeneran en cada actualización (paso previo al panel en `actualizar.yml`) y se descargan desde el panel.
 Solo se conserva la última versión de cada uno (el histórico está en `datos/`, versionado en git).
