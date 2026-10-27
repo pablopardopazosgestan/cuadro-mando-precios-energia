@@ -20,11 +20,15 @@ def test_generar_pdf_y_excel(tmp_path, monkeypatch):
     with pdfplumber.open(pdf) as doc:
         assert len(doc.pages) >= 3
         texto = doc.pages[0].extract_text()
-        assert "Resumen ejecutivo" in texto and "Precios y variaciones" in texto and "OMIE" in texto
+        assert "Claves de la semana" in texto and "OMIE" in texto and "€/kWh" in texto
+        assert "Precios y variaciones" in doc.pages[1].extract_text()
         assert "Fuentes y metodología" in doc.pages[-1].extract_text()
     wb = openpyxl.load_workbook(xlsx)
-    assert {"Resumen", "Mensual", "Gráficos", "Fuentes y criterios"} <= set(wb.sheetnames)
-    assert len(wb["Gráficos"]._charts) == 10            # comparativo + 9 individuales
-    assert wb["1_omie"].auto_filter.ref.startswith("A4:")
-    assert wb["1_omie"].max_row > 2000                   # histórico diario completo
+    assert {"Cuadro de mando", "Anual", "Mensual", "Gráficos", "Fuentes y criterios"} <= set(wb.sheetnames)
+    assert len(wb["Gráficos"]._charts) == 11            # comparativo + barras anuales + 9 individuales
+    assert len(wb["Cuadro de mando"]._charts) == 1
+    datos_omie = wb["Datos 1 OMIE"]
+    assert "Datos_omie" in datos_omie.tables              # tabla de Excel filtrable
+    assert datos_omie.max_row > 2000                      # histórico diario completo
     assert wb["Mensual"]["A2"].value == "2020-01"
+    assert wb["Anual"]["A2"].value == 2020
