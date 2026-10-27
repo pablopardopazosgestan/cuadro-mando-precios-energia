@@ -1,6 +1,7 @@
 name: Actualizar datos y publicar
 
-# Actualización semanal (lunes a las 05:17 UTC) y a mano («Run workflow»). Orden de los pasos:
+# Actualización semanal (lunes a las 05:17 UTC) y a mano («Run workflow»). Orden de los pasos
+# (dependencias en requirements.txt, incluidas reportlab y matplotlib para los informes):
 # pruebas → descarga de datos nuevos → comprobación de que el histórico no se reduce → cuadro de mando →
 # commit de datos/ y sitio/ → publicación en GitHub Pages. Si fallan las pruebas o se pierde histórico no se
 # publica nada. Si falla la descarga de alguna fuente, se publica con el último dato correcto de esa fuente,
