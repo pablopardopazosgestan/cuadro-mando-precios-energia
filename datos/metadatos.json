@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-27T12:07:25+00:00",
+  "generado": "2026-10-28T09:30:14+00:00",
   "version": "0.3.0",
   "indicadores": {
     "omie": {
@@ -14,10 +14,10 @@
       "conversion": "€/MWh ÷ 1.000 = €/kWh",
       "nota": "Precio mayorista: no se le aplican impuestos (decisión 1).",
       "primer_dato": "2020-01-01",
-      "ultimo_dato": "2026-10-27",
-      "n_datos": 2489,
+      "ultimo_dato": "2026-10-28",
+      "n_datos": 2490,
       "n_meses": 82,
-      "con_impuestos_no_disponible": 2489
+      "con_impuestos_no_disponible": 2490
     },
     "mibgas": {
       "numero": 2,
@@ -31,10 +31,10 @@
       "conversion": "€/MWh ÷ 1.000 = €/kWh (el índice se expresa sobre PCS, como todo el mercado gasista)",
       "nota": "Precio mayorista: no se le aplican impuestos (decisión 1).",
       "primer_dato": "2020-01-01",
-      "ultimo_dato": "2026-10-26",
-      "n_datos": 2491,
+      "ultimo_dato": "2026-10-27",
+      "n_datos": 2492,
       "n_meses": 82,
-      "con_impuestos_no_disponible": 2491
+      "con_impuestos_no_disponible": 2492
     },
     "gasoleo_a": {
       "numero": 3,
@@ -65,8 +65,8 @@
       "conversion": "€/MWh ÷ 1.000 = €/kWh; con impuestos: (precio + cuota IEE) × (1 + IVA) vigentes en la fecha",
       "nota": "Indicador 1001 de ESIOS. Requiere ESIOS_TOKEN. Existe desde el 01/06/2021 (inicio de la 2.0TD).",
       "primer_dato": "2021-06-01",
-      "ultimo_dato": "2026-10-27",
-      "n_datos": 1975,
+      "ultimo_dato": "2026-10-28",
+      "n_datos": 1976,
       "n_meses": 65,
       "con_impuestos_no_disponible": 0
     },
