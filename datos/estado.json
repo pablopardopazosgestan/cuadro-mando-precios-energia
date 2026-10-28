@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-28T09:30:14+00:00",
+  "actualizado": "2026-10-28T09:39:30+00:00",
   "version": "0.3.0",
   "fuentes": {
     "ine_ipc": {
@@ -11,19 +11,19 @@
     "esios_pvpc": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T09:30:14+00:00",
+      "ultima_actualizacion_correcta": "2026-10-28T09:39:30+00:00",
       "series": {
         "pvpc": {
           "ultimo_dato": "2026-10-28",
           "n_datos": 1976,
-          "dato_nuevo": true
+          "dato_nuevo": false
         }
       }
     },
     "boe_tur": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T09:30:14+00:00",
+      "ultima_actualizacion_correcta": "2026-10-28T09:39:30+00:00",
       "series": {
         "tur2": {
           "ultimo_dato": "2026-10-01",
@@ -35,31 +35,31 @@
     "omie": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T09:30:14+00:00",
+      "ultima_actualizacion_correcta": "2026-10-28T09:39:30+00:00",
       "series": {
         "omie": {
           "ultimo_dato": "2026-10-28",
           "n_datos": 2490,
-          "dato_nuevo": true
+          "dato_nuevo": false
         }
       }
     },
     "mibgas": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T09:30:14+00:00",
+      "ultima_actualizacion_correcta": "2026-10-28T09:39:30+00:00",
       "series": {
         "mibgas": {
           "ultimo_dato": "2026-10-27",
           "n_datos": 2492,
-          "dato_nuevo": true
+          "dato_nuevo": false
         }
       }
     },
     "boletin_petrolero": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T09:30:14+00:00",
+      "ultima_actualizacion_correcta": "2026-10-28T09:39:30+00:00",
       "series": {
         "gasoleo_a": {
           "ultimo_dato": "2026-10-19",
@@ -76,7 +76,7 @@
     "boe_butano": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T09:30:14+00:00",
+      "ultima_actualizacion_correcta": "2026-10-28T09:39:30+00:00",
       "series": {
         "butano": {
           "ultimo_dato": "2026-09-15",
@@ -88,7 +88,7 @@
     "avebiom": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T09:30:14+00:00",
+      "ultima_actualizacion_correcta": "2026-10-28T09:39:30+00:00",
       "series": {
         "pellet_saco": {
           "ultimo_dato": "2026-07-01",
@@ -103,5 +103,5 @@
       }
     }
   },
-  "ejecucion_url": "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia/actions/runs/40664631260"
+  "ejecucion_url": "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia/actions/runs/40665844795"
 }
