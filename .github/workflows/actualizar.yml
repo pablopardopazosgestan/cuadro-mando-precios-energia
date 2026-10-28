@@ -1,0 +1,107 @@
+name: Actualizar datos y publicar
+
+# Actualización semanal (lunes a las 05:17 UTC) y a mano («Run workflow»). Orden de los pasos
+# (dependencias en requirements.txt, incluidas reportlab y matplotlib para los informes):
+# pruebas → descarga de datos nuevos → comprobación de que el histórico no se reduce → cuadro de mando →
+# commit de datos/ y sitio/ → publicación en GitHub Pages. Si fallan las pruebas o se pierde histórico no se
+# publica nada. Si falla la descarga de alguna fuente, se publica con el último dato correcto de esa fuente,
+# el error queda visible en el panel y la ejecución termina en rojo para que llegue el aviso.
+# 28/10/2026: botón «Actualizar» del panel (workflow_dispatch por API) e informe PDF de dos páginas. AVEBIOM solo se consulta cuando
+# puede haber trimestre nuevo (el resto de semanas el pellet se reconstruye desde los PDF versionados).
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+  push:
+    # Cualquier cambio en este fichero en la rama principal ejecuta una actualización completa (además de «Run workflow»).
+    branches: [main]
+    paths: [".github/workflows/actualizar.yml"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: actualizar
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    outputs:
+      publicar: ${{ steps.commit.outputs.publicar }}
+      resultado: ${{ steps.datos.outputs.resultado }}
+    env:
+      ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+      - name: Pruebas (si fallan, no se publica)
+        run: python -m pytest -q tests
+      - name: Descargar datos nuevos y reconstruir la base de datos
+        id: datos
+        run: |
+          if python -m precios actualizar -v; then
+            echo "resultado=ok" >> "$GITHUB_OUTPUT"
+          else
+            echo "resultado=error" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Comprobar que el histórico se conserva
+        run: python scripts/verificar_historico.py
+      - name: Comprobaciones con valores de control
+        run: python scripts/comprobaciones.py || echo "::warning::Alguna comprobación de control no coincide; revisar docs/COMPROBACIONES.md"
+      - name: Generar los informes PDF y Excel
+        run: python -m precios informes
+      - name: Generar el cuadro de mando
+        run: python -m precios panel
+      - name: Guardar datos y sitio en el repositorio
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datos sitio
+          if git diff --cached --quiet; then
+            echo "Sin cambios que guardar"
+          else
+            git commit -m "Actualización automática $(date -u +%Y-%m-%d\ %H:%M) UTC"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+          echo "publicar=si" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: sitio
+      - name: Resultado
+        run: |
+          python - <<'EOF'
+          import json, os
+          e = json.load(open("datos/estado.json", encoding="utf-8"))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as s:
+              s.write("| Fuente | Resultado | Último dato | Dato nuevo |\n|---|---|---|---|\n")
+              for k, f in e["fuentes"].items():
+                  for id_, d in (f.get("series") or {"": {}}).items():
+                      s.write(f"| {k} {id_} | {f['estado']}{' — ' + f['error'] if f.get('error') else ''} | {d.get('ultimo_dato', '—')} | {'sí' if d.get('dato_nuevo') else 'no'} |\n")
+          errores = [k for k, f in e["fuentes"].items() if f["estado"] != "ok"]
+          if errores:
+              print("::error::Fuentes con error: " + ", ".join(errores) + ". Se ha publicado con el último dato correcto de cada una.")
+          EOF
+          if [ "${{ steps.datos.outputs.resultado }}" != "ok" ]; then exit 1; fi
+
+  publicar:
+    needs: actualizar
+    if: always() && needs.actualizar.outputs.publicar == 'si'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documento fecha_actualizacion="20251229132601">
+  <metadatos>
+    <identificador>BOE-A-2025-26707</identificador>
+    <origen_legislativo codigo="1">Estatal</origen_legislativo>
+    <departamento codigo="9575">Ministerio para la Transición Ecológica y el Reto Demográfico</departamento>
+    <rango codigo="1370">Resolución</rango>
+    <fecha_disposicion>20251222</fecha_disposicion>
+    <numero_oficial/>
+    <titulo>Resolución de 22 de diciembre de 2025, de la Dirección General de Política Energética y Minas, por la que se publica la tarifa de último recurso de gas natural.</titulo>
+    <diario codigo="BOE">Boletín Oficial del Estado</diario>
+    <fecha_publicacion>20251227</fecha_publicacion>
+    <diario_numero>312</diario_numero>
+    <seccion>1</seccion>
+    <subseccion/>
+    <pagina_inicial>176263</pagina_inicial>
+    <pagina_final>176266</pagina_final>
+    <suplemento_pagina_inicial/>
+    <suplemento_pagina_final/>
+    <url_pdf>https://www.boe.es/boe/dias/2025/12/27/pdfs/BOE-A-2025-26707.pdf</url_pdf>
+    <url_epub>
+      <url_epub>https://www.boe.es/diario_boe/epub.php?id=BOE-A-2025-26707</url_epub>
+    </url_epub>
+    <url_pdf_catalan/>
+    <url_pdf_euskera/>
+    <url_pdf_gallego/>
+    <url_pdf_valenciano/>
+    <estatus_legislativo>L</estatus_legislativo>
+    <fecha_vigencia>20260101</fecha_vigencia>
+    <estatus_derogacion>N</estatus_derogacion>
+    <fecha_derogacion/>
+    <judicialmente_anulada>N</judicialmente_anulada>
+    <fecha_anulacion/>
+    <vigencia_agotada>N</vigencia_agotada>
+    <estado_consolidacion codigo="0"/>
+    <letra_imagen>A</letra_imagen>
+    <suplemento_letra_imagen/>
+    <url_eli>https://www.boe.es/eli/es/res/2025/12/22/(1)</url_eli>
+  </metadatos>
+  <metadata-eli>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:eli="http://data.europa.eu/eli/ontology#">
+      <eli:LegalResource rdf:about="https://www.boe.es/eli/es/res/2025/12/22/(1)">
+        <eli:jurisdiction rdf:resource="http://www.elidata.es/mdr/authority/jurisdiction/1/es"/>
+        <eli:type_document rdf:resource="http://www.elidata.es/mdr/authority/resource-type/1/res"/>
+        <eli:id_local rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BOE-A-2025-26707</eli:id_local>
+        <eli:date_document rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-12-22</eli:date_document>
+        <eli:number rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(1)</eli:number>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/619"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/1624"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/1625"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/3889"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5665"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6806"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6827"/>
+        <eli:has_member>
+          <eli:LegalResource rdf:about="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof">
+            <eli:jurisdiction rdf:resource="http://www.elidata.es/mdr/authority/jurisdiction/1/es"/>
+            <eli:type_document rdf:resource="http://www.elidata.es/mdr/authority/resource-type/1/res"/>
+            <eli:id_local rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BOE-A-2025-26707</eli:id_local>
+            <eli:date_document rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-12-22</eli:date_document>
+            <eli:number rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(1)</eli:number>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/619"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/1624"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/1625"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/3889"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5665"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6806"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6827"/>
+            <eli:version rdf:resource="http://www.elidata.es/mdr/authority/version/dof"/>
+            <eli:is_member_of rdf:resource="https://www.boe.es/eli/es/res/2025/12/22/(1)"/>
+            <eli:is_realized_by>
+              <eli:LegalExpression rdf:about="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa">
+                <eli:language rdf:resource="http://www.elidata.es/mdr/authority/language/spa"/>
+                <eli:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Resolución de 22 de diciembre de 2025, de la Dirección General de Política Energética y Minas, por la que se publica la tarifa de último recurso de gas natural.</eli:title>
+                <eli:publisher_agent rdf:resource="https://www.boe.es"/>
+                <eli:date_publication rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-12-27</eli:date_publication>
+                <eli:realizes rdf:resource="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof"/>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa/epub">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/epub+zip"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa/html">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/text/html"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa/pdf">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/pdf"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa/xml">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/xml"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/res/2025/12/22/(1)/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+              </eli:LegalExpression>
+            </eli:is_realized_by>
+          </eli:LegalResource>
+        </eli:has_member>
+      </eli:LegalResource>
+    </rdf:RDF>
+  </metadata-eli>
+  <analisis>
+    <materias>
+      <materia codigo="619" orden="1">Carburantes y combustibles</materia>
+      <materia codigo="1624" orden="1">Consumidores y usuarios</materia>
+      <materia codigo="1625" orden="1">Consumo de energía</materia>
+      <materia codigo="3889" orden="1">Gas</materia>
+      <materia codigo="5665" orden="1">Precios</materia>
+      <materia codigo="6806" orden="1">Suministro de energía</materia>
+      <materia codigo="6827" orden="1">Tarifas</materia>
+    </materias>
+    <notas/>
+    <referencias>
+      <anteriores>
+        <anterior referencia="BOE-A-2009-10329" orden="3060">
+          <palabra codigo="440">DE CONFORMIDAD con</palabra>
+          <texto>el art. 10 de la Orden ITC/1660/2009, de 22 de junio</texto>
+        </anterior>
+        <anterior referencia="BOE-A-1998-23284" orden="3060">
+          <palabra codigo="440">DE CONFORMIDAD con</palabra>
+          <texto>el art. 93 de la Ley 34/1998, de 7 de octubre</texto>
+        </anterior>
+      </anteriores>
+      <posteriores/>
+    </referencias>
+    <alertas>
+      <alerta codigo="106" orden="1">Consumidores y usuarios</alerta>
+      <alerta codigo="115" orden="1">Energía</alerta>
+    </alertas>
+  </analisis>
+  <texto>
+    <p class="parrafo">La Ley 12/2007, de 2 de julio, por la que se modifica la Ley 34/1998, de 7 de octubre, del sector de hidrocarburos, con el fin de adaptarla a lo dispuesto en la Directiva 2003/55/CE del Parlamento Europeo y del Consejo, de 26 de junio de 2003, sobre normas comunes para el mercado interior del gas natural, modificó el artículo 93 de la referida ley, definiendo la tarifa de último recurso. Asimismo, la Ley 34/1998, de 7 de octubre, dispone en su disposición transitoria vigésima el régimen transitorio aplicable al suministro de gases manufacturados en territorios insulares, de manera que hasta la finalización y puesta en marcha de las instalaciones que permitan el suministro de gas natural las empresas distribuidoras podrán efectuar el suministro de gases manufacturados.</p>
+    <p class="parrafo">En desarrollo de la Ley 34/1998, de 7 de octubre, el Real Decreto 949/2001, de 3 de agosto, por el que se regula el acceso de terceros a las instalaciones gasistas y se establece un sistema económico integrado del sector de gas natural, establece en su artículo 25.1 que el titular del Ministerio, mediante orden y previo Acuerdo de la Comisión Delegada del Gobierno para Asuntos Económicos, dictará las disposiciones necesarias para el establecimiento de las tarifas de venta de gas natural. Asimismo, este artículo dispone que en dichas órdenes se establecerán los valores concretos de las tarifas y precios o un sistema de determinación y actualización de los mismos.</p>
+    <p class="parrafo">En cumplimiento de lo anterior, el Ministro de Industria Turismo y Comercio dictó la Orden ITC/1660/2009, de 22 de junio, por la que se establece la metodología de cálculo de la tarifa de último recurso de gas natural. El artículo 10 de dicha orden establece que las revisiones de la tarifa de último recurso de gas natural se realizarán mediante resolución de la Dirección General de Política Energética y Minas. Los términos fijos y variables de las tarifas se actualizarán en el momento en que se produzca alguna modificación en los términos fijos y variables de los peajes y cánones de acceso al sistema y cargos o en los coeficientes de mermas en vigor. El término variable se actualizará con carácter trimestral, desde el día 1 de los meses de enero, abril, julio y octubre de cada año, siempre que el coste de la materia prima experimente una variación al alza o a la baja superior al 2 %. El valor promedio de las primas de las subastas de asignación de capacidad se actualizará el 1 de octubre de cada año, mientras que los costes de comercialización son los establecidos en la Orden ITC/1660/2009, de 22 de junio, por la que se establece la metodología de cálculo de la tarifa de último recurso de gas natural. Asimismo, la disposición adicional única de dicha orden establece que las tarifas a aplicar por las empresas distribuidoras de gases manufacturados por canalización en territorios insulares las determinará la Dirección General de Política Energética y Minas.</p>
+    <p class="parrafo">El Real Decreto-ley 4/2024, de 26 de junio, por el que se prorrogan determinadas medidas para afrontar las consecuencias económicas y sociales derivadas de los conflictos en Ucrania y Oriente Próximo y se adoptan medidas urgentes en materia fiscal, energética y social, en su artículo 25 modificó el artículo 93 de la Ley 34/1998, de 7 de octubre, añadiendo las letras b) y c), ampliando el ámbito de aplicación de la tarifa de último recurso a las comunidades de propietarios de viviendas de uso residencial y agrupaciones de ellas, a los edificios de titularidad pública destinados a viviendas de uso residencial, a los edificios de patronatos o de organizaciones sin ánimo de lucro destinados al mismo uso y a las empresas de servicios energéticos que presten servicio a todas las categorías anteriores.</p>
+    <p class="parrafo">En su virtud, teniendo en cuenta los peajes y cánones en vigor,</p>
+    <p class="parrafo">Esta Dirección General de Política Energética y Minas ha resuelto lo siguiente:</p>
+    <p class="articulo">Primero.</p>
+    <p class="parrafo">Conforme lo dispuesto en el artículo 93 de la Ley 34/1998, de 7 de octubre, del sector de hidrocarburos, se podrán acoger a la tarifa de último recurso exclusivamente los siguientes consumidores:</p>
+    <p class="parrafo_2">a. Consumidores individuales con presión de suministro igual o inferior a 4 bar y consumo anual inferior a 50.000 kWh.</p>
+    <p class="parrafo">b. Comunidades de propietarios de viviendas de uso residencial y agrupaciones de ellas, constituidas conforme los artículos 5 y 24 de la Ley 49/1960, de 21 de julio, sobre propiedad horizontal, así como a las empresas de servicios energéticos que les presten servicio.</p>
+    <p class="parrafo">c. Los edificios de titularidad pública destinados a viviendas de uso residencial y edificios de patronatos o de organizaciones sin ánimo de lucro destinados al mismo uso.</p>
+    <p class="parrafo">d. Las empresas de servicios energéticos que presten servicio a las anteriores.</p>
+    <p class="parrafo_2">Los precios sin impuestos de la tarifa de último recurso de gas natural en vigor desde las cero horas del día 1 de enero de 2026, son los indicados a continuación:</p>
+    <table class="tabla_ancha">
+      <colgroup>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="cabeza_tabla" colspan="2" rowspan="2"> </th>
+          <th class="cabeza_tabla" colspan="2">Tarifa</th>
+        </tr>
+        <tr>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">Término fijo</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">(€/cliente)/mes</p>
+          </th>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">Término variable</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">cent/kWh</p>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.1</td>
+          <td class="cuerpo_tabla_izq">Consumo inferior o igual a 5.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">3,93</td>
+          <td class="cuerpo_tabla_coma">4,259578</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.2</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 5.000 kWh/año e inferior o igual a 15.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">8,11</td>
+          <td class="cuerpo_tabla_coma">4,049688</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.3</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 15.000 kWh/año e inferior o igual a 50.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">18,82</td>
+          <td class="cuerpo_tabla_coma">3,705623</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.4</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 50.000 kWh/año e inferior o igual a 300.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">53,15</td>
+          <td class="cuerpo_tabla_coma">4,020762</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.5</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 300.000 kWh/año e inferior o igual a 1.500.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">289,39</td>
+          <td class="cuerpo_tabla_coma">4,014470</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.6</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 1.500.000 kWh/año e inferior o igual a 5.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">1.296,85</td>
+          <td class="cuerpo_tabla_coma">3,187699</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.7</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 5.000.000 kWh/año e inferior o igual a 15.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">3.952,60</td>
+          <td class="cuerpo_tabla_coma">2,815622</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.8</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 15.000.000 kWh/año e inferior o igual a 50.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">7.283,67</td>
+          <td class="cuerpo_tabla_coma">2,783753</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.9</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 50.000.000 kWh/año e inferior o igual a 150.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">9.819,49</td>
+          <td class="cuerpo_tabla_coma">2,762338</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.10</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 150.000.000 kWh/año e inferior o igual a 500.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">28.625,27</td>
+          <td class="cuerpo_tabla_coma">2,748230</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">TUR.11</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 500.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">182.105,30</td>
+          <td class="cuerpo_tabla_coma">2,717478</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="articulo">Segundo.</p>
+    <p class="parrafo">Los precios sin impuestos aplicables a los suministros de gas manufacturado y/o aire propanado en territorios insulares acogidos a lo dispuesto en la disposición transitoria vigésima de la Ley 34/1998, de 7 de octubre, en vigor desde las cero horas del día 1 de enero de 2026, serán los indicados en el apartado primero.</p>
+    <p class="articulo">Tercero.</p>
+    <p class="parrafo">El coste de la materia prima (Cn) y los diferentes elementos que la componen son:</p>
+    <table class="tabla">
+      <colgroup>
+        <col/>
+        <col/>
+        <col/>
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="cabeza_tabla" rowspan="3">
+            <p class="cabeza_tabla">Coste materia prima, conforme a la fórmula de la Orden ITC/1660/2009, de 22 de junio</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">(cent/kWh)</p>
+          </th>
+          <th class="cabeza_tabla" colspan="2">
+            <p class="cabeza_tabla">Componentes principales</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">(cent/kWh)</p>
+          </th>
+        </tr>
+        <tr>
+          <th class="cabeza_tabla">Gas de base</th>
+          <th class="cabeza_tabla">Gas estacional</th>
+        </tr>
+        <tr>
+          <th class="cabeza_tabla">Referencia</th>
+          <th class="cabeza_tabla">Referencia</th>
+        </tr>
+        <tr>
+          <th class="cabeza_tabla">C<sub>n</sub></th>
+          <th class="cabeza_tabla">RB<sub>n</sub></th>
+          <th class="cabeza_tabla">RE<sub>n</sub></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cuerpo_tabla_centro">2,549651</td>
+          <td class="cuerpo_tabla_centro">2,020239</td>
+          <td class="cuerpo_tabla_centro">2,726960</td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="tabla">
+      <colgroup>
+        <col width="15%"/>
+        <col width="15%"/>
+        <col width="15%"/>
+        <col width="15%"/>
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">BR6n</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">($/Bbl)</p>
+          </th>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">T<sub>n</sub></p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">($/€)</p>
+          </th>
+          <th class="cabeza_tabla">PRQ</th>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">NBP</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">(cent/kWh)</p>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cuerpo_tabla_centro">66,376</td>
+          <td class="cuerpo_tabla_centro">1,1621</td>
+          <td class="cuerpo_tabla_centro">0,031942</td>
+          <td class="cuerpo_tabla_centro">2,726960</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="articulo">Cuarto.</p>
+    <p class="parrafo">Suma de peajes, cargos y cánones incluidos en las tarifas anteriores:</p>
+    <table class="tabla_ancha">
+      <thead>
+        <tr>
+          <th class="cabeza_tabla" colspan="2" rowspan="2"> </th>
+          <th class="cabeza_tabla" colspan="2">Peajes, cargos y cánones</th>
+          <th class="cabeza_tabla" colspan="2">Peajes y cánones</th>
+        </tr>
+        <tr>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">Fijo</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">(€/cliente)/mes</p>
+          </th>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">Variable</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">cent/kWh</p>
+          </th>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">Fijo</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">(€/cliente)/mes</p>
+          </th>
+          <th class="cabeza_tabla">
+            <p class="cabeza_tabla">Variable</p>
+            <p class="cabeza_tabla">–</p>
+            <p class="cabeza_tabla">cent/kWh</p>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL1</td>
+          <td class="cuerpo_tabla_izq">Consumo inferior o igual a 5.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">2,48</td>
+          <td class="cuerpo_tabla_coma">1,602978</td>
+          <td class="cuerpo_tabla_coma">2,45</td>
+          <td class="cuerpo_tabla_coma">1,602978</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL2</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 5.000 kWh/año e inferior o igual a 15.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">6,59</td>
+          <td class="cuerpo_tabla_coma">1,396178</td>
+          <td class="cuerpo_tabla_coma">6,55</td>
+          <td class="cuerpo_tabla_coma">1,396178</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL3</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 15.000 kWh/año e inferior o igual a 50.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">17,14</td>
+          <td class="cuerpo_tabla_coma">1,057178</td>
+          <td class="cuerpo_tabla_coma">17,05</td>
+          <td class="cuerpo_tabla_coma">1,057178</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL4</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 50.000 kWh/año e inferior o igual a 300.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">50,97</td>
+          <td class="cuerpo_tabla_coma">1,367678</td>
+          <td class="cuerpo_tabla_coma">50,52</td>
+          <td class="cuerpo_tabla_coma">1,367678</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL5</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 300.000 kWh/año e inferior o igual a 1.500.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">283,76</td>
+          <td class="cuerpo_tabla_coma">1,361478</td>
+          <td class="cuerpo_tabla_coma">281,46</td>
+          <td class="cuerpo_tabla_coma">1,361478</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL6</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 1,500.000 kWh/año e inferior o igual a 5.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">1276,47</td>
+          <td class="cuerpo_tabla_coma">0,546878</td>
+          <td class="cuerpo_tabla_coma">1268,55</td>
+          <td class="cuerpo_tabla_coma">0,546878</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL7</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 5.000.000 kWh/año e inferior o igual a 15,000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">3893,33</td>
+          <td class="cuerpo_tabla_coma">0,180278</td>
+          <td class="cuerpo_tabla_coma">3870,00</td>
+          <td class="cuerpo_tabla_coma">0,180278</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL8</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 15.000.000 kWh/año e inferior o igual a 50.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">7175,97</td>
+          <td class="cuerpo_tabla_coma">0,148878</td>
+          <td class="cuerpo_tabla_coma">7106,83</td>
+          <td class="cuerpo_tabla_coma">0,148878</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL9</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 50.000.000 kWh/año e inferior o igual a 150.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">9675,76</td>
+          <td class="cuerpo_tabla_coma">0,127778</td>
+          <td class="cuerpo_tabla_coma">9510,16</td>
+          <td class="cuerpo_tabla_coma">0,127778</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL10</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 150.000.000 kWh/año e inferior o igual a 500.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">28209,18</td>
+          <td class="cuerpo_tabla_coma">0,113878</td>
+          <td class="cuerpo_tabla_coma">27708,71</td>
+          <td class="cuerpo_tabla_coma">0,113878</td>
+        </tr>
+        <tr>
+          <td class="cuerpo_tabla_izq">T.RL11</td>
+          <td class="cuerpo_tabla_izq">Consumo superior a 500.000.000 kWh/año.</td>
+          <td class="cuerpo_tabla_coma">179465,89</td>
+          <td class="cuerpo_tabla_coma">0,083578</td>
+          <td class="cuerpo_tabla_coma">176273,16</td>
+          <td class="cuerpo_tabla_coma">0,083578</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="articulo">Quinto.</p>
+    <p class="parrafo">Para el cálculo de la facturación del suministro de gas natural por canalización medido por contador, durante el período que incluya la fecha de entrada en vigor de esta resolución, se repartirá el consumo total del periodo facturado de forma proporcional a los días a los que apliquen las distintas resoluciones en vigor. A los consumos resultantes, les será de aplicación el precio en vigor en cada periodo, que deberá incluir los impuestos vigentes en los mismos.</p>
+    <p class="articulo">Sexto.</p>
+    <p class="parrafo">La presente resolución surtirá efectos el 1 de enero de 2026.</p>
+    <p class="parrafo_2">Contra la presente resolución, y de acuerdo con lo dispuesto en los artículos 121 y siguientes de la Ley 39/2015, de 1 de octubre de 2015, de Procedimiento Administrativo Común de las Administraciones Públicas, puede interponerse recurso de alzada ante la Secretaría de Estado de Energía en el plazo de un mes a partir del día siguiente al de su publicación.</p>
+    <p class="parrafo_2">Madrid, 22 de diciembre de 2025.–El Director General de Política Energética y Minas, Manuel García Hernández.</p>
+  </texto>
+</documento>

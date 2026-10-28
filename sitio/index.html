@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Precios de la energía en España</title>
+<meta name="description" content="Cuadro de mando de precios energéticos en España: electricidad, gas natural, gasóleos, butano y pellet, con histórico desde 2020 y actualización automática semanal.">
+<script src="plotly.min.js"></script>
+<style>
+:root {
+  color-scheme: light;
+  --surface: #fcfcfb; --surface-2: #f3f2ef; --surface-3: #e9e8e3; --border: #dcdad4;
+  --text: #0b0b0b; --text-2: #52514e; --text-3: #7a7873; --accent: #2a78d6;
+  --ok: #0ca30c; --warn: #c98500; --bad: #d03b3b; --grid: #e6e4de;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; --surface: #1a1a19; --surface-2: #242423; --surface-3: #2e2e2c; --border: #3a3a37;
+    --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86; --accent: #3987e5; --ok: #2fbf2f; --warn: #e0a020; --bad: #e66767; --grid: #33332f; }
+}
+:root[data-theme="dark"] { color-scheme: dark; --surface: #1a1a19; --surface-2: #242423; --surface-3: #2e2e2c; --border: #3a3a37;
+  --text: #f0efec; --text-2: #c3c2b7; --text-3: #8f8e86; --accent: #3987e5; --ok: #2fbf2f; --warn: #e0a020; --bad: #e66767; --grid: #33332f; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 56px; }
+body { margin: 0; background: var(--surface); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+nav.principal { position: sticky; top: 0; z-index: 20; background: var(--surface); border-bottom: 1px solid var(--border); }
+nav.principal .int { max-width: 1240px; margin: 0 auto; padding: 8px 16px; display: flex; gap: 4px 14px; align-items: center; flex-wrap: wrap; }
+nav.principal .marca { font-weight: 700; margin-right: 8px; }
+nav.principal a { color: var(--text-2); text-decoration: none; font-size: .9rem; padding: 4px 6px; border-radius: 6px; }
+nav.principal a:hover { background: var(--surface-2); color: var(--text); }
+main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+header.cab { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 18px; }
+h1 { font-size: 1.65rem; margin: 0 0 4px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; }
+h3 { font-size: 1rem; margin: 0 0 4px; }
+.sub { color: var(--text-2); margin: 0; max-width: 820px; }
+.meta { color: var(--text-3); font-size: .85rem; margin: 6px 0 0; }
+a { color: var(--accent); }
+.acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.boton { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: .88rem; padding: 6px 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); text-decoration: none; cursor: pointer; }
+.boton.primario { background: var(--accent); color: #fff; border-color: var(--accent); }
+.boton.activo { outline: 2px solid var(--accent); outline-offset: -2px; }
+.boton:hover { filter: brightness(1.04); }
+/* tarjetas */
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; }
+.tarjeta { position: relative; border: 1px solid var(--border); border-left: 4px solid var(--c, var(--accent)); border-radius: 10px; padding: 10px 12px 8px; background: var(--surface-2); display: grid; grid-template-columns: 1fr 110px; gap: 4px 8px; }
+.tarjeta .nombre { grid-column: 1 / -1; font-weight: 700; font-size: .9rem; }
+.tarjeta .precio { font-size: 1.7rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tarjeta .precio small { font-size: .72rem; font-weight: 400; color: var(--text-2); margin-left: 3px; }
+.tarjeta .vars { font-size: .82rem; line-height: 1.35; }
+.tarjeta .mini { grid-column: 2; grid-row: 2 / span 2; align-self: center; }
+.tarjeta .meta { grid-column: 1 / -1; margin: 2px 0 0; font-size: .74rem; }
+.tarjeta .extra { grid-column: 1 / -1; font-size: .8rem; border-top: 1px dashed var(--border); padding-top: 4px; margin-top: 2px; }
+.sube { color: var(--bad); } .baja { color: var(--ok); } .igual { color: var(--text-2); }
+.nd { color: var(--text-3); font-style: italic; }
+.chip { font-size: .72rem; color: var(--text-2); background: var(--surface-3); border-radius: 4px; padding: 1px 6px; margin-left: 6px; white-space: nowrap; vertical-align: middle; }
+/* tablas */
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--text-2); font-weight: 600; white-space: nowrap; background: var(--surface-2); position: sticky; top: 46px; }
+th.ordenable { cursor: pointer; user-select: none; } th.ordenable:hover { color: var(--text); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tabla-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+.estado { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.punto { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.punto.ok { background: var(--ok); } .punto.warn { background: var(--warn); } .punto.bad { background: var(--bad); }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: middle; }
+/* controles */
+.panel-controles { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; background: var(--surface-2); border-radius: 10px; margin: 10px 0 12px; }
+.fila { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.fila label.campo { display: flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--text-2); }
+.fila input[type=date], .fila select { font: inherit; font-size: .88rem; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+.fila .titulo { font-size: .8rem; color: var(--text-3); text-transform: uppercase; letter-spacing: .04em; min-width: 86px; }
+.selector-series { display: flex; flex-wrap: wrap; gap: 6px 8px; }
+.selector-series label { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 6px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); font-size: .85rem; cursor: pointer; }
+.selector-series label.off { opacity: .5; }
+.selector-series input { margin: 0; }
+.opciones label { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; cursor: pointer; }
+.grafico { width: 100%; min-height: 440px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+.card { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
+.card .cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; flex-wrap: wrap; }
+.card .cab .btns { display: flex; gap: 4px; }
+.card .btns button { font: inherit; font-size: .74rem; padding: 2px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-2); color: var(--text-2); cursor: pointer; }
+.card .btns button.activo { background: var(--accent); color: #fff; border-color: var(--accent); }
+.card .grafico { min-height: 260px; }
+.card .datos { display: none; margin-top: 8px; max-height: 260px; overflow: auto; border: 1px solid var(--border); border-radius: 6px; }
+.card .datos table { font-size: .8rem; } .card .datos th { top: 0; }
+.card.abierto .datos { display: block; }
+.comentario p { margin: 6px 0; }
+details { margin: 8px 0; } summary { cursor: pointer; color: var(--text-2); }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-3); font-size: .85rem; }
+.aviso { padding: 10px 12px; border-left: 4px solid var(--warn); background: var(--surface-2); border-radius: 4px; margin: 10px 0; }
+dialog.actualizar { border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; max-width: 520px; width: calc(100% - 32px); background: var(--surface); color: var(--text); }
+dialog.actualizar::backdrop { background: rgba(0,0,0,.35); }
+dialog.actualizar h3 { margin: 0 0 8px; } dialog.actualizar p { margin: 6px 0; font-size: .92rem; } dialog.actualizar ol { padding-left: 18px; font-size: .9rem; }
+dialog.actualizar input[type=password] { width: 100%; font: inherit; padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); margin: 6px 0 10px; }
+.progreso { display: inline-flex; align-items: center; gap: 8px; } .progreso::before { content: ''; width: 12px; height: 12px; border: 2px solid var(--accent); border-right-color: transparent; border-radius: 50%; animation: gira 1s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
+.dos-col { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 900px) { .dos-col { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { h1 { font-size: 1.3rem; } th, td { padding: 6px 5px; } th { top: 0; position: static; } .tarjeta { grid-template-columns: 1fr 90px; } }
+@media print {
+  @page { size: A4; margin: 12mm; }
+  nav.principal, .panel-controles, .acciones, .card .btns, .card .datos, #descargas { display: none !important; }
+  body { font-size: 11px; } main { max-width: none; padding: 0; }
+  h2 { page-break-after: avoid; break-after: avoid; margin-top: 18px; }
+  .tarjetas { grid-template-columns: repeat(2, 1fr); } .grid { grid-template-columns: repeat(2, 1fr); }
+  .grafico { min-height: 300px; } .card .grafico { min-height: 200px; }
+  #seccion-comparativo, #seccion-individuales, #seccion-estado { page-break-before: always; break-before: page; }
+  a { color: inherit; text-decoration: none; } th { position: static; }
+}
+</style>
+</head>
+<body>
+<nav class="principal"><div class="int">
+  <span class="marca">Precios de la energía</span>
+  <a href="#seccion-resumen">Resumen</a><a href="#seccion-comparativo">Comparativo</a><a href="#seccion-individuales">Indicadores</a>
+  <a href="#seccion-estado">Estado</a><a href="#seccion-metodo">Fuentes</a><a href="#descargas">Descargas</a>
+</div></nav>
+<main>
+<header class="cab">
+  <div>
+    <h1>Precios de la energía en España</h1>
+    <p class="sub">Ocho indicadores en €/kWh: electricidad (mercado diario y PVPC), gas natural (MIBGAS y TUR 2), gasóleos de automoción y calefacción, butano y pellet. Histórico desde 2020, actualización automática semanal.</p>
+    <p class="meta" id="meta-cabecera">Cargando datos…</p>
+  </div>
+  <div class="acciones" id="acciones"></div>
+</header>
+
+<section id="seccion-resumen">
+  <h2>Resumen ejecutivo</h2>
+  <div class="tarjetas" id="tarjetas"></div>
+  <p class="meta">Precio actual: media de los últimos 7 días (OMIE, MIBGAS, PVPC), última semana publicada (gasóleos) o valor vigente hoy (TUR 2, butano, pellet). OMIE y MIBGAS son precios mayoristas sin impuestos; el resto, con impuestos. Variaciones frente al periodo anterior y frente a hace un año; ▲ sube (rojo), ▼ baja (verde), ■ sin cambio. Línea: tendencia de las medias mensuales de 24 meses. n. d.: no disponible (nunca se estima).</p>
+  <div class="dos-col" style="margin-top:14px">
+    <div>
+      <h3>Coste por kWh de la energía final, con impuestos</h3>
+      <div id="g-ranking" class="grafico" style="min-height:300px"></div>
+      <p class="meta" id="ranking-mayoristas"></p>
+    </div>
+    <div>
+      <h3>Claves de la semana</h3>
+      <div class="comentario" id="comentario"></div>
+      <p class="meta">Generado automáticamente a partir de los datos de la tabla; solo recoge variaciones y comparaciones verificables.</p>
+    </div>
+  </div>
+  <h3 style="margin-top:18px">Tabla de indicadores</h3>
+  <div class="tabla-scroll"><table id="tabla-resumen">
+    <thead><tr>
+      <th class="ordenable" data-k="numero">Indicador</th><th class="num ordenable" data-k="precio_eur_kwh">Precio actual €/kWh</th><th class="num ordenable" data-k="variacion_semanal_pct">Var. semanal</th><th class="num ordenable" data-k="variacion_interanual_pct">Var. interanual</th><th class="ordenable" data-k="fecha_dato">Fecha del dato</th><th>Fuente</th><th class="ordenable" data-k="estado">Estado</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="meta">Pulse una cabecera para ordenar. Pase el ratón por cada fila para ver la base del cálculo, el valor original y las notas.</p>
+</section>
+
+<section id="seccion-comparativo">
+  <h2>Comparativo en €/kWh</h2>
+  <div class="panel-controles">
+    <div class="fila"><span class="titulo">Series</span><div class="selector-series" id="selector-series"></div></div>
+    <div class="fila"><span class="titulo">Conjuntos</span>
+      <button class="boton" data-conjunto="todas">Todas</button><button class="boton" data-conjunto="final">Energía final con impuestos</button>
+      <button class="boton" data-conjunto="calefaccion">Calefacción doméstica</button><button class="boton" data-conjunto="electricidad">Electricidad</button>
+      <button class="boton" data-conjunto="gas">Gas natural</button><button class="boton" data-conjunto="carburantes">Carburantes</button><button class="boton" data-conjunto="ninguna">Ninguna</button>
+    </div>
+    <div class="fila"><span class="titulo">Periodo</span>
+      <label class="campo">Desde <input type="date" id="f-desde"></label><label class="campo">Hasta <input type="date" id="f-hasta"></label>
+      <button class="boton" data-meses="3">3 meses</button><button class="boton" data-meses="12">1 año</button><button class="boton" data-meses="36">3 años</button><button class="boton" data-desde="2022-01-01">Desde 2022</button><button class="boton" data-desde="2020-01-01">Todo</button>
+    </div>
+    <div class="fila opciones"><span class="titulo">Opciones</span>
+      <label class="campo">Frecuencia <select id="f-frecuencia"><option value="original">Original (diaria, semanal, trimestral…)</option><option value="mensual">Media mensual</option></select></label>
+      <label><input type="checkbox" id="o-base100"> Base 100 en la primera fecha del periodo</label>
+      <label><input type="checkbox" id="o-mm7"> Media móvil de 7 días (OMIE, MIBGAS, PVPC)</label>
+      <button class="boton" id="b-compartir" title="Copia un enlace con esta comparación">Copiar enlace</button>
+    </div>
+  </div>
+  <div id="g-comparativo" class="grafico"></div>
+  <p class="meta" id="nota-comparativo"></p>
+</section>
+
+<section id="seccion-individuales">
+  <h2>Evolución de cada indicador</h2>
+  <div class="fila" style="margin-bottom:10px">
+    <label class="campo"><input type="checkbox" id="o-impuestos"> Mostrar cambios de impuestos (IVA, impuesto eléctrico e hidrocarburos; referencia al BOE en el detalle)</label>
+    <span class="meta">El periodo seleccionado arriba se aplica a todos los gráficos.</span>
+  </div>
+  <div class="grid" id="individuales"></div>
+</section>
+
+<section id="seccion-estado">
+  <h2>Estado de las fuentes y actualización</h2>
+  <div class="tabla-scroll"><table id="tabla-fuentes">
+    <thead><tr><th>Fuente</th><th>Última descarga correcta</th><th>Último dato</th><th>Resultado</th></tr></thead><tbody></tbody>
+  </table></div>
+  <p class="meta" id="meta-actualizacion"></p>
+  <div id="descargas"></div>
+</section>
+
+<section id="seccion-metodo">
+  <h2>Fuentes y criterios</h2>
+  <div id="metodo"></div>
+  <details><summary>Factores de conversión a €/kWh (sobre poder calorífico inferior)</summary><ul id="factores"></ul></details>
+  <p class="meta">Metodología completa, tabla de impuestos por fecha con referencia al BOE y comprobaciones: <a id="enlace-metodologia" href="#">documentación en el repositorio</a>.</p>
+</section>
+
+<footer>Datos: OMIE, MIBGAS, REE/ESIOS, Comisión Europea (Weekly Oil Bulletin), BOE y AVEBIOM. Impuestos según el BOE e IPC del INE. Cada dato conserva su fuente, fecha de publicación y si es original o calculado. <span id="pie-version"></span></footer>
+</main>
+<dialog class="actualizar" id="dlg-actualizar">
+  <h3>Actualizar los datos ahora</h3>
+  <div id="dlg-cuerpo"></div>
+</dialog>
+
+<script>
+(async function () {
+  // ---------- utilidades
+  const fmtNum = (x, d) => (x == null || Number.isNaN(x)) ? 'n. d.' : x.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const fmtPct = x => x == null ? 'n. d.' : (x > 0.05 ? '▲ ' : (x < -0.05 ? '▼ ' : '■ ')) + (x > 0 ? '+' : '') + x.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
+  const clasePct = x => x == null ? 'nd' : (x > 0.05 ? 'sube' : (x < -0.05 ? 'baja' : 'igual'));
+  const fmtFecha = s => { if (!s) return '—'; const [a, m, d] = s.slice(0, 10).split('-'); return `${d}/${m}/${a}`; };
+  const fmtFechaHora = s => s ? new Date(s).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+  const oscuro = () => (matchMedia('(prefers-color-scheme: dark)').matches && document.documentElement.dataset.theme !== 'light') || document.documentElement.dataset.theme === 'dark';
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  let P;
+  try { P = await (await fetch('datos/panel.json', { cache: 'no-store' })).json(); }
+  catch (e) { document.getElementById('meta-cabecera').textContent = 'No se han podido cargar los datos (datos/panel.json).'; return; }
+  const colores = () => oscuro() ? P.colores_oscuro : P.colores;
+  const ORDEN = P.resumen.map(r => r.id);
+  const R = Object.fromEntries(P.resumen.map(r => [r.id, r]));
+  const NOMBRES = Object.fromEntries(P.resumen.map(r => [r.id, r.nombre_corto]));
+  const UNIDADES = Object.fromEntries(P.resumen.map(r => [r.id, r.unidad_original]));
+  const MAYORISTA = id => id === 'omie' || id === 'mibgas';
+  const DIARIA = id => P.series[id].tipo === 'diaria';
+  const CONJUNTOS = Object.assign({ ninguna: [] }, P.conjuntos);
+  const urlPdf = (P.informes.find(i => i.nombre.endsWith('.pdf')) || {}).url, urlXlsx = (P.informes.find(i => i.nombre.endsWith('.xlsx')) || {}).url;
+
+  // ---------- estado (URL)
+  const estado = { series: ORDEN.slice(), desde: '2022-01-01', hasta: P.fecha_referencia, frecuencia: 'original', base100: false, mm7: false, impuestos: false };
+  const leerHash = () => {
+    const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+    if (h.get('series') != null) estado.series = h.get('series').split(',').filter(s => ORDEN.includes(s));
+    if (h.get('desde')) estado.desde = h.get('desde'); if (h.get('hasta')) estado.hasta = h.get('hasta');
+    if (h.get('frecuencia')) estado.frecuencia = h.get('frecuencia');
+    estado.base100 = h.get('base100') === '1'; estado.mm7 = h.get('mm7') === '1'; estado.impuestos = h.get('impuestos') === '1';
+  };
+  const escribirHash = () => {
+    const h = new URLSearchParams();
+    h.set('series', estado.series.join(',')); h.set('desde', estado.desde); h.set('hasta', estado.hasta); h.set('frecuencia', estado.frecuencia);
+    if (estado.base100) h.set('base100', '1'); if (estado.mm7) h.set('mm7', '1'); if (estado.impuestos) h.set('impuestos', '1');
+    history.replaceState(null, '', '#' + h.toString());
+  };
+  leerHash();
+
+  // ---------- cabecera
+  document.getElementById('meta-cabecera').innerHTML = `Fecha de referencia: <strong>${fmtFecha(P.fecha_referencia)}</strong> · última actualización correcta: <strong>${fmtFechaHora(P.ultima_actualizacion_correcta)}</strong> · versión ${P.version}`;
+  document.getElementById('acciones').innerHTML =
+    (urlPdf ? `<a class="boton" href="${urlPdf}">Informe PDF</a>` : '') + (urlXlsx ? `<a class="boton" href="${urlXlsx}">Histórico Excel</a>` : '') +
+    `<button class="boton primario" id="b-actualizar" title="Lanza la actualización de datos y recarga la página al terminar">Actualizar</button>`;
+  document.getElementById('enlace-metodologia').href = P.url_repo + '/blob/main/docs/METODOLOGIA.md';
+  document.getElementById('pie-version').textContent = `Versión ${P.version}, generado el ${fmtFechaHora(P.generado)}.`;
+  if (P.fuentes_con_error && P.fuentes_con_error.length) {
+    const av = document.createElement('div'); av.className = 'aviso';
+    av.textContent = `Atención: en la última ejecución fallaron ${P.fuentes_con_error.length} fuente(s) (${P.fuentes_con_error.join(', ')}). Se muestra el último dato correcto de cada una; el detalle está en «Estado de las fuentes».`;
+    document.getElementById('seccion-resumen').insertBefore(av, document.getElementById('tarjetas'));
+  }
+
+  // ---------- actualización desde el panel (API de GitHub; el token se guarda solo en este navegador)
+  const GH = P.github || {};
+  const CLAVE_TOKEN = 'cuadro-mando-token-github';
+  const leerToken = () => { try { return localStorage.getItem(CLAVE_TOKEN) || ''; } catch (e) { return ''; } };
+  const guardarToken = t => { try { if (t) localStorage.setItem(CLAVE_TOKEN, t); else localStorage.removeItem(CLAVE_TOKEN); } catch (e) { /* sin almacenamiento */ } };
+  const apiGh = (ruta, token, opciones = {}) => fetch(`https://api.github.com/repos/${GH.propietario}/${GH.repositorio}${ruta}`, Object.assign({
+    headers: Object.assign({ Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, token ? { Authorization: 'Bearer ' + token } : {}) }, opciones));
+  const dlg = document.getElementById('dlg-actualizar'), dlgCuerpo = document.getElementById('dlg-cuerpo');
+  const abrirActualizar = () => {
+    const token = leerToken();
+    dlgCuerpo.innerHTML = `
+      <p>La actualización descarga lo nuevo de cada fuente, regenera los informes y el panel y vuelve a publicar la web. Tarda entre uno y dos minutos.</p>
+      ${token ? `<p>Hay un token de GitHub guardado en este navegador.</p>` : `
+      <p>Para lanzarla desde aquí hace falta, una sola vez, un <strong>token personal de GitHub</strong> con permiso de escritura en <em>Actions</em> sobre este repositorio. Se guarda únicamente en este navegador y no se envía a ningún sitio salvo a la API de GitHub.</p>
+      <ol><li>En GitHub: foto de perfil → <em>Settings</em> → <em>Developer settings</em> → <em>Personal access tokens</em> → <em>Fine-grained tokens</em> → <em>Generate new token</em>.</li>
+      <li>Repositorio: solo <code>${esc(GH.repositorio || '')}</code>. Permisos: <em>Actions: Read and write</em> (y <em>Metadata: Read</em>, que se añade solo).</li>
+      <li>Copie el token y péguelo aquí.</li></ol>
+      <input type="password" id="dlg-token" placeholder="github_pat_…" autocomplete="off">`}
+      <div class="acciones">
+        <button class="boton primario" id="dlg-lanzar">Actualizar ahora</button>
+        <button class="boton" id="dlg-cerrar">Cancelar</button>
+        ${token ? `<button class="boton" id="dlg-olvidar" title="Borra el token guardado en este navegador">Olvidar token</button>` : ''}
+        <a class="boton" href="${P.url_actions}" target="_blank" rel="noopener">Ver ejecuciones</a>
+      </div>
+      <p class="meta" id="dlg-estado"></p>`;
+    dlg.showModal();
+    document.getElementById('dlg-cerrar').onclick = () => dlg.close();
+    const olv = document.getElementById('dlg-olvidar'); if (olv) olv.onclick = () => { guardarToken(''); abrirActualizar(); };
+    document.getElementById('dlg-lanzar').onclick = lanzarActualizacion;
+  };
+  const estadoDlg = (html, progreso = false) => { const e = document.getElementById('dlg-estado'); if (e) e.innerHTML = progreso ? `<span class="progreso">${html}</span>` : html; };
+  const lanzarActualizacion = async () => {
+    const campo = document.getElementById('dlg-token');
+    const token = (campo ? campo.value.trim() : '') || leerToken();
+    if (!token) { estadoDlg('Falta el token.'); return; }
+    const boton = document.getElementById('dlg-lanzar'); boton.disabled = true;
+    estadoDlg('Lanzando la actualización…', true);
+    const inicio = new Date(Date.now() - 60000).toISOString();
+    let r;
+    try {
+      r = await apiGh(`/actions/workflows/${GH.workflow}/dispatches`, token, { method: 'POST', body: JSON.stringify({ ref: GH.rama }) });
+    } catch (e) { estadoDlg('No se pudo contactar con la API de GitHub: ' + esc(e.message)); boton.disabled = false; return; }
+    if (r.status !== 204) {
+      const txt = r.status === 401 ? 'token no válido o caducado' : r.status === 403 ? 'el token no es válido o no tiene permiso de escritura en Actions sobre este repositorio' : r.status === 404 ? 'repositorio, flujo o rama no encontrados (o el token no ve el repositorio)' : 'respuesta ' + r.status;
+      estadoDlg('GitHub ha rechazado la petición: ' + txt + '.'); boton.disabled = false; return;
+    }
+    guardarToken(token);
+    estadoDlg('Actualización en marcha. La página se recargará sola al terminar (1–2 minutos)…', true);
+    // Seguimiento: la última ejecución lanzada a mano después de `inicio`
+    const t0 = Date.now();
+    const seguir = async () => {
+      try {
+        const q = await apiGh(`/actions/workflows/${GH.workflow}/runs?event=workflow_dispatch&branch=${encodeURIComponent(GH.rama)}&created=>${encodeURIComponent(inicio)}&per_page=1`, token);
+        const d = q.ok ? await q.json() : null; const run = d && d.workflow_runs && d.workflow_runs[0];
+        if (run && run.status === 'completed') {
+          if (run.conclusion === 'success') { estadoDlg('Terminada correctamente. Recargando…'); setTimeout(() => location.replace(location.pathname + '?t=' + Date.now() + location.hash), 4000); }
+          else { estadoDlg(`Terminada con avisos (${esc(run.conclusion)}): alguna fuente no respondió; se ha publicado con el último dato correcto. <a href="${run.html_url}" target="_blank" rel="noopener">Ver registro</a>. Recargando…`); setTimeout(() => location.replace(location.pathname + '?t=' + Date.now() + location.hash), 8000); }
+          return;
+        }
+        if (run) estadoDlg(`En marcha (${esc(run.status)}, ${Math.round((Date.now() - t0) / 1000)} s)… <a href="${run.html_url}" target="_blank" rel="noopener">ver registro</a>`, true);
+      } catch (e) { /* se reintenta */ }
+      if (Date.now() - t0 < 15 * 60000) setTimeout(seguir, 10000); else estadoDlg('La ejecución tarda más de lo normal. Compruébela en <a href="' + P.url_actions + '" target="_blank" rel="noopener">la página de ejecuciones</a>.');
+    };
+    setTimeout(seguir, 8000);
+  };
+  document.getElementById('b-actualizar').addEventListener('click', abrirActualizar);
+
+  // ---------- tarjetas
+  const sparkSvg = (id) => {
+    const m = P.mensual[id]; if (!m) return '';
+    const vals = (MAYORISTA(id) ? m.media_eur_kwh_sin : m.media_eur_kwh_con).slice(-24);
+    const v = vals.map(x => x == null ? NaN : x), ok = v.filter(x => !Number.isNaN(x));
+    if (!ok.length) return '';
+    const min = Math.min(...ok), max = Math.max(...ok), W = 110, H = 34;
+    const pts = v.map((x, i) => Number.isNaN(x) ? null : [i / (v.length - 1) * (W - 4) + 2, H - 3 - (max > min ? (x - min) / (max - min) : 0.5) * (H - 6)]);
+    let d = '', pen = false;
+    pts.forEach(p => { if (!p) { pen = false; return; } d += (pen ? ' L' : ' M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); pen = true; });
+    const ult = [...pts].reverse().find(p => p);
+    return `<svg class="mini" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><path d="${d}" fill="none" stroke="${colores()[id]}" stroke-width="1.6" ${P.series[id].tipo === 'escalon' ? '' : 'stroke-linejoin="round"'}/>${ult ? `<circle cx="${ult[0]}" cy="${ult[1]}" r="2.4" fill="${colores()[id]}"/>` : ''}</svg>`;
+  };
+  const tarjetas = document.getElementById('tarjetas');
+  const idsTarjeta = ['omie', 'mibgas', 'gasoleo_a', 'pvpc', 'tur2', 'gasoleo_c', 'butano', 'pellet_saco'];
+  for (const id of idsTarjeta) {
+    const r = R[id];
+    const extra = id === 'pellet_saco' ? R.pellet_granel : null;
+    const div = document.createElement('div'); div.className = 'tarjeta'; div.style.setProperty('--c', colores()[id]);
+    div.innerHTML = `<div class="nombre">${r.numero}. ${esc(r.nombre_corto)}<span class="chip">${MAYORISTA(id) ? 'mayorista, sin impuestos' : 'con impuestos'}</span></div>
+      <div class="precio">${r.precio_eur_kwh == null ? '<span class="nd" style="font-size:1rem">no disponible</span>' : fmtNum(r.precio_eur_kwh, MAYORISTA(id) ? 4 : 3)}<small>€/kWh</small></div>
+      ${sparkSvg(id)}
+      <div class="vars">Semana: <span class="${clasePct(r.variacion_semanal_pct)}">${fmtPct(r.variacion_semanal_pct)}</span><br>Un año: <span class="${clasePct(r.variacion_interanual_pct)}">${fmtPct(r.variacion_interanual_pct)}</span></div>
+      ${extra ? `<div class="extra">${esc(extra.nombre_corto)}: <strong>${fmtNum(extra.precio_eur_kwh, 3)}</strong> €/kWh · semana <span class="${clasePct(extra.variacion_semanal_pct)}">${fmtPct(extra.variacion_semanal_pct)}</span> · un año <span class="${clasePct(extra.variacion_interanual_pct)}">${fmtPct(extra.variacion_interanual_pct)}</span></div>` : ''}
+      <p class="meta">${esc(r.fuente.split(',')[0])} · dato del ${fmtFecha(r.fecha_dato)}${r.precio_eur_kwh == null ? ' · ' + esc(r.detalle_estado || r.estado) : ''}</p>`;
+    div.title = [r.base_precio, r.valor_original != null ? `valor original: ${fmtNum(r.valor_original, 4)} ${r.unidad_original}` : null, r.nota].filter(Boolean).join('\n');
+    tarjetas.appendChild(div);
+  }
+
+  // ---------- comentario, ranking, tabla
+  document.getElementById('comentario').innerHTML = P.comentario.map(p => `<p>${esc(p)}</p>`).join('') || '<p class="nd">Sin datos suficientes.</p>';
+  const layoutBase = () => ({
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { color: oscuro() ? '#c3c2b7' : '#52514e', size: 12, family: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif' },
+    margin: { l: 58, r: 20, t: 10, b: 40 },
+    xaxis: { gridcolor: oscuro() ? '#33332f' : '#e6e4de', zeroline: false, hoverformat: '%d/%m/%Y', tickformat: '%m/%Y' },
+    yaxis: { gridcolor: oscuro() ? '#33332f' : '#e6e4de', zeroline: false, rangemode: 'tozero', separatethousands: true, tickformat: ',.3f' },
+    hovermode: 'x unified', hoverlabel: { namelength: -1, bgcolor: oscuro() ? '#242423' : '#ffffff', bordercolor: oscuro() ? '#3a3a37' : '#dcdad4', font: { color: oscuro() ? '#f0efec' : '#0b0b0b' } },
+    separators: ',.',
+  });
+  const config = { responsive: true, displaylogo: false, locale: 'es', modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'], toImageButtonOptions: { format: 'png', filename: 'precios-energia', scale: 2 } };
+  const dibujarRanking = () => {
+    const finales = P.resumen.filter(r => !MAYORISTA(r.id) && r.precio_eur_kwh != null).sort((a, b) => b.precio_eur_kwh - a.precio_eur_kwh);
+    const lay = layoutBase();
+    lay.margin = { l: 110, r: 70, t: 6, b: 24 }; lay.hovermode = 'closest'; lay.xaxis = { visible: false, range: [0, Math.max(...finales.map(r => r.precio_eur_kwh)) * 1.25] }; lay.yaxis = { automargin: true, tickfont: { size: 12 } };
+    Plotly.react('g-ranking', [{
+      type: 'bar', orientation: 'h', x: finales.map(r => r.precio_eur_kwh), y: finales.map(r => r.nombre_corto),
+      marker: { color: finales.map(r => colores()[r.id]) }, text: finales.map(r => fmtNum(r.precio_eur_kwh, 3) + ' €/kWh'), textposition: 'outside', textfont: { color: oscuro() ? '#f0efec' : '#0b0b0b' },
+      hovertemplate: '%{y}: %{x:,.4f} €/kWh<extra></extra>', cliponaxis: false,
+    }], lay, Object.assign({}, config, { displayModeBar: false }));
+    const may = P.resumen.filter(r => MAYORISTA(r.id) && r.precio_eur_kwh != null);
+    document.getElementById('ranking-mayoristas').textContent = 'Mayoristas, sin impuestos (no comparables con la energía final): ' + may.map(r => `${r.nombre_corto} ${fmtNum(r.precio_eur_kwh, 4)} €/kWh`).join(' · ') + '.';
+  };
+  dibujarRanking();
+
+  let orden = { k: 'numero', asc: true };
+  const dibujarTabla = () => {
+    const tb = document.querySelector('#tabla-resumen tbody'); tb.innerHTML = '';
+    const filas = P.resumen.slice().sort((a, b) => {
+      const va = a[orden.k], vb = b[orden.k];
+      if (va == null && vb == null) return 0; if (va == null) return 1; if (vb == null) return -1;
+      return (va < vb ? -1 : va > vb ? 1 : 0) * (orden.asc ? 1 : -1);
+    });
+    for (const r of filas) {
+      const tr = document.createElement('tr');
+      const clase = r.estado === 'actualizado' ? 'ok' : (r.estado.startsWith('sin') ? 'warn' : 'bad');
+      tr.title = [r.base_precio, r.valor_original != null ? `valor original: ${fmtNum(r.valor_original, 4)} ${r.unidad_original}` : null, r.detalle_estado, r.nota].filter(Boolean).join('\n');
+      tr.innerHTML = `<td><span class="swatch" style="background:${colores()[r.id]}"></span>${r.numero}. ${esc(r.nombre)}<span class="chip">${MAYORISTA(r.id) ? 'sin impuestos (mayorista)' : 'con impuestos'}</span></td>
+        <td class="num"><strong>${r.precio_eur_kwh == null ? '<span class="nd">no disponible</span>' : fmtNum(r.precio_eur_kwh, MAYORISTA(r.id) ? 4 : 3)}</strong></td>
+        <td class="num ${clasePct(r.variacion_semanal_pct)}">${fmtPct(r.variacion_semanal_pct)}</td>
+        <td class="num ${clasePct(r.variacion_interanual_pct)}">${fmtPct(r.variacion_interanual_pct)}</td>
+        <td>${fmtFecha(r.fecha_dato)}${r.periodo_dato && r.periodo_dato.length <= 6 ? ` <span class="chip">${r.periodo_dato}</span>` : ''}</td>
+        <td><a href="${r.url_fuente}" target="_blank" rel="noopener">${esc(r.fuente.split(',')[0])}</a></td>
+        <td><span class="estado"><span class="punto ${clase}"></span>${r.estado}</span></td>`;
+      tb.appendChild(tr);
+    }
+  };
+  document.querySelectorAll('#tabla-resumen th.ordenable').forEach(th => th.addEventListener('click', () => {
+    orden = { k: th.dataset.k, asc: orden.k === th.dataset.k ? !orden.asc : true }; dibujarTabla();
+  }));
+  dibujarTabla();
+
+  // ---------- preparación de series para los gráficos
+  const enPeriodo = (fechas, desde, hasta) => fechas.map((f, i) => (f >= desde && f <= hasta) ? i : -1).filter(i => i >= 0);
+  const mediaMovil = (ys, n) => ys.map((_, i) => { if (i < n - 1) return null; const w = ys.slice(i - n + 1, i + 1); return w.some(v => v == null) ? null : w.reduce((a, b) => a + b, 0) / n; });
+  const puntos = (id, usarKwh, frecuencia) => {
+    // Devuelve {x, y, orig} dentro del periodo; para series escalonadas añade el valor vigente al inicio del periodo (es el dato vigente, no una estimación).
+    const s = P.series[id];
+    if (frecuencia === 'mensual' && P.mensual[id]) {
+      const m = P.mensual[id];
+      const ys = usarKwh ? (MAYORISTA(id) ? m.media_eur_kwh_sin : m.media_eur_kwh_con) : m.media_original;
+      const idx = m.meses.map((k, i) => (k + '-15' >= estado.desde.slice(0, 7) + '-01' && k <= estado.hasta.slice(0, 7)) ? i : -1).filter(i => i >= 0);
+      return { x: idx.map(i => m.meses[i] + '-15'), y: idx.map(i => ys[i]), orig: idx.map(i => m.media_original[i]), mensual: true };
+    }
+    let ys = usarKwh ? s.eur_kwh : s.original;
+    let etiqueta = '';
+    if (estado.mm7 && DIARIA(id) && usarKwh) { ys = mediaMovil(ys, 7); etiqueta = ' (media móvil 7 días)'; }
+    const idx = enPeriodo(s.fechas, estado.desde, estado.hasta);
+    let x = idx.map(i => s.fechas[i]), y = idx.map(i => ys[i]), orig = idx.map(i => s.original[i]);
+    if (s.tipo === 'escalon') {
+      const prev = s.fechas.map((f, i) => f < estado.desde ? i : -1).filter(i => i >= 0).pop();
+      if (prev !== undefined && (x.length === 0 || x[0] !== estado.desde)) { x.unshift(estado.desde); y.unshift(ys[prev]); orig.unshift(s.original[prev]); }
+      if (x.length) { x.push(estado.hasta); y.push(y[y.length - 1]); orig.push(orig[orig.length - 1]); }
+    }
+    return { x, y, orig, etiqueta };
+  };
+  const base100 = y => { const b = y.find(v => v != null); return b ? y.map(v => v == null ? null : v / b * 100) : y.map(() => null); };
+  const trazaComparativo = (id) => {
+    const p = puntos(id, true, estado.frecuencia);
+    const y = estado.base100 ? base100(p.y) : p.y;
+    const nombre = NOMBRES[id] + (MAYORISTA(id) ? ' (sin imp.)' : '') + (p.etiqueta || '');
+    const hover = estado.base100
+      ? '%{y:,.1f} (base 100) · %{customdata[0]} €/kWh · %{customdata[1]} ' + UNIDADES[id].split(' (')[0]
+      : '%{y:,.4f} €/kWh · %{customdata[1]} ' + UNIDADES[id].split(' (')[0];
+    return {
+      type: 'scatter', mode: 'lines', name: nombre, x: p.x, y, customdata: p.y.map((v, i) => [v == null ? 'n. d.' : fmtNum(v, 4), p.orig[i] == null ? 'n. d.' : fmtNum(p.orig[i], 4)]),
+      line: { color: colores()[id], width: 1.8, shape: P.series[id].tipo === 'escalon' && !p.mensual ? 'hv' : 'linear', dash: id === 'pellet_granel' ? 'dash' : 'solid' },
+      connectgaps: false, hovertemplate: hover + '<extra>' + nombre + '</extra>', meta: id,
+    };
+  };
+  const etiquetasFinales = (gd, trazas) => {
+    // Etiquetas al final de cada línea visible, separadas verticalmente si chocan (en píxeles)
+    const ya = gd._fullLayout.yaxis, alto = gd._fullLayout.height, mt = gd._fullLayout.margin.t, mb = gd._fullLayout.margin.b;
+    const h = alto - mt - mb; if (!h || !ya || !ya.range) return [];
+    const px = v => mt + (1 - (v - ya.range[0]) / (ya.range[1] - ya.range[0])) * h;
+    const items = trazas.map(t => { const i = t.y.map((v, k) => v == null ? -1 : k).filter(k => k >= 0).pop(); return i === undefined ? null : { id: t.meta, y: t.y[i], txt: NOMBRES[t.meta] + ' ' + (estado.base100 ? fmtNum(t.y[i], 0) : fmtNum(t.y[i], MAYORISTA(t.meta) ? 4 : 3)) }; }).filter(Boolean)
+      .map(o => Object.assign(o, { py: px(o.y) })).sort((a, b) => a.py - b.py);
+    const min = window.innerWidth <= 640 ? 11 : 13;
+    for (let i = 1; i < items.length; i++) if (items[i].py - items[i - 1].py < min) items[i].py = items[i - 1].py + min;
+    for (let i = items.length - 2; i >= 0; i--) if (items[i + 1].py - items[i].py < min) items[i].py = items[i + 1].py - min;
+    return items.map(o => ({ xref: 'paper', x: 1.003, yref: 'paper', y: 1 - (o.py - mt) / h, xanchor: 'left', yanchor: 'middle', showarrow: false, text: o.txt, font: { size: 10, color: colores()[o.id] }, bgcolor: oscuro() ? 'rgba(26,26,25,.75)' : 'rgba(252,252,251,.8)' }));
+  };
+  const dibujarComparativo = () => {
+    const trazas = estado.series.map(trazaComparativo);
+    const lay = layoutBase();
+    lay.xaxis.range = [estado.desde, estado.hasta];
+    lay.yaxis.title = { text: estado.base100 ? 'Índice (base 100 = primera fecha del periodo)' : '€/kWh' };
+    lay.yaxis.tickformat = estado.base100 ? ',.0f' : ',.3f';
+    lay.yaxis.autorange = true;
+    lay.legend = { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, font: { size: 11 } };
+    const estrecho = window.innerWidth <= 640;
+    lay.margin = { l: 52, r: estrecho ? 112 : 150, t: estrecho ? 16 : 56, b: 36 };
+    lay.showlegend = !estrecho;
+    lay.xaxis.rangeslider = { visible: true, thickness: 0.05 };
+    const el = document.getElementById('g-comparativo');
+    Plotly.react(el, trazas, lay, config).then(gd => Plotly.relayout(gd, { annotations: etiquetasFinales(gd, trazas) }));
+    document.getElementById('nota-comparativo').textContent = (estado.base100 ? 'Base 100: cada serie se divide por su primer valor del periodo (índice derivado del dato; el €/kWh real aparece al pasar el ratón). ' : '') +
+      (estado.mm7 ? 'Media móvil de 7 días en OMIE, MIBGAS y PVPC: suaviza la lectura; el dato diario está en el Excel y en los gráficos individuales. ' : '') +
+      'Las líneas escalonadas son precios regulados o trimestrales, vigentes hasta la siguiente revisión. Los huecos son periodos sin dato (no se rellenan). Pulse una serie de la leyenda o del selector para ocultarla.';
+    escribirHash();
+  };
+  // sincronía leyenda ↔ selector
+  document.getElementById('g-comparativo').on && null;
+  const sel = document.getElementById('selector-series');
+  for (const id of ORDEN) {
+    const l = document.createElement('label');
+    l.innerHTML = `<input type="checkbox" value="${id}"><span class="swatch" style="background:${colores()[id]};margin-right:0"></span>${esc(NOMBRES[id])}${MAYORISTA(id) ? '<span class="chip">sin impuestos</span>' : ''}`;
+    sel.appendChild(l);
+  }
+  const pintarSelector = () => sel.querySelectorAll('input').forEach(i => { i.checked = estado.series.includes(i.value); i.parentElement.classList.toggle('off', !i.checked); });
+  sel.addEventListener('change', () => { estado.series = ORDEN.filter(id => sel.querySelector(`input[value="${id}"]`).checked); pintarSelector(); dibujarComparativo(); });
+  document.querySelectorAll('button[data-conjunto]').forEach(b => b.addEventListener('click', () => { estado.series = CONJUNTOS[b.dataset.conjunto].slice(); pintarSelector(); dibujarComparativo(); }));
+  const gc = document.getElementById('g-comparativo');
+  gc.addEventListener('plotly_legendclick', () => false);
+  // Plotly emite eventos con .on; al ocultar desde la leyenda, reflejar en el selector
+  const engancharLeyenda = () => { if (gc.on && !gc._leyendaOk) { gc._leyendaOk = true; gc.on('plotly_legendclick', ev => { const id = ev.data[ev.curveNumber].meta; estado.series = estado.series.filter(s => s !== id); pintarSelector(); dibujarComparativo(); return false; }); } };
+
+  // ---------- filtros de periodo y opciones
+  const fDesde = document.getElementById('f-desde'), fHasta = document.getElementById('f-hasta'), fFrec = document.getElementById('f-frecuencia');
+  fDesde.value = estado.desde; fHasta.value = estado.hasta; fFrec.value = estado.frecuencia;
+  document.getElementById('o-base100').checked = estado.base100; document.getElementById('o-mm7').checked = estado.mm7; document.getElementById('o-impuestos').checked = estado.impuestos;
+  const dibujarTodo = () => { dibujarComparativo(); engancharLeyenda(); dibujarIndividuales(); };
+  document.querySelectorAll('button[data-meses], button[data-desde]').forEach(b => b.addEventListener('click', () => {
+    const hasta = new Date(P.fecha_referencia + 'T00:00:00'); let desde;
+    if (b.dataset.desde) desde = b.dataset.desde; else { const d = new Date(hasta); d.setMonth(d.getMonth() - Number(b.dataset.meses)); desde = d.toISOString().slice(0, 10); }
+    estado.desde = desde; estado.hasta = P.fecha_referencia; fDesde.value = desde; fHasta.value = estado.hasta; dibujarTodo();
+  }));
+  fDesde.addEventListener('change', () => { if (fDesde.value) { estado.desde = fDesde.value; dibujarTodo(); } });
+  fHasta.addEventListener('change', () => { if (fHasta.value) { estado.hasta = fHasta.value; dibujarTodo(); } });
+  fFrec.addEventListener('change', () => { estado.frecuencia = fFrec.value; dibujarTodo(); });
+  document.getElementById('o-base100').addEventListener('change', e => { estado.base100 = e.target.checked; dibujarComparativo(); });
+  document.getElementById('o-mm7').addEventListener('change', e => { estado.mm7 = e.target.checked; dibujarComparativo(); });
+  document.getElementById('o-impuestos').addEventListener('change', e => { estado.impuestos = e.target.checked; escribirHash(); dibujarIndividuales(); });
+  document.getElementById('b-compartir').addEventListener('click', async e => {
+    escribirHash();
+    try { await navigator.clipboard.writeText(location.href); e.target.textContent = 'Enlace copiado'; setTimeout(() => e.target.textContent = 'Copiar enlace', 2000); }
+    catch (_) { prompt('Copie el enlace:', location.href); }
+  });
+
+  // ---------- gráficos individuales
+  const cont = document.getElementById('individuales');
+  const modoUnidad = Object.fromEntries(ORDEN.map(id => [id, 'original']));
+  for (const id of ORDEN) {
+    const r = R[id];
+    const titulo = id === 'pellet_saco' ? '8a. Pellet: saco de 15 kg' : (id === 'pellet_granel' ? '8b. Pellet: granel en volquete' : `${r.numero}. ${r.nombre}`);
+    const div = document.createElement('div'); div.className = 'card'; div.id = 'card-' + id;
+    div.innerHTML = `<div class="cab"><div><h3>${esc(titulo)}</h3><p class="meta" style="margin:0">${esc(UNIDADES[id])} · ${MAYORISTA(id) ? 'mayorista, sin impuestos' : 'con impuestos'} · ${esc(r.fuente.split(',')[0])}</p></div>
+      <div class="btns"><button data-u="original" class="activo">Unidad original</button><button data-u="kwh">€/kWh</button><button data-v="datos">Ver datos</button><button data-v="csv">CSV</button></div></div>
+      <div class="grafico" id="g-${id}"></div><div class="datos"></div>`;
+    cont.appendChild(div);
+    div.querySelectorAll('button[data-u]').forEach(b => b.addEventListener('click', () => { modoUnidad[id] = b.dataset.u; div.querySelectorAll('button[data-u]').forEach(x => x.classList.toggle('activo', x === b)); dibujarIndividual(id); }));
+    div.querySelector('button[data-v="datos"]').addEventListener('click', () => { div.classList.toggle('abierto'); if (div.classList.contains('abierto')) rellenarDatos(id); });
+    div.querySelector('button[data-v="csv"]').addEventListener('click', () => descargarCsv(id));
+  }
+  const filasDatos = (id) => {
+    const s = P.series[id];
+    return enPeriodo(s.fechas, estado.desde, estado.hasta).map(i => ({ fecha: s.fechas[i], periodo: s.periodos[i], original: s.original[i], sin: s.eur_kwh_sin[i], con: MAYORISTA(id) ? null : s.eur_kwh[i] }));
+  };
+  const rellenarDatos = (id) => {
+    const filas = filasDatos(id).slice().reverse();
+    const d = document.querySelector(`#card-${id} .datos`);
+    d.innerHTML = `<table><thead><tr><th>Fecha</th><th>Periodo</th><th class="num">${esc(UNIDADES[id])}</th><th class="num">€/kWh sin imp.</th><th class="num">€/kWh con imp.</th></tr></thead><tbody>` +
+      filas.map(f => `<tr><td>${fmtFecha(f.fecha)}</td><td>${esc(f.periodo)}</td><td class="num">${fmtNum(f.original, 4)}</td><td class="num">${f.sin == null ? '<span class="nd">n. d.</span>' : fmtNum(f.sin, 6)}</td><td class="num">${f.con == null ? '<span class="nd">' + (MAYORISTA(id) ? 'no aplica' : 'n. d.') + '</span>' : fmtNum(f.con, 6)}</td></tr>`).join('') + '</tbody></table>';
+  };
+  const lineasCsv = (id, filas) => {
+    const lineas = ['fecha;periodo;valor_original;unidad;eur_kwh_sin_impuestos;eur_kwh_con_impuestos;fuente'];
+    for (const f of filas) lineas.push([f.fecha, f.periodo, f.original, UNIDADES[id], f.sin ?? '', f.con ?? '', R[id].fuente].map(v => String(v ?? '').replace(/;/g, ',')).join(';'));
+    return lineas;
+  };
+  const descargarCsv = (id) => {
+    const lineas = lineasCsv(id, filasDatos(id));
+    const blob = new Blob(['﻿' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${id}_${estado.desde}_${estado.hasta}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  };
+  const dibujarIndividual = (id) => {
+    const usarKwh = modoUnidad[id] === 'kwh';
+    const p = puntos(id, usarKwh, estado.frecuencia);
+    const unidad = usarKwh ? '€/kWh' : UNIDADES[id];
+    const traza = { type: 'scatter', mode: 'lines', name: NOMBRES[id], x: p.x, y: p.y, customdata: p.orig.map(v => v == null ? 'n. d.' : fmtNum(v, 4)),
+      line: { color: colores()[id], width: 1.8, shape: P.series[id].tipo === 'escalon' && !p.mensual ? 'hv' : 'linear' }, connectgaps: false,
+      hovertemplate: (usarKwh ? '%{y:,.4f} €/kWh · %{customdata} ' + UNIDADES[id].split(' (')[0] : '%{y:,.4f} ' + UNIDADES[id].split(' (')[0]) + '<extra></extra>' };
+    const lay = layoutBase();
+    lay.xaxis.range = [estado.desde, estado.hasta]; lay.margin = { l: 58, r: 14, t: 14, b: 34 }; lay.showlegend = false;
+    lay.yaxis.title = { text: unidad, font: { size: 11 } }; lay.yaxis.tickformat = usarKwh ? ',.3f' : ',.2f'; lay.yaxis.autorange = true;
+    lay.annotations = []; lay.shapes = [];
+    const iu = p.y.map((v, i) => v == null ? -1 : i).filter(i => i >= 0).pop();
+    if (iu !== undefined) lay.annotations.push({ x: p.x[iu], y: p.y[iu], text: fmtNum(p.y[iu], usarKwh ? 4 : 2), showarrow: true, arrowhead: 0, ax: -28, ay: -22, font: { size: 11, color: colores()[id] }, bgcolor: oscuro() ? 'rgba(26,26,25,.8)' : 'rgba(252,252,251,.85)' });
+    if (estado.impuestos && P.cambios_impuestos[id]) {
+      for (const c of P.cambios_impuestos[id].filter(c => c.fecha >= estado.desde && c.fecha <= estado.hasta)) {
+        lay.shapes.push({ type: 'line', xref: 'x', yref: 'paper', x0: c.fecha, x1: c.fecha, y0: 0, y1: 1, line: { color: oscuro() ? '#8f8e86' : '#7a7873', width: 1, dash: 'dot' } });
+        lay.annotations.push({ x: c.fecha, yref: 'paper', y: 1, text: '⚖', showarrow: false, yanchor: 'bottom', font: { size: 11 }, hovertext: `${fmtFecha(c.fecha)}: ${c.texto}. ${c.referencia}`, captureevents: true });
+      }
+    }
+    Plotly.react(document.getElementById('g-' + id), [traza], lay, config);
+    if (document.getElementById('card-' + id).classList.contains('abierto')) rellenarDatos(id);
+  };
+  const dibujarIndividuales = () => ORDEN.forEach(dibujarIndividual);
+
+  // ---------- estado de las fuentes, descargas, método
+  const nombresFuente = { omie: 'OMIE (mercado diario)', mibgas: 'MIBGAS (índice diario)', boletin_petrolero: 'Comisión Europea (Weekly Oil Bulletin)', esios_pvpc: 'REE / ESIOS (PVPC)', boe_tur: 'BOE (TUR gas natural)', boe_butano: 'BOE (butano envasado)', avebiom: 'AVEBIOM (pellet)', ine_ipc: 'INE (IPC para los impuestos de 2026)' };
+  const tf = document.querySelector('#tabla-fuentes tbody');
+  for (const [k, f] of Object.entries(P.fuentes)) {
+    const ult = Object.values(f.series || {}).map(s => s.ultimo_dato).filter(Boolean).sort().pop();
+    const nuevo = Object.values(f.series || {}).some(s => s.dato_nuevo);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${nombresFuente[k] || k}</td><td>${fmtFechaHora(f.ultima_actualizacion_correcta)}</td><td>${ult ? fmtFecha(ult) + (nuevo ? ' <span class="chip">dato nuevo</span>' : '') : '—'}</td>` +
+      `<td><span class="estado"><span class="punto ${f.estado === 'ok' ? 'ok' : 'bad'}"></span>${f.estado === 'ok' ? 'correcto' : 'error'}</span>${f.error ? `<div class="meta">${esc(f.error)}</div>` : ''}</td>`;
+    tf.appendChild(tr);
+  }
+  document.getElementById('meta-actualizacion').innerHTML = `Última ejecución: ${fmtFechaHora(P.actualizado)}${P.ejecucion_url ? ` (<a href="${P.ejecucion_url}" target="_blank" rel="noopener">ver registro</a>)` : ''}. La actualización se ejecuta cada lunes de forma automática y puede lanzarse a mano con el botón «Actualizar» de la cabecera (pide una vez un token de GitHub) o desde <a href="${P.url_actions}" target="_blank" rel="noopener">la página de ejecuciones del repositorio</a>. Si una fuente falla, se conserva su último dato correcto y el error queda registrado aquí.`;
+  document.getElementById('descargas').innerHTML = P.informes.length ? '<h3 style="margin-top:14px">Descargas</h3><div class="acciones">' + P.informes.map(i => `<a class="boton" href="${i.url}">${i.nombre.endsWith('.pdf') ? 'Informe semanal (PDF)' : 'Histórico y comparador (Excel)'}</a>`).join('') + '</div><p class="meta">Se regeneran en cada actualización con los datos del panel. El CSV de cada indicador se descarga desde su gráfico.</p>' : '<p class="meta">Los informes en PDF y Excel se incorporarán en la siguiente fase.</p>';
+  document.getElementById('metodo').innerHTML = '<div class="tabla-scroll"><table><thead><tr><th>Indicador</th><th>Fuente</th><th>Unidad y frecuencia</th><th>Impuestos</th><th>Conversión a €/kWh</th></tr></thead><tbody>' +
+    P.resumen.map(r => { const m = P.metadatos[r.id] || {}; return `<tr><td>${esc(r.nombre)}</td><td><a href="${r.url_fuente}" target="_blank" rel="noopener">${esc(r.fuente)}</a></td><td>${esc(r.unidad_original)}; ${esc(m.frecuencia || '')}</td><td>${esc(m.impuestos_original || '')}</td><td>${esc(m.conversion || '')}${m.nota ? '<div class="meta">' + esc(m.nota) + '</div>' : ''}</td></tr>`; }).join('') + '</tbody></table></div>';
+  document.getElementById('factores').innerHTML = P.factores.map(f => `<li><strong>${esc(f.nombre)}</strong>: ${fmtNum(f.valor, 3)} ${esc(f.unidad)}. ${esc(f.procedencia)}</li>`).join('');
+
+  pintarSelector();
+  dibujarTodo();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { dibujarRanking(); dibujarTabla(); dibujarTodo(); });
+  window.addEventListener('hashchange', () => { leerHash(); fDesde.value = estado.desde; fHasta.value = estado.hasta; fFrec.value = estado.frecuencia; document.getElementById('o-base100').checked = estado.base100; document.getElementById('o-mm7').checked = estado.mm7; document.getElementById('o-impuestos').checked = estado.impuestos; pintarSelector(); dibujarTodo(); });
+  let temporizador; window.addEventListener('resize', () => { clearTimeout(temporizador); temporizador = setTimeout(dibujarComparativo, 250); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{
+  "_descripcion": "Condiciones de IPC de las que dependen los tipos impositivos de 2026 (RDL 7/2026 art. 38.Dos, 40.Dos y 42; RDL 18/2026 arts. 6, 7, 10-13; RDL 25/2026 arts. 14, 15, 18-21). Para cada mes de referencia del IPC se indica si la variación interanual del IPC de la subclase correspondiente superó el 15 % (true), no lo superó (false) o no se ha podido comprobar (null). Mientras un valor sea null, los impuestos de los meses que dependen de él se publican como «no disponible».",
+  "_fuente_prevista": "INE, IPC por subclases (04.5.1.0 Electricidad, 04.5.2.1 Gas natural, 04.5.2.2 Hidrocarburos licuados, 07.2.2 Carburantes). El INE (www.ine.es / servicios.ine.es) no es accesible desde el entorno de trabajo a 25/10/2026.",
+  "_subclases": {
+    "electricidad": "04.5.1.0 Electricidad",
+    "gas": "04.5.2.1 Gas natural",
+    "glp": "04.5.2.2 Hidrocarburos licuados",
+    "carburantes": "IPC de carburantes (RDL 7/2026 art. 38.Dos y 42.c: expresión literal de la norma)"
+  },
+  "ipc": {
+    "2026-04": {
+      "electricidad": false,
+      "gas": false,
+      "glp": false,
+      "carburantes": true,
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "valores_pct": {
+        "electricidad": -4.3,
+        "gas": -9.6,
+        "glp": -16.4,
+        "carburantes": 15.5
+      }
+    },
+    "2026-06": {
+      "electricidad": false,
+      "gas": false,
+      "glp": false,
+      "carburantes": false,
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "valores_pct": {
+        "electricidad": 6.0,
+        "gas": 0.8,
+        "glp": -14.4,
+        "carburantes": 7.8
+      }
+    },
+    "2026-07": {
+      "electricidad": false,
+      "gas": false,
+      "glp": false,
+      "carburantes": false,
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "valores_pct": {
+        "electricidad": 8.4,
+        "gas": 4.1,
+        "glp": -1.4,
+        "carburantes": 11.6
+      }
+    },
+    "2026-09": {
+      "electricidad": false,
+      "gas": false,
+      "glp": false,
+      "carburantes": true,
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "valores_pct": {
+        "electricidad": 11.4,
+        "gas": 4.3,
+        "glp": 10.2,
+        "carburantes": 30.8
+      }
+    },
+    "2026-10": {
+      "electricidad": null,
+      "gas": null,
+      "glp": null,
+      "carburantes": null,
+      "fuente": null,
+      "valores_pct": {
+        "electricidad": null,
+        "gas": null,
+        "glp": null,
+        "carburantes": null
+      }
+    }
+  },
+  "_actualizado": "2026-10-27"
+}
