@@ -13,7 +13,7 @@
       "gas": false,
       "glp": false,
       "carburantes": true,
-      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-28",
       "valores_pct": {
         "electricidad": -4.3,
         "gas": -9.6,
@@ -26,7 +26,7 @@
       "gas": false,
       "glp": false,
       "carburantes": false,
-      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-28",
       "valores_pct": {
         "electricidad": 6.0,
         "gas": 0.8,
@@ -39,7 +39,7 @@
       "gas": false,
       "glp": false,
       "carburantes": false,
-      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-28",
       "valores_pct": {
         "electricidad": 8.4,
         "gas": 4.1,
@@ -52,7 +52,7 @@
       "gas": false,
       "glp": false,
       "carburantes": true,
-      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-27",
+      "fuente": "INE, IPC (base 2021), variación anual por subclases y clases (tablas 79184 y 76127); descargado el 2026-10-28",
       "valores_pct": {
         "electricidad": 11.4,
         "gas": 4.3,
@@ -74,5 +74,5 @@
       }
     }
   },
-  "_actualizado": "2026-10-27"
+  "_actualizado": "2026-10-28"
 }
