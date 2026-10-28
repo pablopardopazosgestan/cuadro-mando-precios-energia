@@ -1,10 +1,9 @@
 name: Publicar cuadro de mando (GitHub Pages)
 
-# Publica la carpeta `sitio/` en GitHub Pages cada vez que cambia (en la rama principal o en la rama de
-# desarrollo) y también a mano. La actualización de datos (fase 4) la regenera y la vuelve a publicar.
+# Publica la carpeta `sitio/` en GitHub Pages cada vez que cambia en la rama principal y también a mano. La actualización de datos (fase 4) la regenera y la vuelve a publicar.
 on:
   push:
-    branches: [main, claude/new-session-dqbsty]
+    branches: [main]
     paths: ["sitio/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 

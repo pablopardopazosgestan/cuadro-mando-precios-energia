@@ -13,9 +13,8 @@ on:
     - cron: "17 5 * * 1"
   workflow_dispatch:
   push:
-    # Lanzar el workflow desde una rama que no es la principal (GitHub solo ofrece «Run workflow» en main):
-    # cualquier cambio en este fichero ejecuta una actualización completa.
-    branches: [claude/new-session-dqbsty]
+    # Cualquier cambio en este fichero en la rama principal ejecuta una actualización completa (además de «Run workflow»).
+    branches: [main]
     paths: [".github/workflows/actualizar.yml"]
 
 permissions:

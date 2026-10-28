@@ -58,7 +58,9 @@ Escribe a Pablo siempre en castellano, de forma directa.
   desplegables, INDEX/MATCH y gráfico vinculado (fórmulas comprobadas con LibreOffice). Detalle en
   `docs/METODOLOGIA.md` §6 y §8; pruebas JS con Node en `tests/test_panel_js.py`.
 - Mejora de visualización aceptada el 27/10/2026 («sigue»). Pablo delegó la decisión sobre AVEBIOM (ver abajo).
-- **Fase 6 (verificación y entrega): en curso desde el 27/10/2026.**
+- **Fase 6: Pablo aceptó la fusión el 28/10/2026 («fusiona en main»).** La rama `claude/new-session-dqbsty` se fusionó en
+  `main` (merge sin reescribir historia); los dos workflows disparan ahora solo en `main` (y «Run workflow» ya aparece).
+  A partir de aquí se trabaja en `main`; las ejecuciones automáticas hacen commits en `main`: `git pull --rebase` antes.
 
 - **28/10/2026, a petición de Pablo:** botón «Actualizar» del panel lanza el workflow por la API de GitHub con token
   personal guardado en el navegador (`panel.json` → `github`; diálogo en la plantilla). PDF reducido a 2 páginas: cuadro
@@ -70,11 +72,9 @@ Escribe a Pablo siempre en castellano, de forma directa.
 
 ## Siguiente paso
 
-Al recibir el «sigue» de la mejora de visualización: fase 6, comprobar punto por punto el apartado 7 del encargo (ocho indicadores con
-datos reales, gráficos, descargas, actualización configurada y probada), escribir `docs/USO.md` (consultar, actualizar,
-exportar, qué hacer si una fuente falla), proponer a Pablo fusionar la rama en `main` (y, si acepta, hacerlo y
-comprobar que Pages y el workflow siguen funcionando desde `main`), y entregar: enlace, PDF, Excel, instrucciones y
-confirmación de la actualización semanal.
+Entrega hecha (enlace, PDF, Excel, `docs/USO.md`, `docs/GUIA_DE_USUARIO.pdf`, actualización semanal en `main`). Sin
+tareas abiertas salvo las que pida Pablo. Pendiente de observar: primera ejecución programada del lunes y la búsqueda del
+PDF 4T2026 de AVEBIOM a partir del 15/01/2027.
 
 ## Cómo ejecutar y probar
 

@@ -37,8 +37,7 @@ aparece «no disponible» (n. d.).
   (*fine-grained*, solo este repositorio, permiso *Actions: Read and write*), que se guarda únicamente en ese navegador.
   Lanza la actualización por la API de GitHub, muestra el progreso y recarga la página al terminar (1–2 minutos).
   «Olvidar token» lo borra del navegador.
-- **A mano, desde GitHub:** pestaña *Actions* → «Actualizar datos y publicar» → *Run workflow* (cuando el flujo esté en
-  la rama `main`; mientras esté solo en la rama de desarrollo, abrir la última ejecución → *Re-run all jobs*).
+- **A mano, desde GitHub:** pestaña *Actions* → «Actualizar datos y publicar» → *Run workflow*.
 - **En un ordenador propio** (Python 3.12 o superior):
   ```bash
   pip install -r requirements.txt

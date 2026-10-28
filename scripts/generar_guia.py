@@ -300,8 +300,7 @@ def main() -> Path:
              "actualización, muestra el progreso y se recarga solo cuando termina (uno o dos minutos). Si alguna fuente no respondió, lo indica y enlaza el registro."),
            lista(["<b>Cómo obtener el token (una vez):</b> en GitHub, foto de perfil → <i>Settings</i> → <i>Developer settings</i> → <i>Personal access tokens</i> → "
                   "<i>Fine-grained tokens</i> → <i>Generate new token</i>. Repositorio: solo este. Permisos: <i>Actions: Read and write</i>. Copie el token y péguelo en el cuadro.",
-                  "<b>Alternativa sin token:</b> botón «Ver ejecuciones» del mismo cuadro (abre GitHub Actions). Elija «Actualizar datos y publicar» y «Run workflow»; "
-                  "mientras el flujo viva solo en la rama de desarrollo ese botón no aparece: abra la última ejecución y pulse «Re-run all jobs»."]),
+                  "<b>Alternativa sin token:</b> botón «Ver ejecuciones» del mismo cuadro (abre GitHub Actions). Elija «Actualizar datos y publicar» y pulse «Run workflow»."]),
            P("8.3 Saber si ha ido bien", h3),
            lista(["<b>En el panel:</b> sección «Estado de las fuentes y actualización»: por fuente, última descarga correcta, último dato y resultado (● correcto / ● error con el mensaje), y enlace a la ejecución.",
                   "<b>En GitHub:</b> la ejecución aparece en verde si todas las fuentes respondieron, y en rojo si alguna falló. En rojo, GitHub envía un correo al propietario del repositorio.",
