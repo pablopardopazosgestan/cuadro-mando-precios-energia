@@ -206,6 +206,13 @@ Criterios del resumen ejecutivo:
   los datos no disponibles quedan vacíos). Opción «Mostrar cambios de impuestos»: líneas verticales en las fechas
   en que cambia algún tipo (IVA, IEE, hidrocarburos) con el texto «antes → después» y la referencia al BOE
   (`precios.impuestos.cambios_impuestos`). El periodo seleccionado en el comparativo se aplica a todos.
+- **Botón «Actualizar» (28/10/2026):** lanza el workflow `actualizar.yml` desde el propio panel mediante la API de GitHub
+  (`POST /repos/{owner}/{repo}/actions/workflows/actualizar.yml/dispatches`, `ref` = rama que figura en `panel.json` →
+  `github.rama`, la del ejecutor o la del repositorio local). Requiere un token personal *fine-grained* del usuario con
+  permiso *Actions: Read and write* sobre el repositorio; se pide una vez y se guarda solo en `localStorage` del
+  navegador (nunca en el repositorio ni en el servidor). El panel sigue la ejecución por la API (`runs?event=
+  workflow_dispatch`) y recarga la página al terminar, avisando si alguna fuente falló. Sin token, el cuadro enlaza la
+  página de ejecuciones.
 - **Presentación:** navegación fija por secciones, modo claro/oscuro automático, hoja de estilos de impresión y
   diseño adaptable a móvil. Paleta categórica fija y validada (una tonalidad por indicador; el pellet a granel
   comparte tono con el saco y usa trazo discontinuo); un solo eje Y; números en formato español.
@@ -246,21 +253,23 @@ Criterios del resumen ejecutivo:
 
 `python -m precios informes` genera, con los mismos datos que el panel (`panel.construir`), dos ficheros pensados
 para dirección (rediseñados el 27/10/2026 a petición de Pablo):
-- **`sitio/informes/informe.pdf`** (A4, 4 páginas, tipografía DejaVu Sans incluida con matplotlib):
-  1. *Cuadro de mando de una página*: ocho tarjetas (una por indicador; la del pellet incluye el granel) con el
-     precio en €/kWh en grande, variación semanal e interanual con flecha y color (rojo sube, verde baja), fuente,
-     fecha del dato y si es con o sin impuestos, y una línea de tendencia de las medias mensuales de 24 meses;
-     ranking visual del coste por kWh de la energía final con impuestos; «Claves de la semana» (el comentario
-     generado a partir de los datos).
-  2. Tabla de precios y variaciones (con estado por colores y una mini tendencia de 24 meses por fila) y
-     comparativo de los nueve indicadores en €/kWh desde 2022, con la leyenda fuera del área de datos y el nombre y
-     último valor al final de cada línea, separados si chocan (`informes._etiquetas_finales`).
-  3. Segundo comparativo solo de la energía final con impuestos (sin OMIE ni MIBGAS, las mismas series que el
-     ranking); nueve gráficos individuales desde 2022 en la unidad original con el periodo analizado sombreado y el
-     último valor anotado en el margen derecho, sin tapar la línea; tabla de medias anuales en €/kWh de los últimos
-     cinco años.
-  4. Estado de las fuentes en la última actualización, fuentes y metodología (tabla por indicador con enlaces),
-     factores de conversión, impuestos y criterios.
+- **`sitio/informes/informe.pdf`** (A4, 2 páginas desde el 28/10/2026 a petición de Pablo: más corto, visual y con
+  lectura para dirección; tipografía DejaVu Sans incluida con matplotlib):
+  1. *Cuadro de mando*: ocho tarjetas (precio en €/kWh, variación semanal e interanual con flecha y color, mini tendencia
+     de 24 meses, fuente, fecha, con/sin impuestos; la del pellet incluye el granel); ranking del coste por kWh de la
+     energía final con impuestos; «Claves de la semana»; y el gráfico «Pellet frente a las alternativas de calefacción»
+     (`informes.grafico_competitividad`): sobrecoste del kWh de gasóleo C, butano, TUR 2 y PVPC frente al pellet en saco
+     hoy y hace un año (barras) y su evolución en 24 meses con medias mensuales (líneas). Sobrecoste = precio
+     alternativa ÷ precio pellet saco − 1, ambos en €/kWh con impuestos; el de hace un año se deduce de las variaciones
+     interanuales (precio ÷ (1 + variación)). Es un dato derivado y se marca como calculado.
+  2. *Lectura para dirección* (`precios/lectura.py`): por indicador, precio y variaciones, un **texto fijo** de qué mide
+     y por qué importa para el coste de producción o el precio del pellet (redactado el 28/10/2026, revisable a mano,
+     decisión en `docs/DECISIONES.md`), una **frase calculada** solo con cifras del panel (dirección de las variaciones,
+     prima frente al pellet y si la ventaja del pellet se amplía, se reduce o se mantiene) y la mini tendencia. Cierra
+     con el estado de las fuentes en una línea y el resumen de cómo se calcula. El impacto en €/t no se cuantifica:
+     depende de los consumos de cada planta, que no son datos públicos.
+  Los gráficos comparativos desde 2022 y los nueve individuales dejan de ir en el PDF (están en el panel y en el Excel);
+  las funciones `grafico_comparativo` y `grafico_individual` se conservan y prueban.
 - **`sitio/informes/historico.xlsx`**: «Cuadro de mando» (ocho tarjetas en celdas combinadas con precio, variaciones
   con color, fuente y fecha; tabla resumen con formato condicional: color y flechas en las variaciones; claves de la
   semana; ranking de la energía final ordenado de menor a mayor con gráfico de barras vinculado); «Anual» (medias

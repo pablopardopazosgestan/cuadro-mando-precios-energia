@@ -30,6 +30,22 @@ log = logging.getLogger(__name__)
 DIR_SITIO = RAIZ / "sitio"
 URL_REPO = "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia"
 URL_ACTIONS = URL_REPO + "/actions/workflows/actualizar.yml"
+GITHUB_PROPIETARIO, GITHUB_REPO = URL_REPO.rsplit("/", 2)[-2:]
+
+
+def rama_actual() -> str:
+    """Rama en la que vive el workflow: la del ejecutor de GitHub Actions o la del repositorio local; `main` si no se sabe."""
+    import os
+    import subprocess
+    if os.environ.get("GITHUB_REF_NAME"):
+        return os.environ["GITHUB_REF_NAME"]
+    try:
+        r = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=RAIZ, capture_output=True, text=True, timeout=10)
+        if r.returncode == 0 and r.stdout.strip() and r.stdout.strip() != "HEAD":
+            return r.stdout.strip()
+    except Exception:  # noqa: BLE001
+        pass
+    return "main"
 
 # Paleta categórica de referencia (dataviz), en orden fijo. El pellet a granel comparte el tono del
 # pellet en saco y se distingue por el trazo discontinuo (codificación secundaria).
@@ -274,6 +290,7 @@ def construir(hoy: dt.date | None = None) -> dict:
         "ejecucion_url": estado.get("ejecucion_url"),
         "fuentes_con_error": [k for k, f in estado["fuentes"].items() if f.get("estado") != "ok"],
         "url_actions": URL_ACTIONS, "url_repo": URL_REPO,
+        "github": {"propietario": GITHUB_PROPIETARIO, "repositorio": GITHUB_REPO, "workflow": "actualizar.yml", "rama": rama_actual()},
         "resumen": resumen,
         "comentario": comentario_semanal(resumen, hoy),
         "series": series,

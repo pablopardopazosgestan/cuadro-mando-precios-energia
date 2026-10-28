@@ -18,11 +18,11 @@ def test_generar_pdf_y_excel(tmp_path, monkeypatch):
     pdf, xlsx = salidas
     assert pdf.exists() and xlsx.exists()
     with pdfplumber.open(pdf) as doc:
-        assert len(doc.pages) >= 3
+        assert len(doc.pages) == 2
         texto = doc.pages[0].extract_text()
         assert "Claves de la semana" in texto and "OMIE" in texto and "€/kWh" in texto
-        assert "Precios y variaciones" in doc.pages[1].extract_text()
-        assert "Fuentes y metodología" in doc.pages[-1].extract_text()
+        assert "Pellet frente a las alternativas" in texto
+        assert "Qué significa cada indicador" in doc.pages[1].extract_text()
     wb = openpyxl.load_workbook(xlsx)
     assert {"Cuadro de mando", "Anual", "Mensual", "Gráficos", "Fuentes y criterios"} <= set(wb.sheetnames)
     assert len(wb["Gráficos"]._charts) == 11            # comparativo + barras anuales + 9 individuales
@@ -61,15 +61,18 @@ def test_comparativo_energia_final_y_periodo_sombreado():
 
 
 @pytest.mark.skipif(not (DATOS / "omie.csv").exists(), reason="sin datos")
-def test_pdf_cuatro_paginas_y_excel_comparador(tmp_path, monkeypatch):
+def test_pdf_dos_paginas_y_excel_comparador(tmp_path, monkeypatch):
     monkeypatch.setattr(informes, "DIR_INFORMES", tmp_path)
     pdf, xlsx = informes.generar(hoy=dt.date(2026, 10, 27))
     with pdfplumber.open(pdf) as doc:
-        assert len(doc.pages) == 4
-        assert "24 meses" in doc.pages[1].extract_text()                       # mini tendencia por fila en la tabla
-        p3 = doc.pages[2].extract_text()
-        assert "Energía final con impuestos" in p3 and "banda: periodo analizado" in p3 and "Media anual" in p3
-        assert len(doc.pages[1].images) >= 10                                   # 9 sparklines + comparativo
+        assert len(doc.pages) == 2
+        p1, p2 = doc.pages[0].extract_text(), doc.pages[1].extract_text()
+        assert "Sobrecoste" in p1 and len(doc.pages[0].images) >= 10            # 8 mini tendencias + ranking + competitividad
+        for nombre in ("1. OMIE", "2. MIBGAS", "3. Gasóleo A", "4. PVPC 2.0TD", "5. TUR 2", "6. Gasóleo C", "7. Butano", "8. Pellet saco 15 kg"):
+            assert nombre in p1 and nombre in p2                                 # los ocho indicadores en las dos páginas
+        assert "Granel" in p1 and "Granel" in p2
+        assert "Qué mide y por qué importa" in p2 and "Esta semana (calculado)" in p2 and "24 meses" in p2
+        assert "Fuentes en la última actualización" in p2 and "Cómo se calcula" in p2
     wb = openpyxl.load_workbook(xlsx)
     assert wb.sheetnames.index("Comparador") < wb.sheetnames.index("Datos 1 OMIE")
     wc = wb["Comparador"]

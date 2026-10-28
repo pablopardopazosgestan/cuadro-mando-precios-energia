@@ -60,6 +60,10 @@ Escribe a Pablo siempre en castellano, de forma directa.
 - Mejora de visualización aceptada el 27/10/2026 («sigue»). Pablo delegó la decisión sobre AVEBIOM (ver abajo).
 - **Fase 6 (verificación y entrega): en curso desde el 27/10/2026.**
 
+- **28/10/2026, a petición de Pablo:** botón «Actualizar» del panel lanza el workflow por la API de GitHub con token
+  personal guardado en el navegador (`panel.json` → `github`; diálogo en la plantilla). PDF reducido a 2 páginas: cuadro
+  de mando + gráfico de sobrecoste de las alternativas frente al pellet + «lectura para dirección» con texto fijo por
+  indicador (`precios/lectura.py`, decisión en DECISIONES) y frases calculadas. Pruebas: `tests/test_lectura.py`.
 - Guía de usuario en PDF (27/10/2026, a petición de Pablo antes de fusionar): `docs/GUIA_DE_USUARIO.pdf`, generada por
   `scripts/generar_guia.py` a partir de las capturas de `docs/guia/` (`scripts/capturas_guia.js`, Playwright) y de las
   páginas del informe. Regenerar si cambia el panel o los informes.

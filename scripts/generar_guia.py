@@ -152,7 +152,7 @@ def main() -> Path:
              "falta usuario ni contraseña: la página es pública para quien tenga el enlace."),
            lista(["<b>Barra superior:</b> enlaces fijos a Resumen, Comparativo, Indicadores, Estado, Fuentes y Descargas.",
                   "<b>Cabecera:</b> fecha de referencia (el día de la última actualización), hora de la última actualización correcta y versión; "
-                  "botones «Informe PDF», «Histórico Excel» y «Actualizar» (abre la página de ejecuciones en GitHub).",
+                  "botones «Informe PDF», «Histórico Excel» y «Actualizar» (lanza la actualización de datos desde el propio panel; apartado 8.2).",
                   "<b>Aviso:</b> si en la última actualización falló alguna fuente, aparece una franja de aviso bajo la cabecera con el nombre de la fuente.",
                   "<b>Claro u oscuro:</b> el panel sigue el modo del dispositivo. <b>Imprimir:</b> Ctrl+P (o Cmd+P) produce una copia limpia, sin controles.",
                   "<b>Móvil:</b> la página se adapta al ancho de pantalla; las tablas se desplazan lateralmente con el dedo."])]
@@ -242,16 +242,22 @@ def main() -> Path:
     # ------------------------------------------------------------ 6
     el += [P("6. Informe PDF", h2),
            P("Botón «Informe PDF» en la cabecera o enlace en «Descargas». Se regenera en cada actualización con los mismos datos del panel; "
-             "solo se conserva la última versión (el histórico completo está en el Excel). Cuatro páginas en A4:"),
+             "solo se conserva la última versión (el histórico completo está en el Excel). Dos páginas en A4, pensadas para leerse en cinco minutos:"),
            tabla([["Página", "Contenido"],
-                  ["1. Cuadro de mando", "Ocho tarjetas con precio, variaciones, fuente, fecha y tendencia de 24 meses; ranking del coste por kWh de la energía final; claves de la semana."],
-                  ["2. Precios y comparativo", "Tabla de precios y variaciones con estado y mini tendencia por fila; comparativo de los nueve indicadores desde 2022 con el último valor al final de cada línea."],
-                  ["3. Energía final y detalle", "Comparativo solo de la energía final con impuestos; nueve gráficos individuales desde 2022 en la unidad original (banda: semana analizada; último valor anotado); tabla de medias anuales en €/kWh."],
-                  ["4. Fuentes y metodología", "Estado de las fuentes en la última actualización; fuente, unidad, frecuencia, impuestos y conversión de cada indicador; factores de conversión y criterios."]],
-                 [0.24, 0.76])]
-    el += [Table([[Image(str(DIR_GUIA / f"pdf_p{i}.png"), width=ANCHO / 4 - 2 * mm, height=(ANCHO / 4 - 2 * mm) * 1.414) for i in (1, 2, 3, 4)]],
-                 colWidths=[ANCHO / 4] * 4, style=TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 1), ("RIGHTPADDING", (0, 0), (-1, -1), 1)])),
-           P("Las cuatro páginas del informe semanal.", pie_fig)]
+                  ["1. Cuadro de mando", "Ocho tarjetas con precio, variaciones, fuente, fecha y tendencia de 24 meses; ranking del coste por kWh de la energía final; "
+                                         "claves de la semana; y el gráfico «Pellet frente a las alternativas de calefacción»: cuánto más (o menos) cuesta el kWh de gasóleo C, "
+                                         "butano, TUR 2 y PVPC que el del pellet en saco, hoy y hace un año, y la evolución de esa diferencia en 24 meses."],
+                  ["2. Lectura para dirección", "Para cada indicador: precio y variaciones, una explicación fija de qué mide y por qué importa para el coste de producción o el precio "
+                                                "del pellet, una frase calculada con las cifras de la semana (por ejemplo, «su kWh cuesta hoy un 80 % más que el del pellet en saco») "
+                                                "y la mini tendencia. Cierra con el estado de las fuentes y cómo se calcula todo."]],
+                 [0.24, 0.76]),
+           P("<b>Cómo leer el sobrecoste:</b> es el precio de la alternativa dividido por el precio del pellet en saco, menos uno, ambos en €/kWh con impuestos. "
+             "Positivo significa que el pellet es más barato; si crece respecto a hace un año, la ventaja del pellet se amplía. El valor de hace un año se deduce "
+             "de las variaciones interanuales. Las explicaciones fijas se redactaron el 28/10/2026 y se revisan a mano; las frases con cifras salen de los datos. "
+             "El impacto en euros por tonelada depende de los consumos de cada planta y no se incluye.", destacado)]
+    el += [Table([[Image(str(DIR_GUIA / f"pdf_p{i}.png"), width=ANCHO / 2 - 3 * mm, height=(ANCHO / 2 - 3 * mm) * 1.414) for i in (1, 2)]],
+                 colWidths=[ANCHO / 2] * 2, style=TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 1), ("RIGHTPADDING", (0, 0), (-1, -1), 1)])),
+           P("Las dos páginas del informe semanal.", pie_fig)]
 
     # ------------------------------------------------------------ 7
     el += [P("7. Excel", h2),
@@ -288,13 +294,19 @@ def main() -> Path:
                "Publicación de la web."]], bulletType="1", leftIndent=14),
            P("Todo el proceso dura entre uno y dos minutos. El panel muestra la fecha y hora de la última actualización correcta en la cabecera."),
            P("8.2 Lanzarla a mano", h3),
-           P("Pulse «Actualizar» en la cabecera del panel (abre la página de ejecuciones en GitHub; hace falta tener sesión en GitHub con acceso al "
-             "repositorio). Elija «Actualizar datos y publicar» y pulse «Run workflow». Mientras el flujo viva solo en la rama de desarrollo, ese botón "
-             "no aparece: abra la última ejecución y pulse «Re-run all jobs». En uno o dos minutos la web queda actualizada; recargue la página."),
+           P("Pulse <b>«Actualizar»</b> en la cabecera del panel. Se abre un cuadro que explica el proceso y pide, <b>solo la primera vez</b>, un token "
+             "personal de GitHub con permiso de escritura en <i>Actions</i> sobre este repositorio. El token se guarda únicamente en ese navegador (no "
+             "viaja a ningún sitio salvo a la API de GitHub) y puede borrarse con «Olvidar token». Al pulsar «Actualizar ahora», el panel lanza la "
+             "actualización, muestra el progreso y se recarga solo cuando termina (uno o dos minutos). Si alguna fuente no respondió, lo indica y enlaza el registro."),
+           lista(["<b>Cómo obtener el token (una vez):</b> en GitHub, foto de perfil → <i>Settings</i> → <i>Developer settings</i> → <i>Personal access tokens</i> → "
+                  "<i>Fine-grained tokens</i> → <i>Generate new token</i>. Repositorio: solo este. Permisos: <i>Actions: Read and write</i>. Copie el token y péguelo en el cuadro.",
+                  "<b>Alternativa sin token:</b> botón «Ver ejecuciones» del mismo cuadro (abre GitHub Actions). Elija «Actualizar datos y publicar» y «Run workflow»; "
+                  "mientras el flujo viva solo en la rama de desarrollo ese botón no aparece: abra la última ejecución y pulse «Re-run all jobs»."]),
            P("8.3 Saber si ha ido bien", h3),
            lista(["<b>En el panel:</b> sección «Estado de las fuentes y actualización»: por fuente, última descarga correcta, último dato y resultado (● correcto / ● error con el mensaje), y enlace a la ejecución.",
                   "<b>En GitHub:</b> la ejecución aparece en verde si todas las fuentes respondieron, y en rojo si alguna falló. En rojo, GitHub envía un correo al propietario del repositorio.",
                   "<b>Importante:</b> aunque una fuente falle, la web <i>se publica igualmente</i> con el último dato correcto de esa fuente, marcado con su fecha. El rojo es un aviso, no una caída del sistema."])]
+    el += figura("12_actualizar.png", "El cuadro «Actualizar los datos ahora», con las instrucciones para el token.", ancho=120 * mm)
     el += figura("10_estado.png", "Estado de las fuentes y descargas.")
 
     # ------------------------------------------------------------ 9

@@ -6,7 +6,7 @@ name: Actualizar datos y publicar
 # commit de datos/ y sitio/ → publicación en GitHub Pages. Si fallan las pruebas o se pierde histórico no se
 # publica nada. Si falla la descarga de alguna fuente, se publica con el último dato correcto de esa fuente,
 # el error queda visible en el panel y la ejecución termina en rojo para que llegue el aviso.
-# 27/10/2026: informes y panel con la mejora de visualización (versión 0.3.0). AVEBIOM solo se consulta cuando
+# 28/10/2026: botón «Actualizar» del panel (workflow_dispatch por API) e informe PDF de dos páginas. AVEBIOM solo se consulta cuando
 # puede haber trimestre nuevo (el resto de semanas el pellet se reconstruye desde los PDF versionados).
 on:
   schedule:

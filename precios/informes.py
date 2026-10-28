@@ -45,6 +45,7 @@ from reportlab.platypus import Image, KeepTogether, PageBreak, Paragraph, Simple
 from . import __version__  # noqa: E402
 from .config import DIR_SERIES  # noqa: E402
 from .indicadores import INDICADORES, ORDEN  # noqa: E402
+from . import lectura  # noqa: E402
 from .panel import COLORES, DIR_SITIO, TIPO, URL_REPO, columna_panel, construir  # noqa: E402
 
 log = logging.getLogger(__name__)
@@ -285,6 +286,57 @@ def grafico_individual(id_: str, desde: dt.date, hasta: dt.date, periodo: tuple[
     return _png(fig)
 
 
+def grafico_competitividad(panel: dict, meses_n: int = 24) -> bytes:
+    """Izquierda: prima de cada alternativa de calefacción frente al pellet en saco (hoy y hace un año).
+    Derecha: evolución mensual de esa prima en los últimos `meses_n` meses (medias mensuales en €/kWh con impuestos)."""
+    resumen = {r["id"]: r for r in panel["resumen"]}
+    comp = lectura.competitividad(resumen, "pellet_saco")
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(10.5, 3.1), dpi=160, gridspec_kw={"width_ratios": [1, 1.5]})
+    if comp:
+        y = range(len(comp))
+        hoy = [c["prima_pct"] for c in comp]
+        antes = [c["prima_hace_un_anyo_pct"] if c["prima_hace_un_anyo_pct"] is not None else 0 for c in comp]
+        a1.barh([i + 0.2 for i in y], hoy, height=0.38, color=[COLORES[c["id"]] for c in comp], label="hoy")
+        a1.barh([i - 0.2 for i in y], antes, height=0.38, color=[COLORES[c["id"]] for c in comp], alpha=0.35, label="hace un año")
+        for i, c in enumerate(comp):
+            a1.text(c["prima_pct"] + (3 if c["prima_pct"] >= 0 else -3), i + 0.2, lectura._pct(c["prima_pct"]), va="center",
+                    ha="left" if c["prima_pct"] >= 0 else "right", fontsize=6.8, color=TINTA, fontweight="bold")
+            if c["prima_hace_un_anyo_pct"] is not None:
+                a1.text(c["prima_hace_un_anyo_pct"] + (3 if c["prima_hace_un_anyo_pct"] >= 0 else -3), i - 0.2, lectura._pct(c["prima_hace_un_anyo_pct"]),
+                        va="center", ha="left" if c["prima_hace_un_anyo_pct"] >= 0 else "right", fontsize=6.2, color=TINTA2)
+        a1.set_yticks(list(y))
+        a1.set_yticklabels([c["nombre"] for c in comp], fontsize=7.5)
+        a1.invert_yaxis()
+        a1.axvline(0, color=TINTA, linewidth=0.8)
+        vmax, vmin = max(hoy + antes + [0]), min(hoy + antes + [0])
+        a1.set_xlim(vmin * 1.6 - 5 if vmin < 0 else -vmax * 0.06, vmax * 1.3 + 5)
+        a1.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:+.0f} %".replace("-", "−")))
+        a1.tick_params(axis="x", labelsize=7)
+        from matplotlib.patches import Patch
+        a1.legend(handles=[Patch(color=TINTA2, label="hoy"), Patch(color=TINTA2, alpha=0.35, label="hace un año")], fontsize=6.5, frameon=False,
+                  loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2)
+    a1.set_title("Sobrecoste del kWh frente al pellet en saco", loc="left", fontsize=8.5, fontweight="bold")
+    a1.spines[["top", "right"]].set_visible(False)
+    meses_p, pellet = _mensual_kwh(panel, "pellet_saco")
+    base = dict(zip(meses_p, pellet))
+    for id_ in lectura.ALTERNATIVAS:
+        meses, vals = _mensual_kwh(panel, id_)
+        pares = [(m, (v / base[m] - 1) * 100) for m, v in zip(meses, vals) if v is not None and base.get(m)][-meses_n:]
+        if pares:
+            a2.plot([pd.Timestamp(m + "-15") for m, _ in pares], [v for _, v in pares], color=COLORES[id_], linewidth=1.6, label=INDICADORES[id_].nombre_corto)
+            a2.annotate(f"{pares[-1][1]:+.0f} %".replace("-", "−"), xy=(pd.Timestamp(pares[-1][0] + "-15"), pares[-1][1]), xytext=(4, 0), textcoords="offset points",
+                        fontsize=6.5, color=COLORES[id_], va="center", fontweight="bold")
+    a2.axhline(0, color=TINTA, linewidth=0.8)
+    _estilo(a2)
+    a2.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:+.0f} %".replace("-", "−")))
+    a2.xaxis.set_major_formatter(mdates.DateFormatter("%m/%y"))
+    a2.tick_params(labelsize=7)
+    a2.set_title(f"Evolución del sobrecoste frente al pellet en saco ({meses_n} meses, medias mensuales)", loc="left", fontsize=8.5, fontweight="bold")
+    a2.legend(fontsize=6.5, frameon=False, ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.16))
+    fig.tight_layout()
+    return _png(fig)
+
+
 # ------------------------------------------------------------------ PDF
 
 def generar_pdf(panel: dict, ruta: Path) -> Path:
@@ -336,146 +388,103 @@ def generar_pdf(panel: dict, ruta: Path) -> Path:
     el = []
     resumen = {r["id"]: r for r in panel["resumen"]}
 
-    # ---------- Página 1: cuadro de mando
+    # ---------- Página 1: cuadro de mando (tarjetas, ranking, competitividad del pellet, claves)
     el.append(Paragraph("Precios de la energía en España", h1))
     el.append(Paragraph(f"Informe semanal n.º {semana.year}-{semana.week:02d} · periodo analizado del {desde_periodo:%d/%m/%Y} al {hoy:%d/%m/%Y} · "
-                        f"ocho indicadores en €/kWh, con impuestos salvo los mercados mayoristas (OMIE y MIBGAS).", peq))
-    el.append(Spacer(1, 3 * mm))
+                        f"ocho indicadores en €/kWh, con impuestos salvo los mercados mayoristas (OMIE y MIBGAS) · nada se estima: n. d. = no disponible.", peq))
+    el.append(Spacer(1, 2 * mm))
+
+    estilo_t = [("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(SUPERFICIE)), ("LINEBELOW", (0, 0), (-1, 0), 0.8, colors.HexColor(TINTA)),
+                ("LINEBELOW", (0, 1), (-1, -1), 0.3, colors.HexColor(BORDE)), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("TOPPADDING", (0, 0), (-1, -1), 3.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 3.5)]
+    kpi_valor4 = st("kv4", fontName=fb, fontSize=14, leading=16)
+    kpi_var4 = st("kvar4", fontSize=7, leading=8.8)
+    kpi_meta4 = st("km4", fontSize=6, leading=7.6, textColor=colors.HexColor(TINTA3))
 
     def tarjeta(id_, extra_id=None):
         r = resumen[id_]
         precio = _fmt(r["precio_eur_kwh"], 4 if id_ in ("omie", "mibgas") else 3)
         sem, inter = r["variacion_semanal_pct"], r["variacion_interanual_pct"]
-        var = (f'Semana: <font color="{_color_var(sem)}">{_pct(sem)}</font><br/>'
-               f'Un año: <font color="{_color_var(inter)}">{_pct(inter)}</font>')
-        extra = ""
+        var = (f'Semana <font color="{_color_var(sem)}">{_pct(sem)}</font><br/>Un año <font color="{_color_var(inter)}">{_pct(inter)}</font>')
         if extra_id:
             e = resumen[extra_id]
-            extra = (f'<br/>{e["nombre_corto"]}: <b>{_fmt(e["precio_eur_kwh"], 3)}</b> €/kWh '
-                     f'(<font color="{_color_var(e["variacion_semanal_pct"])}">{_pct(e["variacion_semanal_pct"])}</font> semana, '
-                     f'<font color="{_color_var(e["variacion_interanual_pct"])}">{_pct(e["variacion_interanual_pct"])}</font> año)')
-        etiqueta = "mayorista, sin impuestos" if r["impuestos"].startswith("sin") else "con impuestos"
-        meta = f"{NOMBRE_FUENTE[id_]} · dato del {_fecha(r['fecha_dato'])} · {etiqueta}"
-        if r["precio_eur_kwh"] is None:
-            meta += f" · {r['detalle_estado'] or r['estado']}"
-        izq = [Paragraph(f"{r['numero']}. {r['nombre_corto']}", kpi_nombre),
-               Paragraph(f'{precio} <font size="7" color="{TINTA2}">€/kWh</font>', kpi_valor),
-               Paragraph(var + extra, kpi_var), Paragraph(meta, kpi_meta)]
-        der = Image(io.BytesIO(sparkline(panel, id_)), width=34 * mm, height=8.5 * mm)
-        t = Table([[izq, der]], colWidths=[(ancho / 2 - 4 * mm) - 36 * mm, 36 * mm])
-        t.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("VALIGN", (1, 0), (1, 0), "MIDDLE"),
-                               ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(SUPERFICIE)),
-                               ("LINEBEFORE", (0, 0), (0, 0), 2.2, colors.HexColor(COLORES[id_])),
-                               ("LEFTPADDING", (0, 0), (0, 0), 6), ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                               ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4)]))
+            var += (f'<br/>Granel <b>{_fmt(e["precio_eur_kwh"], 3)}</b> €/kWh · <font color="{_color_var(e["variacion_interanual_pct"])}">{_pct(e["variacion_interanual_pct"])}</font> año')
+        etiqueta = "mayorista, sin imp." if r["impuestos"].startswith("sin") else "con impuestos"
+        meta = f"{NOMBRE_FUENTE[id_]} · {_fecha(r['fecha_dato'])} · {etiqueta}"
+        spark = Image(io.BytesIO(sparkline(panel, id_)), width=26 * mm, height=6.5 * mm, hAlign="RIGHT")
+        t = Table([[Paragraph(f"{r['numero']}. {r['nombre_corto']}", kpi_nombre)],
+                   [Paragraph(f'{precio} <font size="6.5" color="{TINTA2}">€/kWh</font>', kpi_valor4)],
+                   [Paragraph(var, kpi_var4)], [spark], [Paragraph(meta, kpi_meta4)]], colWidths=[ancho / 4 - 3 * mm])
+        t.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), colors.HexColor(SUPERFICIE)),
+                               ("LINEBEFORE", (0, 0), (0, -1), 2.2, colors.HexColor(COLORES[id_])),
+                               ("LEFTPADDING", (0, 0), (-1, -1), 5), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+                               ("TOPPADDING", (0, 0), (-1, -1), 1), ("BOTTOMPADDING", (0, 0), (-1, -1), 1),
+                               ("TOPPADDING", (0, 0), (0, 0), 3), ("BOTTOMPADDING", (0, -1), (0, -1), 3)]))
         return t
 
     tarjetas = [tarjeta("omie"), tarjeta("mibgas"), tarjeta("gasoleo_a"), tarjeta("pvpc"),
                 tarjeta("tur2"), tarjeta("gasoleo_c"), tarjeta("butano"), tarjeta("pellet_saco", "pellet_granel")]
-    cuadricula = Table([tarjetas[i:i + 2] for i in range(0, 8, 2)], colWidths=[ancho / 2, ancho / 2])
-    cuadricula.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 4),
-                                    ("TOPPADDING", (0, 0), (-1, -1), 2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
+    cuadricula = Table([tarjetas[i:i + 4] for i in range(0, 8, 4)], colWidths=[ancho / 4] * 4)
+    cuadricula.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+                                    ("TOPPADDING", (0, 0), (-1, -1), 1.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 1.5), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
     el.append(cuadricula)
-    el.append(Paragraph("Precio actual: media de los últimos 7 días (OMIE, MIBGAS, PVPC), última semana publicada (gasóleos) o valor vigente hoy "
-                        "(TUR 2, butano, pellet). Variaciones frente al periodo anterior y frente a hace un año. Línea: tendencia de las medias "
-                        "mensuales de los últimos 24 meses. ▲ sube, ▼ baja, ■ sin cambio; n. d.: no disponible (nunca se estima).", peq))
-    el.append(Spacer(1, 3 * mm))
+    el.append(Paragraph("Precio actual: media de 7 días (OMIE, MIBGAS, PVPC), última semana publicada (gasóleos) o valor vigente (TUR 2, butano, pellet). "
+                        "▲ sube (rojo), ▼ baja (verde), ■ sin cambio. Línea: medias mensuales de 24 meses.", peq))
 
-    el.append(Image(io.BytesIO(grafico_ranking(panel["resumen"])), width=ancho * 0.72, height=ancho * 0.72 * 2.5 / 6.2, hAlign="LEFT"))
-    el.append(Paragraph("Claves de la semana", h2))
-    for p in panel["comentario"]:
-        el.append(Paragraph("• " + p, normal))
+    ranking = Image(io.BytesIO(grafico_ranking(panel["resumen"])), width=ancho * 0.5, height=ancho * 0.5 * 2.5 / 6.2)
+    claves = [Paragraph("Claves de la semana", h2)] + [Paragraph("• " + p_, st("cl", fontSize=8.2, leading=10.6, alignment=TA_JUSTIFY)) for p_ in panel["comentario"]]
+    fila = Table([[ranking, claves]], colWidths=[ancho * 0.52, ancho * 0.48])
+    fila.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0)]))
+    el.append(fila)
+    el.append(Paragraph("Pellet frente a las alternativas de calefacción", h2))
+    el.append(Image(io.BytesIO(grafico_competitividad(panel)), width=ancho, height=ancho * 3.1 / 10.5))
+    el.append(Paragraph("Sobrecoste = precio de la alternativa ÷ precio del pellet en saco − 1, ambos en €/kWh con impuestos (dato calculado). "
+                        "Positivo: el pellet es más barato. El valor de hace un año se deduce de las variaciones interanuales.", peq))
 
-    # ---------- Página 2: tabla y comparativo
+    # ---------- Página 2: lectura para dirección
     el.append(PageBreak())
-    el.append(Paragraph("Precios y variaciones", h2))
-    cab = ["Indicador", "€/kWh", "Semana", "Un año", "Fecha", "Valor original", "Fuente", "Estado", "24 meses"]
-    filas = [[Paragraph(c, celda_b) for c in cab]]
-    estilo_t = [("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(SUPERFICIE)), ("LINEBELOW", (0, 0), (-1, 0), 0.8, colors.HexColor(TINTA)),
-                ("LINEBELOW", (0, 1), (-1, -1), 0.3, colors.HexColor(BORDE)), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("TOPPADDING", (0, 0), (-1, -1), 3.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 3.5)]
-    for i, r in enumerate(panel["resumen"], start=1):
-        sem, inter = r["variacion_semanal_pct"], r["variacion_interanual_pct"]
-        punto = {"actualizado": BAJA, "sin actualización en el periodo": "#c98500"}.get(r["estado"], SUBE)
-        filas.append([Paragraph(f"{r['numero']}. {r['nombre']}" + (" <font color='%s'>(sin impuestos)</font>" % TINTA3 if r["impuestos"].startswith("sin") else ""), celda),
-                      Paragraph(f"<b>{_fmt(r['precio_eur_kwh'], 4 if r['id'] in ('omie', 'mibgas') else 3)}</b>", celda_r),
-                      Paragraph(f'<font color="{_color_var(sem)}">{_pct(sem)}</font>', celda_r),
-                      Paragraph(f'<font color="{_color_var(inter)}">{_pct(inter)}</font>', celda_r),
-                      Paragraph(_fecha(r["fecha_dato"]).replace("/20", "/"), celda),
-                      Paragraph(f"{_fmt(r['valor_original'], 2 if r['valor_original'] and r['valor_original'] > 10 else 4)} {r['unidad_original'].split(' (')[0]}", celda),
-                      Paragraph(NOMBRE_FUENTE[r["id"]], celda),
-                      Paragraph(f'<font color="{punto}">●</font> {r["estado"]}', celda),
-                      Image(io.BytesIO(sparkline(panel, r["id"])), width=20 * mm, height=5 * mm)])
-    t = Table(filas, colWidths=[ancho * f for f in (0.18, 0.08, 0.09, 0.11, 0.085, 0.12, 0.08, 0.145, 0.11)], repeatRows=1)
-    t.setStyle(TableStyle(estilo_t + [("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3)]))
-    el.append(t)
-    el.append(Paragraph("Estado: ● actualizado (dato nuevo en los últimos 7 días); ● sin actualización en el periodo (la fuente publica con menor frecuencia); "
-                        "● fuente no disponible o dato pendiente. Los precios con impuestos de PVPC, TUR 2 y butano son calculados con los tipos vigentes en cada "
-                        "fecha; los del Boletín Petrolero y AVEBIOM, originales de la fuente. Última columna: medias mensuales de los últimos 24 meses.", peq))
-    el.append(Paragraph("Comparativo en €/kWh desde enero de 2022 (los nueve indicadores)", h2))
-    el.append(Image(io.BytesIO(grafico_comparativo(INICIO_INFORME, hoy, alto=3.9)), width=ancho, height=ancho * 3.9 / 10.5))
-    el.append(Paragraph("Las líneas escalonadas son precios regulados o trimestrales, que se mantienen hasta la siguiente revisión. Los huecos son periodos sin dato. "
-                        "Al final de cada línea, su último valor.", peq))
-    # ---------- Página 3: comparativo de energía final y gráficos individuales
-    el.append(PageBreak())
-    el.append(Paragraph("Energía final con impuestos (sin los mercados mayoristas)", h2))
-    el.append(Image(io.BytesIO(grafico_comparativo(INICIO_INFORME, hoy, ids=[i for i in ORDEN if i not in ("omie", "mibgas")], alto=3.4)),
-                    width=ancho, height=ancho * 3.4 / 10.5))
-    el.append(Paragraph("Mismas series que el ranking de la página 1: comparables entre sí porque todas son precio final al consumidor con impuestos.", peq))
-
-    el.append(Paragraph("Evolución de cada indicador desde 2022 (unidad original de la fuente; último valor anotado; banda: periodo analizado)", h2))
-    w = ancho / 3 - 2 * mm
-    imgs = [Image(io.BytesIO(grafico_individual(id_, INICIO_INFORME, hoy, (desde_periodo, hoy))), width=w, height=w * 2.05 / 3.6) for id_ in ORDEN]
-    tg = Table([imgs[i:i + 3] for i in range(0, 9, 3)], colWidths=[ancho / 3] * 3)
-    tg.setStyle(TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0), ("TOPPADDING", (0, 0), (-1, -1), 2)]))
-    el.append(tg)
-    anual = _anual(panel)
-    anyos = sorted({a for d in anual.values() for a in d})[-5:]
-    el.append(Paragraph("Media anual en €/kWh", h2))
-    filas = [[Paragraph("Indicador", celda_b)] + [Paragraph(a + ("*" if a == panel["fecha_referencia"][:4] else ""), celda_b) for a in anyos]]
-    for id_ in ORDEN:
-        filas.append([Paragraph(INDICADORES[id_].nombre_corto + (" (sin imp.)" if id_ in ("omie", "mibgas") else ""), celda)] +
-                     [Paragraph(_fmt(anual[id_].get(a), 4 if id_ in ("omie", "mibgas") else 3), celda_r) for a in anyos])
-    ta = Table(filas, colWidths=[ancho * 0.3] + [ancho * 0.7 / len(anyos)] * len(anyos))
-    ta.setStyle(TableStyle(estilo_t + [("TOPPADDING", (0, 0), (-1, -1), 2.2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2)]))
-    el.append(ta)
-    el.append(Paragraph("* Año en curso: media de los meses disponibles. Los años sin dato en alguno de sus meses se dejan en blanco.", peq))
-
-    # ---------- Página 4: estado de las fuentes y metodología
-    el.append(PageBreak())
-    el.append(Paragraph("Estado de las fuentes en la última actualización", h2))
-    nombres_fuente = {"omie": "OMIE", "mibgas": "MIBGAS", "boletin_petrolero": "Comisión Europea (Weekly Oil Bulletin)", "esios_pvpc": "REE / ESIOS",
-                      "boe_tur": "BOE (TUR gas natural)", "boe_butano": "BOE (butano envasado)", "avebiom": "AVEBIOM", "ine_ipc": "INE (IPC, impuestos de 2026)"}
-    filas = [[Paragraph(c, celda_b) for c in ("Fuente", "Resultado", "Último dato", "Última descarga correcta")]]
-    for k, f in panel["fuentes"].items():
-        ult = max((s_.get("ultimo_dato") or "" for s_ in (f.get("series") or {}).values()), default="")
-        ok = f.get("estado") == "ok"
-        filas.append([Paragraph(nombres_fuente.get(k, k), celda),
-                      Paragraph(f'<font color="{BAJA if ok else SUBE}">●</font> ' + ("correcto" if ok else "error: " + str(f.get("error", ""))[:90]), celda),
-                      Paragraph(_fecha(ult) if ult else "—", celda), Paragraph(_fecha((f.get("ultima_actualizacion_correcta") or "")[:10]), celda)])
-    te = Table(filas, colWidths=[ancho * f for f in (0.32, 0.38, 0.14, 0.16)])
-    te.setStyle(TableStyle(estilo_t))
-    el.append(te)
-    el.append(Paragraph("La actualización es automática cada lunes y puede lanzarse a mano desde el repositorio. Si una fuente falla se conserva su último dato correcto y el error queda registrado.", peq))
-    el.append(Paragraph("Fuentes y metodología", h2))
-    celda_p = st("cp", fontSize=7, leading=8.6)
-    filas = [[Paragraph(c, celda_b) for c in ("Indicador", "Fuente (enlace)", "Unidad y frecuencia", "Impuestos", "Conversión a €/kWh")]]
+    el.append(Paragraph("Qué significa cada indicador y cómo repercute en el pellet", h2))
+    el.append(Paragraph("Para cada indicador: su precio y variaciones, una lectura fija de qué mide y por qué importa para el coste de producción o el precio "
+                        "del pellet, y una frase calculada con las cifras de esta semana. El impacto en euros por tonelada depende de los consumos de cada planta y no se incluye.", peq))
+    lect_t = st("lt", fontName=fb, fontSize=8.2, leading=10.2)
+    lect_n = st("ln", fontSize=7.4, leading=9.4, alignment=TA_JUSTIFY)
+    lect_d = st("ld", fontSize=7.4, leading=9.4, alignment=TA_JUSTIFY, textColor=colors.HexColor(TINTA))
+    lect_k = st("lk", fontSize=7.2, leading=9.2)
+    filas = [[Paragraph(c, celda_b) for c in ("Indicador", "Qué mide y por qué importa", "Esta semana (calculado)", "24 meses")]]
     for r in panel["resumen"]:
-        m = panel["metadatos"].get(r["id"], {})
-        filas.append([Paragraph(r["nombre"], celda_p), Paragraph(f'<a href="{r["url_fuente"]}" color="{ACENTO}">{r["fuente"]}</a>', celda_p),
-                      Paragraph(f"{r['unidad_original']}; {m.get('frecuencia', '')}", celda_p), Paragraph(m.get("impuestos_original", ""), celda_p),
-                      Paragraph(m.get("conversion", ""), celda_p)])
-    tf = Table(filas, colWidths=[ancho * f for f in (0.19, 0.27, 0.2, 0.14, 0.2)], repeatRows=1)
-    tf.setStyle(TableStyle(estilo_t + [("VALIGN", (0, 0), (-1, -1), "TOP"), ("TOPPADDING", (0, 0), (-1, -1), 2.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5)]))
-    el.append(tf)
+        if r["id"] == "pellet_granel":
+            continue
+        id_ = r["id"]
+        sem, inter = r["variacion_semanal_pct"], r["variacion_interanual_pct"]
+        extra = ""
+        if id_ == "pellet_saco":
+            g = resumen["pellet_granel"]
+            extra = (f'<br/>Granel <b>{_fmt(g["precio_eur_kwh"], 3)}</b> €/kWh · <font color="{_color_var(g["variacion_interanual_pct"])}">{_pct(g["variacion_interanual_pct"])}</font> año')
+        izq = [Paragraph(f"{r['numero']}. {r['nombre_corto']}", lect_t),
+               Paragraph(f'<b>{_fmt(r["precio_eur_kwh"], 4 if id_ in ("omie", "mibgas") else 3)}</b> €/kWh · {_fmt(r["valor_original"], 2 if (r["valor_original"] or 0) > 10 else 4)} {r["unidad_original"].split(" (")[0]}', lect_k),
+               Paragraph(f'Semana <font color="{_color_var(sem)}">{_pct(sem)}</font> · Un año <font color="{_color_var(inter)}">{_pct(inter)}</font>{extra}', lect_k),
+               Paragraph(f'{NOMBRE_FUENTE[id_]} · {_fecha(r["fecha_dato"])}', kpi_meta4)]
+        filas.append([izq, Paragraph(lectura.SIGNIFICADO[id_], lect_n), Paragraph(lectura.frase_dinamica(id_, resumen), lect_d),
+                      Image(io.BytesIO(sparkline(panel, id_)), width=22 * mm, height=5.5 * mm)])
+    tl = Table(filas, colWidths=[ancho * 0.21, ancho * 0.36, ancho * 0.29, ancho * 0.14], repeatRows=1)
+    tl.setStyle(TableStyle(estilo_t + [("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+                                        ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 4)]
+                           + [("LINEBEFORE", (0, i), (0, i), 2, colors.HexColor(COLORES[r["id"]])) for i, r in enumerate([x for x in panel["resumen"] if x["id"] != "pellet_granel"], start=1)]))
+    el.append(tl)
+
+    # Estado de las fuentes en una línea y pie metodológico
+    nombres_fuente = {"omie": "OMIE", "mibgas": "MIBGAS", "boletin_petrolero": "Comisión Europea", "esios_pvpc": "REE/ESIOS",
+                      "boe_tur": "BOE (TUR)", "boe_butano": "BOE (butano)", "avebiom": "AVEBIOM", "ine_ipc": "INE"}
+    ok = [nombres_fuente.get(k, k) for k, f in panel["fuentes"].items() if f.get("estado") == "ok"]
+    mal = [f"{nombres_fuente.get(k, k)} ({str(f.get('error', ''))[:60]})" for k, f in panel["fuentes"].items() if f.get("estado") != "ok"]
     el.append(Spacer(1, 2 * mm))
-    el.append(Paragraph("<b>Factores de conversión</b> (sobre poder calorífico inferior): " + "; ".join(
-        f"{f['nombre']}: {_fmt(f['valor'], 3)} {f['unidad']}" for f in panel["factores"]) + ". Procedencia: IDAE (gasóleo, butano, PCI/PCS del gas natural) y boletín de referencia (pellet; AVEBIOM usa 4,76 kWh/kg).", peq))
-    el.append(Paragraph("<b>Impuestos:</b> se aplican los vigentes en cada fecha (IVA, impuesto especial sobre la electricidad e impuesto sobre hidrocarburos) con su "
-                        "referencia al BOE; en 2026 varios tipos dependen del IPC del INE. Tabla completa en docs/METODOLOGIA.md del repositorio.", peq))
-    el.append(Paragraph("<b>Criterios:</b> nada se rellena ni se estima; cada dato conserva su fuente, fecha de publicación y si es original o calculado. "
-                        "OMIE y MIBGAS son precios mayoristas y se presentan sin impuestos. Pellet: trimestral desde el 4T2024, medias anuales de AVEBIOM antes.", peq))
-    el.append(Paragraph(f"Cuadro de mando interactivo con filtros de periodo y descarga del Excel: {URL_PANEL} · Código, datos y metodología: {URL_REPO} · Versión {__version__}.", peq))
+    el.append(Paragraph(f"<b>Fuentes en la última actualización ({_fecha((panel.get('actualizado') or '')[:10])}):</b> "
+                        + (f"correctas {len(ok)} de {len(ok) + len(mal)}" + (f"; con error: {'; '.join(mal)} (se muestra su último dato correcto)" if mal else "") + "."), peq))
+    el.append(Paragraph("<b>Cómo se calcula:</b> impuestos vigentes en cada fecha (IVA, impuesto eléctrico e hidrocarburos) con referencia al BOE; conversión a €/kWh sobre poder "
+                        "calorífico inferior (gasóleo 10,28 kWh/l; butano 12,73 kWh/kg; pellet 4,8 kWh/kg; gas PCI/PCS 0,904). OMIE y MIBGAS son mayoristas sin impuestos y no entran en el ranking. "
+                        "Cada dato conserva su fuente y fecha; nada se rellena ni se estima. La lectura fija de cada indicador se redactó el 28/10/2026 y se revisa a mano; "
+                        "las frases con cifras se calculan con los datos de este informe.", peq))
+    el.append(Paragraph(f"Cuadro de mando interactivo (comparativo, filtros, CSV) y Excel con el histórico completo: {URL_PANEL} · Metodología: {URL_REPO}/blob/main/docs/METODOLOGIA.md · Versión {__version__}.", peq))
     doc.build(el, onFirstPage=cabecera_pie, onLaterPages=cabecera_pie)
     return ruta
 

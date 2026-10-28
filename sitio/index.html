@@ -90,6 +90,12 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-sp
 details { margin: 8px 0; } summary { cursor: pointer; color: var(--text-2); }
 footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-3); font-size: .85rem; }
 .aviso { padding: 10px 12px; border-left: 4px solid var(--warn); background: var(--surface-2); border-radius: 4px; margin: 10px 0; }
+dialog.actualizar { border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; max-width: 520px; width: calc(100% - 32px); background: var(--surface); color: var(--text); }
+dialog.actualizar::backdrop { background: rgba(0,0,0,.35); }
+dialog.actualizar h3 { margin: 0 0 8px; } dialog.actualizar p { margin: 6px 0; font-size: .92rem; } dialog.actualizar ol { padding-left: 18px; font-size: .9rem; }
+dialog.actualizar input[type=password] { width: 100%; font: inherit; padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); margin: 6px 0 10px; }
+.progreso { display: inline-flex; align-items: center; gap: 8px; } .progreso::before { content: ''; width: 12px; height: 12px; border: 2px solid var(--accent); border-right-color: transparent; border-radius: 50%; animation: gira 1s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
 .dos-col { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; align-items: start; }
 @media (max-width: 900px) { .dos-col { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { h1 { font-size: 1.3rem; } th, td { padding: 6px 5px; } th { top: 0; position: static; } .tarjeta { grid-template-columns: 1fr 90px; } }
@@ -198,6 +204,10 @@ footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border
 
 <footer>Datos: OMIE, MIBGAS, REE/ESIOS, Comisión Europea (Weekly Oil Bulletin), BOE y AVEBIOM. Impuestos según el BOE e IPC del INE. Cada dato conserva su fuente, fecha de publicación y si es original o calculado. <span id="pie-version"></span></footer>
 </main>
+<dialog class="actualizar" id="dlg-actualizar">
+  <h3>Actualizar los datos ahora</h3>
+  <div id="dlg-cuerpo"></div>
+</dialog>
 
 <script>
 (async function () {
@@ -244,7 +254,7 @@ footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border
   document.getElementById('meta-cabecera').innerHTML = `Fecha de referencia: <strong>${fmtFecha(P.fecha_referencia)}</strong> · última actualización correcta: <strong>${fmtFechaHora(P.ultima_actualizacion_correcta)}</strong> · versión ${P.version}`;
   document.getElementById('acciones').innerHTML =
     (urlPdf ? `<a class="boton" href="${urlPdf}">Informe PDF</a>` : '') + (urlXlsx ? `<a class="boton" href="${urlXlsx}">Histórico Excel</a>` : '') +
-    `<a class="boton primario" href="${P.url_actions}" target="_blank" rel="noopener">Actualizar</a>`;
+    `<button class="boton primario" id="b-actualizar" title="Lanza la actualización de datos y recarga la página al terminar">Actualizar</button>`;
   document.getElementById('enlace-metodologia').href = P.url_repo + '/blob/main/docs/METODOLOGIA.md';
   document.getElementById('pie-version').textContent = `Versión ${P.version}, generado el ${fmtFechaHora(P.generado)}.`;
   if (P.fuentes_con_error && P.fuentes_con_error.length) {
@@ -252,6 +262,73 @@ footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border
     av.textContent = `Atención: en la última ejecución fallaron ${P.fuentes_con_error.length} fuente(s) (${P.fuentes_con_error.join(', ')}). Se muestra el último dato correcto de cada una; el detalle está en «Estado de las fuentes».`;
     document.getElementById('seccion-resumen').insertBefore(av, document.getElementById('tarjetas'));
   }
+
+  // ---------- actualización desde el panel (API de GitHub; el token se guarda solo en este navegador)
+  const GH = P.github || {};
+  const CLAVE_TOKEN = 'cuadro-mando-token-github';
+  const leerToken = () => { try { return localStorage.getItem(CLAVE_TOKEN) || ''; } catch (e) { return ''; } };
+  const guardarToken = t => { try { if (t) localStorage.setItem(CLAVE_TOKEN, t); else localStorage.removeItem(CLAVE_TOKEN); } catch (e) { /* sin almacenamiento */ } };
+  const apiGh = (ruta, token, opciones = {}) => fetch(`https://api.github.com/repos/${GH.propietario}/${GH.repositorio}${ruta}`, Object.assign({
+    headers: Object.assign({ Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, token ? { Authorization: 'Bearer ' + token } : {}) }, opciones));
+  const dlg = document.getElementById('dlg-actualizar'), dlgCuerpo = document.getElementById('dlg-cuerpo');
+  const abrirActualizar = () => {
+    const token = leerToken();
+    dlgCuerpo.innerHTML = `
+      <p>La actualización descarga lo nuevo de cada fuente, regenera los informes y el panel y vuelve a publicar la web. Tarda entre uno y dos minutos.</p>
+      ${token ? `<p>Hay un token de GitHub guardado en este navegador.</p>` : `
+      <p>Para lanzarla desde aquí hace falta, una sola vez, un <strong>token personal de GitHub</strong> con permiso de escritura en <em>Actions</em> sobre este repositorio. Se guarda únicamente en este navegador y no se envía a ningún sitio salvo a la API de GitHub.</p>
+      <ol><li>En GitHub: foto de perfil → <em>Settings</em> → <em>Developer settings</em> → <em>Personal access tokens</em> → <em>Fine-grained tokens</em> → <em>Generate new token</em>.</li>
+      <li>Repositorio: solo <code>${esc(GH.repositorio || '')}</code>. Permisos: <em>Actions: Read and write</em> (y <em>Metadata: Read</em>, que se añade solo).</li>
+      <li>Copie el token y péguelo aquí.</li></ol>
+      <input type="password" id="dlg-token" placeholder="github_pat_…" autocomplete="off">`}
+      <div class="acciones">
+        <button class="boton primario" id="dlg-lanzar">Actualizar ahora</button>
+        <button class="boton" id="dlg-cerrar">Cancelar</button>
+        ${token ? `<button class="boton" id="dlg-olvidar" title="Borra el token guardado en este navegador">Olvidar token</button>` : ''}
+        <a class="boton" href="${P.url_actions}" target="_blank" rel="noopener">Ver ejecuciones</a>
+      </div>
+      <p class="meta" id="dlg-estado"></p>`;
+    dlg.showModal();
+    document.getElementById('dlg-cerrar').onclick = () => dlg.close();
+    const olv = document.getElementById('dlg-olvidar'); if (olv) olv.onclick = () => { guardarToken(''); abrirActualizar(); };
+    document.getElementById('dlg-lanzar').onclick = lanzarActualizacion;
+  };
+  const estadoDlg = (html, progreso = false) => { const e = document.getElementById('dlg-estado'); if (e) e.innerHTML = progreso ? `<span class="progreso">${html}</span>` : html; };
+  const lanzarActualizacion = async () => {
+    const campo = document.getElementById('dlg-token');
+    const token = (campo ? campo.value.trim() : '') || leerToken();
+    if (!token) { estadoDlg('Falta el token.'); return; }
+    const boton = document.getElementById('dlg-lanzar'); boton.disabled = true;
+    estadoDlg('Lanzando la actualización…', true);
+    const inicio = new Date(Date.now() - 60000).toISOString();
+    let r;
+    try {
+      r = await apiGh(`/actions/workflows/${GH.workflow}/dispatches`, token, { method: 'POST', body: JSON.stringify({ ref: GH.rama }) });
+    } catch (e) { estadoDlg('No se pudo contactar con la API de GitHub: ' + esc(e.message)); boton.disabled = false; return; }
+    if (r.status !== 204) {
+      const txt = r.status === 401 ? 'token no válido o caducado' : r.status === 403 ? 'el token no es válido o no tiene permiso de escritura en Actions sobre este repositorio' : r.status === 404 ? 'repositorio, flujo o rama no encontrados (o el token no ve el repositorio)' : 'respuesta ' + r.status;
+      estadoDlg('GitHub ha rechazado la petición: ' + txt + '.'); boton.disabled = false; return;
+    }
+    guardarToken(token);
+    estadoDlg('Actualización en marcha. La página se recargará sola al terminar (1–2 minutos)…', true);
+    // Seguimiento: la última ejecución lanzada a mano después de `inicio`
+    const t0 = Date.now();
+    const seguir = async () => {
+      try {
+        const q = await apiGh(`/actions/workflows/${GH.workflow}/runs?event=workflow_dispatch&branch=${encodeURIComponent(GH.rama)}&created=>${encodeURIComponent(inicio)}&per_page=1`, token);
+        const d = q.ok ? await q.json() : null; const run = d && d.workflow_runs && d.workflow_runs[0];
+        if (run && run.status === 'completed') {
+          if (run.conclusion === 'success') { estadoDlg('Terminada correctamente. Recargando…'); setTimeout(() => location.replace(location.pathname + '?t=' + Date.now() + location.hash), 4000); }
+          else { estadoDlg(`Terminada con avisos (${esc(run.conclusion)}): alguna fuente no respondió; se ha publicado con el último dato correcto. <a href="${run.html_url}" target="_blank" rel="noopener">Ver registro</a>. Recargando…`); setTimeout(() => location.replace(location.pathname + '?t=' + Date.now() + location.hash), 8000); }
+          return;
+        }
+        if (run) estadoDlg(`En marcha (${esc(run.status)}, ${Math.round((Date.now() - t0) / 1000)} s)… <a href="${run.html_url}" target="_blank" rel="noopener">ver registro</a>`, true);
+      } catch (e) { /* se reintenta */ }
+      if (Date.now() - t0 < 15 * 60000) setTimeout(seguir, 10000); else estadoDlg('La ejecución tarda más de lo normal. Compruébela en <a href="' + P.url_actions + '" target="_blank" rel="noopener">la página de ejecuciones</a>.');
+    };
+    setTimeout(seguir, 8000);
+  };
+  document.getElementById('b-actualizar').addEventListener('click', abrirActualizar);
 
   // ---------- tarjetas
   const sparkSvg = (id) => {
@@ -512,7 +589,7 @@ footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--border
       `<td><span class="estado"><span class="punto ${f.estado === 'ok' ? 'ok' : 'bad'}"></span>${f.estado === 'ok' ? 'correcto' : 'error'}</span>${f.error ? `<div class="meta">${esc(f.error)}</div>` : ''}</td>`;
     tf.appendChild(tr);
   }
-  document.getElementById('meta-actualizacion').innerHTML = `Última ejecución: ${fmtFechaHora(P.actualizado)}${P.ejecucion_url ? ` (<a href="${P.ejecucion_url}" target="_blank" rel="noopener">ver registro</a>)` : ''}. La actualización se ejecuta cada lunes de forma automática y puede lanzarse a mano desde <a href="${P.url_actions}" target="_blank" rel="noopener">la página de ejecuciones del repositorio</a>. Si una fuente falla, se conserva su último dato correcto y el error queda registrado aquí.`;
+  document.getElementById('meta-actualizacion').innerHTML = `Última ejecución: ${fmtFechaHora(P.actualizado)}${P.ejecucion_url ? ` (<a href="${P.ejecucion_url}" target="_blank" rel="noopener">ver registro</a>)` : ''}. La actualización se ejecuta cada lunes de forma automática y puede lanzarse a mano con el botón «Actualizar» de la cabecera (pide una vez un token de GitHub) o desde <a href="${P.url_actions}" target="_blank" rel="noopener">la página de ejecuciones del repositorio</a>. Si una fuente falla, se conserva su último dato correcto y el error queda registrado aquí.`;
   document.getElementById('descargas').innerHTML = P.informes.length ? '<h3 style="margin-top:14px">Descargas</h3><div class="acciones">' + P.informes.map(i => `<a class="boton" href="${i.url}">${i.nombre.endsWith('.pdf') ? 'Informe semanal (PDF)' : 'Histórico y comparador (Excel)'}</a>`).join('') + '</div><p class="meta">Se regeneran en cada actualización con los datos del panel. El CSV de cada indicador se descarga desde su gráfico.</p>' : '<p class="meta">Los informes en PDF y Excel se incorporarán en la siguiente fase.</p>';
   document.getElementById('metodo').innerHTML = '<div class="tabla-scroll"><table><thead><tr><th>Indicador</th><th>Fuente</th><th>Unidad y frecuencia</th><th>Impuestos</th><th>Conversión a €/kWh</th></tr></thead><tbody>' +
     P.resumen.map(r => { const m = P.metadatos[r.id] || {}; return `<tr><td>${esc(r.nombre)}</td><td><a href="${r.url_fuente}" target="_blank" rel="noopener">${esc(r.fuente)}</a></td><td>${esc(r.unidad_original)}; ${esc(m.frecuencia || '')}</td><td>${esc(m.impuestos_original || '')}</td><td>${esc(m.conversion || '')}${m.nota ? '<div class="meta">' + esc(m.nota) + '</div>' : ''}</td></tr>`; }).join('') + '</tbody></table></div>';

@@ -33,9 +33,12 @@ aparece «no disponible» (n. d.).
 - **Automática:** cada lunes a las 05:17 UTC (06:17 u 07:17 hora peninsular) GitHub Actions descarga lo nuevo de
   cada fuente, comprueba que el histórico no se reduce, regenera los informes y el panel, guarda los datos en el
   repositorio y publica la web. No hay que hacer nada.
-- **A mano:** en el repositorio, pestaña *Actions* → «Actualizar datos y publicar» → *Run workflow* (cuando el flujo
-  esté en la rama `main`; mientras esté solo en la rama de desarrollo, abrir la última ejecución → *Re-run all jobs*).
-  El panel enlaza esa página desde el botón «Actualizar».
+- **A mano, desde el panel:** botón «Actualizar» de la cabecera. La primera vez pide un token personal de GitHub
+  (*fine-grained*, solo este repositorio, permiso *Actions: Read and write*), que se guarda únicamente en ese navegador.
+  Lanza la actualización por la API de GitHub, muestra el progreso y recarga la página al terminar (1–2 minutos).
+  «Olvidar token» lo borra del navegador.
+- **A mano, desde GitHub:** pestaña *Actions* → «Actualizar datos y publicar» → *Run workflow* (cuando el flujo esté en
+  la rama `main`; mientras esté solo en la rama de desarrollo, abrir la última ejecución → *Re-run all jobs*).
 - **En un ordenador propio** (Python 3.12 o superior):
   ```bash
   pip install -r requirements.txt
@@ -51,7 +54,8 @@ aparece «no disponible» (n. d.).
 
 ## 3. Exportar
 
-- **Informe PDF** (4 páginas, para dirección) y **Excel** (histórico completo con datos originales y convertidos,
+- **Informe PDF** (2 páginas, para dirección: cuadro de mando con tarjetas, ranking, sobrecoste de las alternativas
+  frente al pellet y claves; y lectura por indicador de qué mide y cómo repercute en el pellet) y **Excel** (histórico completo con datos originales y convertidos,
   medias mensuales y anuales, gráficos vinculados, hoja «Comparador» con desplegables, fuentes y criterios): botones
   «Informe PDF» e «Histórico Excel» en la cabecera del panel, o la sección «Descargas». Se regeneran en cada
   actualización; solo se conserva la última versión (el histórico completo está en `datos/`, versionado en git).
