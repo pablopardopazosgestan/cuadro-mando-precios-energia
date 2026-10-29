@@ -247,13 +247,13 @@ def main() -> Path:
                   ["1. Cuadro de mando", "Ocho tarjetas con precio, variaciones, fuente, fecha y tendencia de 24 meses; ranking del coste por kWh de la energía final; "
                                          "claves de la semana; y el gráfico «Pellet frente a las alternativas de calefacción»: cuánto más (o menos) cuesta el kWh de gasóleo C, "
                                          "butano, TUR 2 y PVPC que el del pellet en saco, hoy y hace un año, y la evolución de esa diferencia en 24 meses."],
-                  ["2. Lectura para dirección", "Para cada indicador: precio y variaciones, una explicación fija de qué mide y por qué importa para el coste de producción o el precio "
-                                                "del pellet, una frase calculada con las cifras de la semana (por ejemplo, «su kWh cuesta hoy un 80 % más que el del pellet en saco») "
-                                                "y la mini tendencia. Cierra con el estado de las fuentes y cómo se calcula todo."]],
+                  ["2. Evolución y lectura", "Ocho gráficos grandes, uno por indicador, con los últimos 24 meses en €/kWh (en las series diarias, el dato en claro y la media "
+                                             "de 7 días en trazo grueso; el pellet a granel en discontinuo) y el último valor anotado. Encima, precio y variaciones; debajo, una "
+                                             "explicación fija de qué mide y por qué importa para el coste de producción o el precio del pellet. Cierra con el estado de las fuentes."]],
                  [0.24, 0.76]),
            P("<b>Cómo leer el sobrecoste:</b> es el precio de la alternativa dividido por el precio del pellet en saco, menos uno, ambos en €/kWh con impuestos. "
              "Positivo significa que el pellet es más barato; si crece respecto a hace un año, la ventaja del pellet se amplía. El valor de hace un año se deduce "
-             "de las variaciones interanuales. Las explicaciones fijas se redactaron el 28/10/2026 y se revisan a mano; las frases con cifras salen de los datos. "
+             "de las variaciones interanuales. Las explicaciones fijas se redactaron el 28/10/2026 y se revisan a mano. "
              "El impacto en euros por tonelada depende de los consumos de cada planta y no se incluye.", destacado)]
     el += [Table([[Image(str(DIR_GUIA / f"pdf_p{i}.png"), width=ANCHO / 2 - 3 * mm, height=(ANCHO / 2 - 3 * mm) * 1.414) for i in (1, 2)]],
                  colWidths=[ANCHO / 2] * 2, style=TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 1), ("RIGHTPADDING", (0, 0), (-1, -1), 1)])),

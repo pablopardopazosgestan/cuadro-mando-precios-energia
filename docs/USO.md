@@ -54,7 +54,7 @@ aparece «no disponible» (n. d.).
 ## 3. Exportar
 
 - **Informe PDF** (2 páginas, para dirección: cuadro de mando con tarjetas, ranking, sobrecoste de las alternativas
-  frente al pellet y claves; y lectura por indicador de qué mide y cómo repercute en el pellet) y **Excel** (histórico completo con datos originales y convertidos,
+  frente al pellet y claves; y ocho gráficos grandes de evolución a 24 meses con la lectura de qué mide cada indicador y cómo repercute en el pellet) y **Excel** (histórico completo con datos originales y convertidos,
   medias mensuales y anuales, gráficos vinculados, hoja «Comparador» con desplegables, fuentes y criterios): botones
   «Informe PDF» e «Histórico Excel» en la cabecera del panel, o la sección «Descargas». Se regeneran en cada
   actualización; solo se conserva la última versión (el histórico completo está en `datos/`, versionado en git).

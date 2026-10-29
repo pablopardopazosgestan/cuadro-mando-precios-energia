@@ -66,6 +66,8 @@ Escribe a Pablo siempre en castellano, de forma directa.
   personal guardado en el navegador (`panel.json` → `github`; diálogo en la plantilla). PDF reducido a 2 páginas: cuadro
   de mando + gráfico de sobrecoste de las alternativas frente al pellet + «lectura para dirección» con texto fijo por
   indicador (`precios/lectura.py`, decisión en DECISIONES) y frases calculadas. Pruebas: `tests/test_lectura.py`.
+  **29/10/2026:** la página 2 pasa a cuadrícula 2×4 de gráficos grandes de evolución (24 meses, `grafico_evolucion`) con el
+  texto fijo debajo; la columna de frases calculadas se quita del PDF (redundante para dirección; sigue en el código).
 - Guía de usuario en PDF (27/10/2026, a petición de Pablo antes de fusionar): `docs/GUIA_DE_USUARIO.pdf`, generada por
   `scripts/generar_guia.py` a partir de las capturas de `docs/guia/` (`scripts/capturas_guia.js`, Playwright) y de las
   páginas del informe. Regenerar si cambia el panel o los informes.

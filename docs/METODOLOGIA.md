@@ -262,12 +262,13 @@ para dirección (rediseñados el 27/10/2026 a petición de Pablo):
      hoy y hace un año (barras) y su evolución en 24 meses con medias mensuales (líneas). Sobrecoste = precio
      alternativa ÷ precio pellet saco − 1, ambos en €/kWh con impuestos; el de hace un año se deduce de las variaciones
      interanuales (precio ÷ (1 + variación)). Es un dato derivado y se marca como calculado.
-  2. *Lectura para dirección* (`precios/lectura.py`): por indicador, precio y variaciones, un **texto fijo** de qué mide
-     y por qué importa para el coste de producción o el precio del pellet (redactado el 28/10/2026, revisable a mano,
-     decisión en `docs/DECISIONES.md`), una **frase calculada** solo con cifras del panel (dirección de las variaciones,
-     prima frente al pellet y si la ventaja del pellet se amplía, se reduce o se mantiene) y la mini tendencia. Cierra
-     con el estado de las fuentes en una línea y el resumen de cómo se calcula. El impacto en €/t no se cuantifica:
-     depende de los consumos de cada planta, que no son datos públicos.
+  2. *Evolución y lectura* (29/10/2026, a petición de Pablo: más gráfico, sin texto redundante): cuadrícula 2×4 con un
+     gráfico grande por indicador (`informes.grafico_evolucion`): últimos 24 meses en €/kWh en la frecuencia original
+     (series diarias con el dato en claro y la media de 7 días en trazo grueso; pellet granel en discontinuo), último
+     valor anotado a la derecha; encima, precio y variaciones; debajo, el **texto fijo** de `precios/lectura.py` sobre qué
+     mide y por qué importa para el coste de producción o el precio del pellet (redactado el 28/10/2026, revisable a
+     mano). Las frases calculadas de `lectura.frase_dinamica` se mantienen en el código y probadas, pero ya no van en
+     el PDF. Cierra con el estado de las fuentes en una línea; el resumen de cómo se calcula va al pie de la página 1.
   Los gráficos comparativos desde 2022 y los nueve individuales dejan de ir en el PDF (están en el panel y en el Excel);
   las funciones `grafico_comparativo` y `grafico_individual` se conservan y prueban.
 - **`sitio/informes/historico.xlsx`**: «Cuadro de mando» (ocho tarjetas en celdas combinadas con precio, variaciones
