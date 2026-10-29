@@ -1,29 +1,29 @@
 {
-  "actualizado": "2026-10-28T10:07:42+00:00",
+  "actualizado": "2026-10-29T11:06:24+00:00",
   "version": "0.3.0",
   "fuentes": {
     "ine_ipc": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {}
     },
     "esios_pvpc": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {
         "pvpc": {
-          "ultimo_dato": "2026-10-28",
-          "n_datos": 1976,
-          "dato_nuevo": false
+          "ultimo_dato": "2026-10-29",
+          "n_datos": 1977,
+          "dato_nuevo": true
         }
       }
     },
     "boe_tur": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {
         "tur2": {
           "ultimo_dato": "2026-10-01",
@@ -35,48 +35,48 @@
     "omie": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {
         "omie": {
-          "ultimo_dato": "2026-10-28",
-          "n_datos": 2490,
-          "dato_nuevo": false
+          "ultimo_dato": "2026-10-29",
+          "n_datos": 2491,
+          "dato_nuevo": true
         }
       }
     },
     "mibgas": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {
         "mibgas": {
-          "ultimo_dato": "2026-10-27",
-          "n_datos": 2492,
-          "dato_nuevo": false
+          "ultimo_dato": "2026-10-28",
+          "n_datos": 2493,
+          "dato_nuevo": true
         }
       }
     },
     "boletin_petrolero": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {
         "gasoleo_a": {
-          "ultimo_dato": "2026-10-19",
-          "n_datos": 349,
-          "dato_nuevo": false
+          "ultimo_dato": "2026-10-26",
+          "n_datos": 350,
+          "dato_nuevo": true
         },
         "gasoleo_c": {
-          "ultimo_dato": "2026-10-19",
-          "n_datos": 349,
-          "dato_nuevo": false
+          "ultimo_dato": "2026-10-26",
+          "n_datos": 350,
+          "dato_nuevo": true
         }
       }
     },
     "boe_butano": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {
         "butano": {
           "ultimo_dato": "2026-09-15",
@@ -88,7 +88,7 @@
     "avebiom": {
       "estado": "ok",
       "error": null,
-      "ultima_actualizacion_correcta": "2026-10-28T10:07:42+00:00",
+      "ultima_actualizacion_correcta": "2026-10-29T11:06:24+00:00",
       "series": {
         "pellet_saco": {
           "ultimo_dato": "2026-07-01",
@@ -103,5 +103,5 @@
       }
     }
   },
-  "ejecucion_url": "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia/actions/runs/40669540408"
+  "ejecucion_url": "https://github.com/pablopardopazosgestan/cuadro-mando-precios-energia/actions/runs/40862698411"
 }
