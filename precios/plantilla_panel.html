@@ -276,11 +276,12 @@ dialog.actualizar input[type=password] { width: 100%; font: inherit; padding: 7p
     dlgCuerpo.innerHTML = `
       <p>La actualización descarga lo nuevo de cada fuente, regenera los informes y el panel y vuelve a publicar la web. Tarda entre uno y dos minutos.</p>
       ${token ? `<p>Hay un token de GitHub guardado en este navegador.</p>` : `
-      <p>Para lanzarla desde aquí hace falta, una sola vez, un <strong>token personal de GitHub</strong> con permiso de escritura en <em>Actions</em> sobre este repositorio. Se guarda únicamente en este navegador y no se envía a ningún sitio salvo a la API de GitHub.</p>
+      <p>Para lanzarla desde aquí hace falta, una sola vez, un <strong>token personal de GitHub</strong> (empieza por <code>github_pat_</code> o <code>ghp_</code>) con permiso de escritura en <em>Actions</em> sobre este repositorio. Se guarda únicamente en este navegador y no se envía a ningún sitio salvo a la API de GitHub.</p>
+      <p class="meta"><strong>No es el token de ESIOS:</strong> ese ya está guardado como secreto en GitHub y lo usa el propio proceso de actualización; aquí se necesita permiso para <em>lanzar</em> ese proceso, y eso solo lo da un token de GitHub.</p>
       <ol><li>En GitHub: foto de perfil → <em>Settings</em> → <em>Developer settings</em> → <em>Personal access tokens</em> → <em>Fine-grained tokens</em> → <em>Generate new token</em>.</li>
       <li>Repositorio: solo <code>${esc(GH.repositorio || '')}</code>. Permisos: <em>Actions: Read and write</em> (y <em>Metadata: Read</em>, que se añade solo).</li>
       <li>Copie el token y péguelo aquí.</li></ol>
-      <input type="password" id="dlg-token" placeholder="github_pat_…" autocomplete="off">`}
+      <input type="password" id="dlg-token" placeholder="github_pat_… o ghp_…" autocomplete="off">`}
       <div class="acciones">
         <button class="boton primario" id="dlg-lanzar">Actualizar ahora</button>
         <button class="boton" id="dlg-cerrar">Cancelar</button>
@@ -298,6 +299,7 @@ dialog.actualizar input[type=password] { width: 100%; font: inherit; padding: 7p
     const campo = document.getElementById('dlg-token');
     const token = (campo ? campo.value.trim() : '') || leerToken();
     if (!token) { estadoDlg('Falta el token.'); return; }
+    if (!/^(github_pat_|ghp_|gho_|ghs_)/.test(token)) { estadoDlg('Esto no parece un token de GitHub (empiezan por «github_pat_» o «ghp_»). Si ha pegado el token de ESIOS: no es el que se necesita aquí; ese ya está guardado en GitHub y lo usa el proceso de actualización.'); return; }
     const boton = document.getElementById('dlg-lanzar'); boton.disabled = true;
     estadoDlg('Lanzando la actualización…', true);
     const inicio = new Date(Date.now() - 60000).toISOString();
@@ -306,7 +308,7 @@ dialog.actualizar input[type=password] { width: 100%; font: inherit; padding: 7p
       r = await apiGh(`/actions/workflows/${GH.workflow}/dispatches`, token, { method: 'POST', body: JSON.stringify({ ref: GH.rama }) });
     } catch (e) { estadoDlg('No se pudo contactar con la API de GitHub: ' + esc(e.message)); boton.disabled = false; return; }
     if (r.status !== 204) {
-      const txt = r.status === 401 ? 'token no válido o caducado' : r.status === 403 ? 'el token no es válido o no tiene permiso de escritura en Actions sobre este repositorio' : r.status === 404 ? 'repositorio, flujo o rama no encontrados (o el token no ve el repositorio)' : 'respuesta ' + r.status;
+      const txt = r.status === 401 ? 'token de GitHub no válido o caducado (si ha pegado el token de ESIOS, no es el que se necesita aquí)' : r.status === 403 ? 'el token no es válido o no tiene permiso de escritura en Actions sobre este repositorio' : r.status === 404 ? 'repositorio, flujo o rama no encontrados (o el token no ve el repositorio)' : 'respuesta ' + r.status;
       estadoDlg('GitHub ha rechazado la petición: ' + txt + '.'); boton.disabled = false; return;
     }
     guardarToken(token);

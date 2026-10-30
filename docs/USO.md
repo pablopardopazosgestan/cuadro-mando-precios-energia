@@ -34,7 +34,8 @@ aparece «no disponible» (n. d.).
   cada fuente, comprueba que el histórico no se reduce, regenera los informes y el panel, guarda los datos en el
   repositorio y publica la web. No hay que hacer nada.
 - **A mano, desde el panel:** botón «Actualizar» de la cabecera. La primera vez pide un token personal de GitHub
-  (*fine-grained*, solo este repositorio, permiso *Actions: Read and write*), que se guarda únicamente en ese navegador.
+  (*fine-grained*, solo este repositorio, permiso *Actions: Read and write*; empieza por `github_pat_`), que se guarda
+  únicamente en ese navegador. **No es el token de ESIOS**: ese ya está como secreto en GitHub y lo usa el workflow.
   Lanza la actualización por la API de GitHub, muestra el progreso y recarga la página al terminar (1–2 minutos).
   «Olvidar token» lo borra del navegador.
 - **A mano, desde GitHub:** pestaña *Actions* → «Actualizar datos y publicar» → *Run workflow*.

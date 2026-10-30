@@ -299,7 +299,9 @@ def main() -> Path:
              "viaja a ningún sitio salvo a la API de GitHub) y puede borrarse con «Olvidar token». Al pulsar «Actualizar ahora», el panel lanza la "
              "actualización, muestra el progreso y se recarga solo cuando termina (uno o dos minutos). Si alguna fuente no respondió, lo indica y enlaza el registro."),
            lista(["<b>Cómo obtener el token (una vez):</b> en GitHub, foto de perfil → <i>Settings</i> → <i>Developer settings</i> → <i>Personal access tokens</i> → "
-                  "<i>Fine-grained tokens</i> → <i>Generate new token</i>. Repositorio: solo este. Permisos: <i>Actions: Read and write</i>. Copie el token y péguelo en el cuadro.",
+                  "<i>Fine-grained tokens</i> → <i>Generate new token</i>. Repositorio: solo este. Permisos: <i>Actions: Read and write</i>. Copie el token (empieza por github_pat_) y péguelo en el cuadro.",
+                  "<b>No confundir con el token de ESIOS:</b> ese ya está guardado como secreto en GitHub y lo usa el propio proceso de actualización para descargar el PVPC. "
+                  "Aquí hace falta permiso para <i>lanzar</i> el proceso, y eso solo lo da un token de GitHub; si se pega el de ESIOS, el cuadro lo rechaza.",
                   "<b>Alternativa sin token:</b> botón «Ver ejecuciones» del mismo cuadro (abre GitHub Actions). Elija «Actualizar datos y publicar» y pulse «Run workflow»."]),
            P("8.3 Saber si ha ido bien", h3),
            lista(["<b>En el panel:</b> sección «Estado de las fuentes y actualización»: por fuente, última descarga correcta, último dato y resultado (● correcto / ● error con el mensaje), y enlace a la ejecución.",
