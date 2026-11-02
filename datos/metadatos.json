@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-02T07:48:23+00:00",
+  "generado": "2026-11-02T14:37:36+00:00",
   "version": "0.3.0",
   "indicadores": {
     "omie": {
@@ -14,10 +14,10 @@
       "conversion": "€/MWh ÷ 1.000 = €/kWh",
       "nota": "Precio mayorista: no se le aplican impuestos (decisión 1).",
       "primer_dato": "2020-01-01",
-      "ultimo_dato": "2026-11-02",
-      "n_datos": 2495,
+      "ultimo_dato": "2026-11-03",
+      "n_datos": 2496,
       "n_meses": 83,
-      "con_impuestos_no_disponible": 2495
+      "con_impuestos_no_disponible": 2496
     },
     "mibgas": {
       "numero": 2,
