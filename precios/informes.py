@@ -379,6 +379,84 @@ def grafico_evolucion(id_: str, hasta: dt.date, meses_n: int = 24, extra_id: str
     return _png(fig)
 
 
+# ------------------------------------------------------------------ Gráfico para redes sociales
+
+# Versión del ranking de energía final pensada para difusión (petición del 03/11/2026): sin gasóleo A (carburante, no
+# calefacción) y con los conceptos «gas natural» y «electricidad» identificados con su tarifa.
+EXCLUIDOS_REDES = ("omie", "mibgas", "gasoleo_a")
+ETIQUETAS_REDES = {"tur2": "Gas natural (TUR 2)", "pvpc": "Electricidad (PVPC 2.0)", "gasoleo_c": "Gasóleo C",
+                   "butano": "Butano", "pellet_saco": "Pellet saco 15 kg", "pellet_granel": "Pellet granel"}
+FORMATOS_REDES = {"coste_kwh_redes.png": (1200, 675), "coste_kwh_redes_cuadrado.png": (1080, 1080)}
+
+
+def datos_redes(resumen: list[dict]) -> list[dict]:
+    """Filas del gráfico para redes, de menor a mayor precio. Solo indicadores con precio disponible (nada se estima)."""
+    filas = [r for r in resumen if r["id"] not in EXCLUIDOS_REDES and r.get("precio_eur_kwh") is not None]
+    filas.sort(key=lambda r: r["precio_eur_kwh"])
+    return [{"id": r["id"], "etiqueta": ETIQUETAS_REDES.get(r["id"], r["nombre_corto"]), "valor": r["precio_eur_kwh"],
+             "fecha_dato": r.get("fecha_dato")} for r in filas]
+
+
+def _nota_fechas_redes(filas: list[dict], hoy: dt.date) -> str:
+    """Pie con el periodo de cada dato: los precios no se publican todos a la vez."""
+    f = {x["id"]: x["fecha_dato"] for x in filas}
+    partes = []
+    if f.get("pvpc"):
+        partes.append(f"electricidad: media de 7 días hasta el {_fecha(f['pvpc'])}")
+    if f.get("gasoleo_c"):
+        partes.append(f"gasóleo C: semana del {_fecha(f['gasoleo_c'])}")
+    if f.get("tur2") or f.get("butano"):
+        partes.append("gas natural y butano: tarifa vigente")
+    for pid in ("pellet_saco", "pellet_granel"):
+        if f.get(pid):
+            d = dt.date.fromisoformat(f[pid])
+            partes.append(f"pellet: índice del {(d.month - 1) // 3 + 1}T{d.year}")
+            break
+    return "; ".join(partes) + "."
+
+
+def grafico_redes(panel: dict, ancho_px: int = 1200, alto_px: int = 675) -> bytes:
+    """PNG listo para publicar: ranking del coste por kWh de la energía final con impuestos, con título, fecha y fuentes.
+    Dos maquetas: horizontal 16:9 (X, LinkedIn, Facebook) y cuadrada (Instagram)."""
+    import textwrap
+    dpi = 200
+    filas = datos_redes(panel["resumen"])
+    hoy = dt.date.fromisoformat(panel["fecha_referencia"])
+    cuadrado = alto_px >= ancho_px * 0.9
+    k = ancho_px / 1200
+    if cuadrado:
+        L = dict(titulo=["Coste por kWh de la energía final,", "con impuestos"], y_titulo=0.945, paso_titulo=0.058, y_sub=0.825,
+                 ejes=[0.34, 0.18, 0.55, 0.615], ancho_pie=108, t_titulo=17 * k, t_sub=7.9 * k, t_barra=10.5 * k, t_pie=6.6 * k)
+    else:
+        L = dict(titulo=["Coste por kWh de la energía final, con impuestos"], y_titulo=0.925, paso_titulo=0, y_sub=0.825,
+                 ejes=[0.28, 0.215, 0.61, 0.57], ancho_pie=130, t_titulo=14 * k, t_sub=7.8 * k, t_barra=8.7 * k, t_pie=5.6 * k)
+    fig = plt.figure(figsize=(ancho_px / dpi, alto_px / dpi), dpi=dpi, facecolor="#fcfcfb")
+    x0 = 0.06
+    for i, linea in enumerate(L["titulo"]):
+        fig.text(x0, L["y_titulo"] - i * L["paso_titulo"], linea, fontsize=L["t_titulo"], fontweight="bold", color=TINTA, va="top")
+    fig.text(x0, L["y_sub"], f"España · precios a {hoy:%d/%m/%Y} · €/kWh con IVA e impuestos incluidos · de menor a mayor",
+             fontsize=L["t_sub"], color=TINTA2, va="top")
+    ax = fig.add_axes(L["ejes"], facecolor="#fcfcfb")
+    valores = [x["valor"] for x in filas]
+    barras = ax.barh([x["etiqueta"] for x in filas], valores, color=[COLORES[x["id"]] for x in filas], height=0.66)
+    for b, v in zip(barras, valores):
+        ax.text(b.get_width() + max(valores) * 0.015, b.get_y() + b.get_height() / 2, _fmt(v, 3) + " €/kWh", va="center",
+                fontsize=L["t_barra"], color=TINTA, fontweight="bold")
+    ax.set_xlim(0, max(valores) * 1.32 if valores else 1)
+    ax.invert_yaxis()
+    ax.spines[["top", "right", "bottom"]].set_visible(False)
+    ax.spines["left"].set_color(BORDE)
+    ax.tick_params(axis="x", bottom=False, labelbottom=False)
+    ax.tick_params(axis="y", length=0, labelsize=L["t_barra"], colors=TINTA, pad=6 * k)
+    pie = ("Fuentes: REE/ESIOS (electricidad), BOE (gas natural y butano), Comisión Europea (gasóleo C) y AVEBIOM (pellet). "
+           "Impuestos vigentes según el BOE; conversión a kWh sobre poder calorífico inferior. Periodo de cada dato: " + _nota_fechas_redes(filas, hoy))
+    fig.text(x0, 0.035, "\n".join(textwrap.wrap(pie, L["ancho_pie"])), fontsize=L["t_pie"], color=TINTA3, va="bottom", linespacing=1.45)
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=dpi, facecolor=fig.get_facecolor())
+    plt.close(fig)
+    return buf.getvalue()
+
+
 # ------------------------------------------------------------------ PDF
 
 def generar_pdf(panel: dict, ruta: Path) -> Path:
@@ -903,4 +981,8 @@ def generar_excel(panel: dict, ruta: Path) -> Path:
 def generar(hoy: dt.date | None = None) -> list[Path]:
     panel = construir(hoy)
     DIR_INFORMES.mkdir(parents=True, exist_ok=True)
-    return [generar_pdf(panel, DIR_INFORMES / "informe.pdf"), generar_excel(panel, DIR_INFORMES / "historico.xlsx")]
+    salidas = [generar_pdf(panel, DIR_INFORMES / "informe.pdf"), generar_excel(panel, DIR_INFORMES / "historico.xlsx")]
+    for nombre, (w, h) in FORMATOS_REDES.items():
+        (DIR_INFORMES / nombre).write_bytes(grafico_redes(panel, w, h))
+        salidas.append(DIR_INFORMES / nombre)
+    return salidas

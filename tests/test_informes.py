@@ -15,7 +15,7 @@ DATOS = Path(__file__).resolve().parent.parent / "datos" / "series"
 def test_generar_pdf_y_excel(tmp_path, monkeypatch):
     monkeypatch.setattr(informes, "DIR_INFORMES", tmp_path)
     salidas = informes.generar(hoy=dt.date(2026, 10, 27))
-    pdf, xlsx = salidas
+    pdf, xlsx = salidas[:2]
     assert pdf.exists() and xlsx.exists()
     with pdfplumber.open(pdf) as doc:
         assert len(doc.pages) == 2
@@ -63,7 +63,7 @@ def test_comparativo_energia_final_y_periodo_sombreado():
 @pytest.mark.skipif(not (DATOS / "omie.csv").exists(), reason="sin datos")
 def test_pdf_dos_paginas_y_excel_comparador(tmp_path, monkeypatch):
     monkeypatch.setattr(informes, "DIR_INFORMES", tmp_path)
-    pdf, xlsx = informes.generar(hoy=dt.date(2026, 10, 27))
+    pdf, xlsx, *_ = informes.generar(hoy=dt.date(2026, 10, 27))
     with pdfplumber.open(pdf) as doc:
         assert len(doc.pages) == 2
         p1, p2 = doc.pages[0].extract_text(), doc.pages[1].extract_text()
@@ -89,3 +89,31 @@ def test_pdf_dos_paginas_y_excel_comparador(tmp_path, monkeypatch):
     precios = [ws.cell(row=r, column=4).value for r in range(fila + 2, fila + 9)]
     assert precios == sorted(precios) and len(precios) == 7                      # energía final, de menor a mayor
     assert wb.calculation.fullCalcOnLoad is True
+
+
+def test_datos_del_grafico_para_redes():
+    resumen = [
+        {"id": "omie", "nombre_corto": "OMIE", "precio_eur_kwh": 0.20, "fecha_dato": "2026-11-03"},
+        {"id": "gasoleo_a", "nombre_corto": "Gasóleo A", "precio_eur_kwh": 0.184, "fecha_dato": "2026-10-26"},
+        {"id": "pvpc", "nombre_corto": "PVPC 2.0TD", "precio_eur_kwh": 0.272, "fecha_dato": "2026-11-02"},
+        {"id": "tur2", "nombre_corto": "TUR 2", "precio_eur_kwh": 0.071, "fecha_dato": "2026-10-01"},
+        {"id": "pellet_saco", "nombre_corto": "Pellet saco 15 kg", "precio_eur_kwh": 0.082, "fecha_dato": "2026-07-01"},
+        {"id": "butano", "nombre_corto": "Butano", "precio_eur_kwh": None, "fecha_dato": None},
+    ]
+    filas = informes.datos_redes(resumen)
+    assert [f["id"] for f in filas] == ["tur2", "pellet_saco", "pvpc"]          # sin mayoristas ni gasóleo A; sin precio, fuera
+    assert [f["etiqueta"] for f in filas] == ["Gas natural (TUR 2)", "Pellet saco 15 kg", "Electricidad (PVPC 2.0)"]
+    nota = informes._nota_fechas_redes(filas, dt.date(2026, 11, 3))
+    assert "media de 7 días hasta el 02/11/2026" in nota and "índice del 3T2026" in nota and "gasóleo C" not in nota
+
+
+@pytest.mark.skipif(not (DATOS / "omie.csv").exists(), reason="sin datos")
+def test_graficos_para_redes_en_sus_tamanos(tmp_path, monkeypatch):
+    from PIL import Image as PILImage
+    monkeypatch.setattr(informes, "DIR_INFORMES", tmp_path)
+    salidas = informes.generar(hoy=dt.date(2026, 10, 27))
+    for nombre, tam in informes.FORMATOS_REDES.items():
+        ruta = tmp_path / nombre
+        assert ruta in salidas
+        with PILImage.open(ruta) as im:
+            assert im.size == tam

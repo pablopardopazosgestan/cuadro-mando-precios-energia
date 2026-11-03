@@ -59,6 +59,9 @@ aparece «no disponible» (n. d.).
   medias mensuales y anuales, gráficos vinculados, hoja «Comparador» con desplegables, fuentes y criterios): botones
   «Informe PDF» e «Histórico Excel» en la cabecera del panel, o la sección «Descargas». Se regeneran en cada
   actualización; solo se conserva la última versión (el histórico completo está en `datos/`, versionado en git).
+- **Gráficos para redes sociales:** en «Descargas», «Gráfico para redes, 16:9» (1200 × 675 px) y «Gráfico para redes,
+  cuadrado» (1080 × 1080 px). Coste por kWh de la energía final con impuestos, sin gasóleo A, con «Gas natural (TUR 2)»
+  y «Electricidad (PVPC 2.0)»; fuentes y periodo de cada dato en el pie. Se regeneran en cada actualización.
 - **CSV de un indicador:** botón «CSV» en su gráfico (datos del periodo elegido; separador «;», abre en Excel).
 - **Datos brutos:** `datos/series/<indicador>.csv` (frecuencia original) y `datos/mensual/<indicador>.csv`.
 - En el Excel, la hoja «Comparador» permite elegir hasta cuatro series, frecuencia mensual o anual y Base 100 sin

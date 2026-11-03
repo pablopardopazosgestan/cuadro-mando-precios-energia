@@ -258,6 +258,13 @@ def main() -> Path:
     el += [Table([[Image(str(DIR_GUIA / f"pdf_p{i}.png"), width=ANCHO / 2 - 3 * mm, height=(ANCHO / 2 - 3 * mm) * 1.414) for i in (1, 2)]],
                  colWidths=[ANCHO / 2] * 2, style=TableStyle([("LEFTPADDING", (0, 0), (-1, -1), 1), ("RIGHTPADDING", (0, 0), (-1, -1), 1)])),
            P("Las dos páginas del informe semanal.", pie_fig)]
+    el += [P("6.1 Gráficos para redes sociales", h3),
+           P("En «Descargas» hay dos imágenes PNG listas para publicar, regeneradas en cada actualización: «Gráfico para redes, 16:9» (1200 × 675 px, "
+             "para X, LinkedIn o Facebook) y «Gráfico para redes, cuadrado» (1080 × 1080 px, para Instagram). Muestran el coste por kWh de la energía "
+             "final con impuestos, de menor a mayor, sin el gasóleo A (carburante, no calefacción) y con el gas natural y la electricidad identificados "
+             "con su tarifa: «Gas natural (TUR 2)» y «Electricidad (PVPC 2.0)». El pie recoge las fuentes y el periodo de cada dato, para que la imagen "
+             "pueda circular sola sin perder la referencia.")]
+    el += figura("13_redes.png", "Gráfico para redes, formato 16:9.", ancho=120 * mm)
 
     # ------------------------------------------------------------ 7
     el += [P("7. Excel", h2),

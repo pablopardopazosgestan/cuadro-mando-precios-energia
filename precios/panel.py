@@ -278,7 +278,7 @@ def construir(hoy: dt.date | None = None) -> dict:
     cambios = {id_: imp.cambios_impuestos(id_, INICIO_AMPLIADO, hoy, omie_mensual) for id_ in ("pvpc", "tur2", "butano", "pellet_saco", "pellet_granel")}
     ultima_ok = max((f.get("ultima_actualizacion_correcta") or "" for f in estado["fuentes"].values()), default="") or None
     informes = []
-    for nombre in ("informe.pdf", "historico.xlsx"):
+    for nombre in ("informe.pdf", "historico.xlsx", "coste_kwh_redes.png", "coste_kwh_redes_cuadrado.png"):
         if (DIR_SITIO / "informes" / nombre).exists():
             informes.append({"nombre": nombre, "url": f"informes/{nombre}"})
     panel = {

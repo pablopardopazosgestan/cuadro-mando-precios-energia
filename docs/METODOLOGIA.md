@@ -271,6 +271,13 @@ para dirección (rediseñados el 27/10/2026 a petición de Pablo):
      el PDF. Cierra con el estado de las fuentes en una línea; el resumen de cómo se calcula va al pie de la página 1.
   Los gráficos comparativos desde 2022 y los nueve individuales dejan de ir en el PDF (están en el panel y en el Excel);
   las funciones `grafico_comparativo` y `grafico_individual` se conservan y prueban.
+- **Gráficos para redes sociales** (03/11/2026, a petición de Pablo): `sitio/informes/coste_kwh_redes.png` (1200 × 675 px)
+  y `coste_kwh_redes_cuadrado.png` (1080 × 1080 px), generados por `informes.grafico_redes` con los mismos datos del
+  ranking de energía final (`informes.datos_redes`): se excluyen OMIE, MIBGAS (mayoristas) y el gasóleo A
+  (carburante); «TUR 2» se rotula «Gas natural (TUR 2)» y «PVPC 2.0TD», «Electricidad (PVPC 2.0)». Título, fecha de
+  referencia, «€/kWh con IVA e impuestos incluidos», y en el pie las fuentes y el periodo de cada dato (media de 7 días
+  del PVPC, semana del gasóleo C, tarifa vigente de TUR 2 y butano, trimestre del índice de AVEBIOM). Un indicador sin
+  precio no aparece; nada se estima. El panel los enlaza en «Descargas».
 - **`sitio/informes/historico.xlsx`**: «Cuadro de mando» (ocho tarjetas en celdas combinadas con precio, variaciones
   con color, fuente y fecha; tabla resumen con formato condicional: color y flechas en las variaciones; claves de la
   semana; ranking de la energía final ordenado de menor a mayor con gráfico de barras vinculado); «Anual» (medias
