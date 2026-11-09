@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-03T11:56:21+00:00",
+  "generado": "2026-11-09T06:17:32+00:00",
   "version": "0.3.0",
   "indicadores": {
     "omie": {
@@ -14,10 +14,10 @@
       "conversion": "€/MWh ÷ 1.000 = €/kWh",
       "nota": "Precio mayorista: no se le aplican impuestos (decisión 1).",
       "primer_dato": "2020-01-01",
-      "ultimo_dato": "2026-11-03",
-      "n_datos": 2496,
+      "ultimo_dato": "2026-11-09",
+      "n_datos": 2502,
       "n_meses": 83,
-      "con_impuestos_no_disponible": 2496
+      "con_impuestos_no_disponible": 2502
     },
     "mibgas": {
       "numero": 2,
@@ -31,10 +31,10 @@
       "conversion": "€/MWh ÷ 1.000 = €/kWh (el índice se expresa sobre PCS, como todo el mercado gasista)",
       "nota": "Precio mayorista: no se le aplican impuestos (decisión 1).",
       "primer_dato": "2020-01-01",
-      "ultimo_dato": "2026-11-02",
-      "n_datos": 2498,
+      "ultimo_dato": "2026-11-08",
+      "n_datos": 2504,
       "n_meses": 83,
-      "con_impuestos_no_disponible": 2498
+      "con_impuestos_no_disponible": 2504
     },
     "gasoleo_a": {
       "numero": 3,
@@ -48,9 +48,9 @@
       "conversion": "€/l ÷ 10.28 kWh/l (PCI; decisión 10)",
       "nota": "De abril a diciembre de 2022 el Boletín no descuenta la bonificación de 20 c€/l del RDL 6/2022 (decisión 11).",
       "primer_dato": "2020-01-06",
-      "ultimo_dato": "2026-10-26",
-      "n_datos": 350,
-      "n_meses": 82,
+      "ultimo_dato": "2026-11-02",
+      "n_datos": 351,
+      "n_meses": 83,
       "con_impuestos_no_disponible": 0
     },
     "pvpc": {
@@ -65,8 +65,8 @@
       "conversion": "€/MWh ÷ 1.000 = €/kWh; con impuestos: (precio + cuota IEE) × (1 + IVA) vigentes en la fecha",
       "nota": "Indicador 1001 de ESIOS. Requiere ESIOS_TOKEN. Existe desde el 01/06/2021 (inicio de la 2.0TD).",
       "primer_dato": "2021-06-01",
-      "ultimo_dato": "2026-11-03",
-      "n_datos": 1982,
+      "ultimo_dato": "2026-11-09",
+      "n_datos": 1988,
       "n_meses": 66,
       "con_impuestos_no_disponible": 0
     },
@@ -99,9 +99,9 @@
       "conversion": "€/l ÷ 10.28 kWh/l (PCI)",
       "nota": "De abril a diciembre de 2022 el Boletín no descuenta la bonificación de 20 c€/l del RDL 6/2022 (decisión 11).",
       "primer_dato": "2020-01-06",
-      "ultimo_dato": "2026-10-26",
-      "n_datos": 350,
-      "n_meses": 82,
+      "ultimo_dato": "2026-11-02",
+      "n_datos": 351,
+      "n_meses": 83,
       "con_impuestos_no_disponible": 0
     },
     "butano": {
