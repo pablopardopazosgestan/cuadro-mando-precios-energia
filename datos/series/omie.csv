@@ -2515,3 +2515,4 @@ fecha,periodo,valor_original,unidad_original,eur_kwh_sin_impuestos,eur_kwh_con_i
 2026-11-21,2026-11-21,148.438300,€/MWh,0.148438,,no aplica (precio mayorista),,,2026-11-20,marginalpdbc_20261121.1,"96 periodos; mín 79.62, máx 193.46 €/MWh"
 2026-11-22,2026-11-22,65.142500,€/MWh,0.065142,,no aplica (precio mayorista),,,2026-11-21,marginalpdbc_20261122.1,"96 periodos; mín -0.30, máx 220.76 €/MWh"
 2026-11-23,2026-11-23,205.199900,€/MWh,0.205200,,no aplica (precio mayorista),,,2026-11-22,marginalpdbc_20261123.1,"96 periodos; mín 130.00, máx 313.30 €/MWh"
+2026-11-24,2026-11-24,210.134900,€/MWh,0.210135,,no aplica (precio mayorista),,,2026-11-23,marginalpdbc_20261124.1,"96 periodos; mín 155.07, máx 242.70 €/MWh"
